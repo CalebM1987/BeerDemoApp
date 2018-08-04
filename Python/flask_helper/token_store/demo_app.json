@@ -1,0 +1,9 @@
+{
+  "tokens": [
+    {
+      "token": "pbkdf2:sha1:1000$mNFRDxJTgDDLYJG6tbcjLoQfv8Ngm6xH$b3ae41dcee8be72b0b754f2f58905f6841495175", 
+      "expires": 1507078569864, 
+      "user": "calebma"
+    }
+  ]
+}

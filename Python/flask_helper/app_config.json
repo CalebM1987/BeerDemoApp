@@ -1,0 +1,4 @@
+{
+	"ldap_server": "LDAP:/server.your-org.com",
+	"domain_name": "your-org"
+}
