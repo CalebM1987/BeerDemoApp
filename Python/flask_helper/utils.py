@@ -8,12 +8,18 @@ import ldap
 from datetime import datetime, timedelta
 import time
 import six
+import flask_sqlalchemy
+
+Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
+InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
 
 VALID_CREDENTIALS = 'VALID_CREDENTIALS'
 INVALID_CREDENTIALS = 'INVALID_CREDENTIALS'
 
 # allow safe imports
-__all__ = ('collect_args', 'SecurityHandler', 'JSONExceptionHandler', 'INVALID_CREDENTIALS', 'VALID_CREDENTIALS', 'date_to_mil', 'mil_to_date')
+__all__ = ('collect_args', 'SecurityHandler', 'JSONExceptionHandler', 'INVALID_CREDENTIALS',
+           'VALID_CREDENTIALS', 'date_to_mil', 'mil_to_date', 'query_wrapper', 'to_json',
+           'list_fields', 'get_row', 'update_row')
 
 def date_to_mil(date=None):
     """converts datetime.datetime() object to milliseconds
@@ -73,6 +79,69 @@ def collect_args():
         for k,v in request.files.iteritems():
             data[k] = v
     return data
+
+def list_fields(table):
+    if not table:
+        return []
+    cols = table.__table__.columns if hasattr(table, '__table__') else table.columns
+    return [f.name for f in cols]
+
+def query_wrapper(table, **kwargs):
+    """query wrapper for complex queries via kwargs
+
+    Required:
+        table -- db.Model() for table
+
+    Optional:
+        **kwargs -- dict/kwargs of conditions for query
+        wildcards -- list of field names that should use like query
+            instead of equals (string contains)
+    """
+    conditions = []
+    wildcards = kwargs.get('wildcards', [])
+    for kwarg, val in six.iteritems(kwargs):
+        if hasattr(table, kwarg):
+            col = getattr(table, kwarg)
+            #print('col: {}, type: {}'.format(col, type(col)))
+            if isinstance(col, (Column, InstrumentedAttribute)):
+                if kwarg in wildcards:
+                    conditions.append(col.like('%{}%'.format(val)))
+                else:
+                    conditions.append(col==val)
+    if conditions:
+        #print('conditions: {}'.format(conditions))
+        return table.query.filter(*conditions).all()
+    else:
+        return table.query.all()
+
+def to_json(results, fields=None):
+    """casts query results to json
+
+    :param results: query results
+    :param fields: list of field names to include
+    :return:
+    """
+    if isinstance(results, list):
+        if len(results):
+            if not fields or not isinstance(fields, (list, tuple)):
+                fields = list_fields(results[0])
+            return [{f: getattr(r, f) for f in fields} for r in results]
+        else:
+            return []
+    else:
+        if not fields or not isinstance(fields, (list, tuple)):
+            fields = list_fields(results)
+        return {f: getattr(results, f) for f in fields}
+
+def get_row(table, d, key):
+    val = d.get(key)
+    if val:
+        return table.query.filter_by(**{key: val}).first()
+    return None
+
+def update_row(table, **kwargs):
+    for k,v in six.iteritems(kwargs):
+        setattr(table, k, v)
 
 class SecurityHandler(object):
     def __init__(self, ldap_server, domain_name):

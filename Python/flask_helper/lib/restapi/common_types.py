@@ -5,20 +5,58 @@ import sqlite3
 import base64
 import shutil
 import contextlib
-import urlparse
-from rest_utils import *
+from .rest_utils import *
 from .decorator import decorator
 import sys
+import warnings
 
-if sys.version_info[0] > 2:
-    basestring = str
+from . import six
+from .six.moves import urllib, zip_longest
+
+def force_open_source(force=True):
+    """this function can be used to explicitly use open source mode, even if arcpy is available
+
+    Optional:
+        force -- when True, this will force restapi to use open source mode.
+    """
+    __opensource__ = force
+    if force:
+        from .open_restapi import Geometry, GeometryCollection, exportReplica, project, \
+        partHandler, find_ws_type, SHP_FTYPES, __opensource__, GeocodeHandler, Geocoder
+
+        for f in ['Geometry', 'GeometryCollection', 'exportReplica', 'partHandler', 'project', 'find_ws_type', 'SHP_FTYPES', '__opensource__', 'GeocodeHandler', 'Geocoder']:
+            setattr(sys.modules[PACKAGE_NAME], f, locals().get(f))
+            setattr(sys.modules[__name__], f, locals().get(f))
+
+        setattr(sys.modules[PACKAGE_NAME], 'exportFeatureSet', exportFeatureSet_os)
+        setattr(sys.modules[__name__], 'exportFeatureSet', exportFeatureSet_os)
+
+    else:
+        from .arc_restapi import  Geometry, GeometryCollection,  find_ws_type, \
+        __opensource__, GeocodeHandler, Geocoder
+
+        for f in ['Geometry', 'GeometryCollection', 'find_ws_type', '__opensource__', 'GeocodeHandler', 'Geocoder']:
+
+            setattr(sys.modules[PACKAGE_NAME], f, locals().get(f))
+            setattr(sys.modules[__name__], f, locals().get(f))
+
+        setattr(sys.modules[PACKAGE_NAME], 'exportFeatureSet', exportFeatureSet_arcpy)
+        setattr(sys.modules[__name__], 'exportFeatureSet', exportFeatureSet_arcpy)
 
 try:
+    # can explicitly choose to use open source
+    print('FORCE OPEN SOURCE IS: ', FORCE_OPEN_SOURCE)
+    if FORCE_OPEN_SOURCE:
+        print('you have chosen to explicitly use the open source version.')
+        raise ImportError
+
     import arcpy
-    from arc_restapi import *
+    from .arc_restapi import *
     has_arcpy = True
+
 except ImportError:
-    from open_restapi import *
+    warnings.warn('No Arcpy found, some limitations in functionality may apply.')
+    from .open_restapi import *
     has_arcpy = False
     class Callable(object):
         def __call__(self, *args, **kwargs):
@@ -98,12 +136,11 @@ def unqualify_fields(fs):
 
     for i,feature in enumerate(fs.features):
         feature_copy = {}
-        for f, val in feature.attributes.iteritems():
+        for f, val in six.iteritems(feature.attributes):
             feature_copy[clean_fields.get(f, f)] = val
         fs.features[i].attributes = munch.munchify(feature_copy)
 
-if has_arcpy:
-    def exportFeatureSet(feature_set, out_fc, include_domains=False, qualified_fieldnames=False):
+def exportFeatureSet_arcpy(feature_set, out_fc, include_domains=False, qualified_fieldnames=False, **kwargs):
         """export FeatureSet (JSON result)  to shapefile or feature class
 
         Required:
@@ -120,6 +157,10 @@ if has_arcpy:
         at minimum, feature set must contain these keys:
             [u'features', u'fields', u'spatialReference', u'geometryType']
         """
+        if __opensource__:
+            return exportFeatureSet_os(feature_set, out_fc, **kwargs)
+
+        out_fc = validate_name(out_fc)
         # validate features input (should be list or dict, preferably list)
         if not isinstance(feature_set, FeatureSet):
             feature_set = FeatureSet(feature_set)
@@ -154,7 +195,7 @@ if has_arcpy:
             outSR = arcpy.SpatialReference(feature_set.getSR())
             path, fc_name = os.path.split(out_fc)
             g_type = G_DICT.get(feature_set.geometryType, '').upper()
-            arcpy.CreateFeatureclass_management(path, fc_name, g_type,
+            arcpy.management.CreateFeatureclass(path, fc_name, g_type,
                                             spatial_reference=outSR)
 
             # add all fields
@@ -204,16 +245,24 @@ if has_arcpy:
                         else:
                             dType = RANGE_UPPER
 
+
                         arcpy.management.CreateDomain(ws, field.domain[NAME],
-                                                      field.domain[NAME],
-                                                      FTYPES[field.type],
-                                                      dType)
-                        if dType == CODED:
-                            for cv in field.domain[CODED_VALUES]:
-                                arcpy.management.AddCodedValueToDomain(ws, field.domain[NAME], cv[CODE], cv[NAME])
-                        elif dType == RANGE_UPPER:
-                            _min, _max = field.domain[RANGE]
-                            arcpy.management.SetValueForRangeDomain(ws, field.domain[NAME], _min, _max)
+                                                          field.domain[NAME],
+                                                          FTYPES[field.type],
+                                                          dType)
+
+                        try:
+
+                            if dType == CODED:
+                                for cv in field.domain[CODED_VALUES]:
+                                    arcpy.management.AddCodedValueToDomain(ws, field.domain[NAME], cv[CODE], cv[NAME])
+
+                            elif dType == RANGE_UPPER:
+                                _min, _max = field.domain[RANGE]
+                                arcpy.management.SetValueForRangeDomain(ws, field.domain[NAME], _min, _max)
+
+                        except Exception as e:
+                            warnings.warn(e)
 
                         gdb_domains.append(field.domain[NAME])
                         print('Added domain "{}" to database: "{}"'.format(field.domain[NAME], ws))
@@ -221,7 +270,7 @@ if has_arcpy:
             # add domains
             if not isShp and include_domains:
                 field_list = [f.name.split('.')[-1] for f in arcpy.ListFields(out_fc)]
-                for fld, dom_name in dom_map.iteritems():
+                for fld, dom_name in six.iteritems(dom_map):
                     if fld in field_list:
                         arcpy.management.AssignDomainToField(out_fc, fld, dom_name)
                         print('Assigned domain "{}" to field "{}"'.format(dom_name, fld))
@@ -236,8 +285,7 @@ if has_arcpy:
         print('Created: "{0}"'.format(original))
         return original
 
-else:
-    def exportFeatureSet(feature_set, out_fc, outSR=None, **kwargs):
+def exportFeatureSet_os(feature_set, out_fc, outSR=None, **kwargs):
         """export features (JSON result) to shapefile or feature class
 
         Required:
@@ -248,6 +296,9 @@ else:
             outSR -- optional output spatial reference.  If none set, will default
                 to SR of result_query feature set.
         """
+        import shp_helper
+        from .shapefile import shapefile
+        out_fc = validate_name(out_fc)
         # validate features input (should be list or dict, preferably list)
         if not isinstance(feature_set, FeatureSet):
             feature_set = FeatureSet(feature_set)
@@ -294,6 +345,12 @@ else:
         # write projection file
         project(out_fc, outSR)
         return out_fc
+
+if has_arcpy:
+    exportFeatureSet = exportFeatureSet_arcpy
+
+else:
+    exportFeatureSet = exportFeatureSet_os
 
 def exportGeometryCollection(gc, output, **kwargs):
     """Exports a goemetry collection to shapefile or feature class
@@ -373,7 +430,7 @@ class Cursor(FeatureSet):
             def geometry(self):
                 """returns a restapi Geometry() object"""
                 if GEOMETRY in self.feature.json:
-                    gd = {k: v for k,v in self.feature.geometry.iteritems()}
+                    gd = {k: v for k,v in six.iteritems(self.feature.geometry)}
                     if SPATIAL_REFERENCE not in gd:
                         gd[SPATIAL_REFERENCE] = cursor.spatialReference
                     return Geometry(gd)
@@ -471,9 +528,9 @@ class Cursor(FeatureSet):
                 else:
                     geom = row[i]
                     if isinstance(geom, Geometry):
-                        ft[GEOMETRY] = {k:v for k,v in geom.json.iteritems() if k != SPATIAL_REFERENCE}
+                        ft[GEOMETRY] = {k:v for k,v in six.iteritems(geom.json) if k != SPATIAL_REFERENCE}
                     else:
-                        ft[GEOMETRY] = {k:v for k,v in Geometry(geom).json.iteritems() if k != SPATIAL_REFERENCE}
+                        ft[GEOMETRY] = {k:v for k,v in six.iteritems(Geometry(geom).json) if k != SPATIAL_REFERENCE}
             return Feature(ft)
         elif isinstance(row, self.BaseRow):
             return row.feature
@@ -496,7 +553,7 @@ class Cursor(FeatureSet):
         """
         if not fields or fields == '*':
             fields = [f.name for f in self.fields]
-        if isinstance(fields, basestring):
+        if isinstance(fields, six.string_types):
             fields = fields.split(',')
         for i,f in enumerate(fields):
             if '@' in f:
@@ -524,7 +581,7 @@ class SQLiteReplica(sqlite3.Connection):
         be used with a context manager.  For example:
 
             with SQLiteReplica(r'C:\TEMP\replica.geodatabase') as con:
-                print con.list_tables()
+                print(con.list_tables())
                 # do other stuff
 
         Required:
@@ -762,9 +819,9 @@ class ArcServer(RESTEndpoint):
 
         ags = restapi.ArcServer(url, username, password)
         for root, folders, services in ags.walk():
-            print root
-            print services
-            print '\n\n'
+            print(root)
+            print(services)
+            print('\n\n')
         """
         self.service_cache = []
         services = []
@@ -795,7 +852,7 @@ class ArcServer(RESTEndpoint):
         return len(self.service_cache)
 
     def __repr__(self):
-        parsed = urlparse.urlparse(self.url)
+        parsed = urllib.parse.urlparse(self.url)
         try:
             instance = parsed.path.split('/')[1]
         except IndexError:
@@ -816,7 +873,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
         field_list = []
         if fields == '*':
             return fields
-        elif isinstance(fields, basestring):
+        elif isinstance(fields, six.string_types):
             fields = fields.split(',')
         if isinstance(fields, list):
             all_fields = self.list_fields()
@@ -837,7 +894,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
         """generator to form where clauses to query all records.  Will iterate through "chunks"
         of OID's until all records have been returned (grouped by maxRecordCount)
 
-        *Thanks to Wayne Whitley for the brilliant idea to use itertools.izip_longest()
+        *Thanks to Wayne Whitley for the brilliant idea to use izip_longest()
 
 
 
@@ -866,7 +923,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
             max_recs = chunk_size
         else:
             max_recs = self.json.get(MAX_RECORD_COUNT, 1000)
-        for each in izip_longest(*(iter(oids),) * max_recs):
+        for each in zip_longest(*(iter(oids),) * max_recs):
             theRange = filter(lambda x: x != None, each) # do not want to remove OID "0"
             if theRange:
                 _min, _max = min(theRange), max(theRange)
@@ -899,10 +956,10 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
         # default params
         params = {RETURN_GEOMETRY : TRUE, WHERE: where, F : f}
 
-        for k,v in add_params.iteritems():
+        for k,v in six.iteritems(add_params):
             params[k] = v
 
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             params[k] = v
 
         if RESULT_RECORD_COUNT in params and self.compatible_with_version('10.3'):
@@ -1013,7 +1070,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
             OUT_SR: outSR
         }
 
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             params[k] = v
         return RelatedRecords(self.request(query_url, params))
 
@@ -1057,12 +1114,12 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
             params[UNITS] = units
 
         # add additional params
-        for k,v in add_params.iteritems():
+        for k,v in six.iteritems(add_params):
             if k not in params:
                 params[k] = v
 
         # add kwargs
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in params:
                 params[k] = v
 
@@ -1093,7 +1150,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
              OUT_FIELDS: ''}
 
         # add kwargs if specified
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in p.keys():
                 p[k] = v
 
@@ -1269,15 +1326,19 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
                     att_dict, att_ids = {}, []
                     for i,row in enumerate(fs):
                         att_id = 'P-{}'.format(i + 1)
+                        print('\nattId: {}, oid: {}'.format(att_id, row.get(fs.OIDFieldName)))
                         att_ids.append(att_id)
                         att_dict[att_id] = []
                         for att in self.attachments(row.get(fs.OIDFieldName)):
+                            print('\tatt: ', att)
                             out_att = att.download(att_folder, verbose=False)
                             att_dict[att_id].append(os.path.join(out_att))
 
                     # photo field (hopefully this is a unique field name...)
+                    print('att_dict is: ', att_dict)
+
                     PHOTO_ID = 'PHOTO_ID_X_Y_Z__'
-                    arcpy.management.AddField(out_fc, PHOTO_ID, 'TEXT')
+                    arcpy.management.AddField(out_fc, PHOTO_ID, 'TEXT', field_length=255)
                     with arcpy.da.UpdateCursor(out_fc, PHOTO_ID) as rows:
                         for i,row in enumerate(rows):
                             rows.updateRow((att_ids[i],))
@@ -1291,7 +1352,7 @@ class MapServiceLayer(RESTEndpoint, SpatialReferenceMixin, FieldsMixin):
                     arcpy.management.AddField(tmp_tab, 'PHOTO_NAME', 'TEXT', field_length=255)
 
                     with arcpy.da.InsertCursor(tmp_tab, [PHOTO_ID, 'PATH', 'PHOTO_NAME']) as irows:
-                        for k, att_list in att_dict.iteritems():
+                        for k, att_list in six.iteritems(att_dict):
                             for v in att_list:
                                 irows.insertRow((k,) + os.path.split(v))
 
@@ -1410,7 +1471,7 @@ class MapService(BaseService):
         """
         all_layers = self.layers
         for layer in all_layers:
-            if fnmatch.fnmatch(layer[NAME], name):
+            if fnmatch.fnmatch(fix_encoding(layer.get(NAME)), fix_encoding(name)):
                 if SUB_LAYER_IDS in layer:
                     if grp_lyr and layer[SUB_LAYER_IDS] != None:
                         return layer[ID]
@@ -1418,7 +1479,7 @@ class MapService(BaseService):
                         return layer[ID]
                 return layer[ID]
         for tab in self.tables:
-            if fnmatch.fnmatch(tab.get(NAME), name):
+            if fnmatch.fnmatch(fix_encoding(tab.get(NAME)), fix_encoding(name)):
                 return tab.get(ID)
         print('No Layer found matching "{0}"'.format(name))
         return None
@@ -1438,7 +1499,7 @@ class MapService(BaseService):
 
     def list_layers(self):
         """Method to return a list of layer names in a MapService"""
-        return [l.name for l in self.layers]
+        return [fix_encoding(l.name) for l in self.layers]
 
     def list_tables(self):
         """Method to return a list of layer names in a MapService"""
@@ -1450,7 +1511,7 @@ class MapService(BaseService):
         Required:
             lyrID -- id of layer for which to get name
         """
-        return [l.name for l in self.layers if l.id == lyrID][0]
+        return [fix_encoding(l.name) for l in self.layers if l.id == lyrID][0]
 
     def export(self, out_image, imageSR=None, bbox=None, bboxSR=None, size=None, dpi=96, format='png', transparent=True, **kwargs):
         """exports a map image
@@ -1479,7 +1540,7 @@ class MapService(BaseService):
             if isinstance(bbox, (list, tuple)):
                 size = ','.join(map(str, [abs(int(bbox[0]) - int(bbox[2])), abs(int(bbox[1]) - int(bbox[3]))]))
 
-        if isinstance(bbox, dict) or (isinstance(bbox, basestring) and bbox.startswith('{')):
+        if isinstance(bbox, dict) or (isinstance(bbox, six.string_types) and bbox.startswith('{')):
             print('it is a geometry object')
             bbox = Geometry(bbox)
 
@@ -1515,7 +1576,7 @@ class MapService(BaseService):
         }
 
         # add additional params from **kwargs
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in params:
                 params[k] = v
 
@@ -1728,7 +1789,7 @@ class FeatureService(MapService):
             raise NotImplementedError('FeatureService "{}" does not support Sync!'.format(self.url))
 
         # validate layers
-        if isinstance(layers, basestring):
+        if isinstance(layers, six.string_types):
             layers = [l.strip() for l in layers.split(',')]
 
         elif not isinstance(layers, (list, tuple)):
@@ -1737,7 +1798,7 @@ class FeatureService(MapService):
         if all(map(lambda x: isinstance(x, int), layers)):
             layers = ','.join(map(str, layers))
 
-        elif all(map(lambda x: isinstance(x, basestring), layers)):
+        elif all(map(lambda x: isinstance(x, six.string_types), layers)):
             layers = ','.join(map(str, filter(lambda x: x is not None,
                                 [s.id for s in self.layers if s.name.lower()
                                  in [l.lower() for l in layers]])))
@@ -1776,11 +1837,11 @@ class FeatureService(MapService):
                    REPLICA_OPTIONS: '',
                    }
 
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k != SYNC_MODEL:
                 if k == LAYER_QUERIES:
                     if options[k]:
-                        if isinstance(options[k], basestring):
+                        if isinstance(options[k], six.string_types):
                             options[k] = json.loads(options[k])
                         for key in options[k].keys():
                             options[k][key][USE_GEOMETRY] = useGeometry
@@ -1880,7 +1941,7 @@ class FeatureService(MapService):
         query_url = self.url + '/synchronizeReplica'
         params = {REPLICA_ID: replicaID}
 
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             params[k] = v
 
         return self.request(query_url, params)
@@ -1961,7 +2022,7 @@ class FeatureLayer(MapServiceLayer):
                     DELETES: []
                 }
                 self._kwargs = {}
-                for k,v in kwargs.iteritems():
+                for k,v in six.iteritems(kwargs):
                     if k not in('feature_set', 'fieldOrder', 'auto_save'):
                         self._kwargs[k] = v
                 for i, f in enumerate(self.features):
@@ -2049,7 +2110,7 @@ class FeatureLayer(MapServiceLayer):
                     yield list(self._createRow(feature, self.spatialReference).values)
 
             def _get_oid(self, row):
-                if isinstance(row, (int, long)):
+                if isinstance(row, six.integer_types):
                     return row
                 try:
                     return self._toJson(row).get(layer.OIDFieldName)
@@ -2057,7 +2118,7 @@ class FeatureLayer(MapServiceLayer):
                     return None
 
             def _get_globalid(self, row):
-                if isinstance(row, (int, long)):
+                if isinstance(row, six.integer_types):
                     return row
                 try:
                     return self._toJson(row).get(layer.GlobalIdFieldName or getattr(self, GLOBALID_FIELD_NAME))
@@ -2084,7 +2145,7 @@ class FeatureLayer(MapServiceLayer):
 ##                # cannot get this to work :(
 ##                if layer.canApplyEditsWithAttachments:
 ##                    att_key = DATA
-##                    if isinstance(attachment, basestring) and attachment.startswith('{'):
+##                    if isinstance(attachment, six.string_types) and attachment.startswith('{'):
 ##                        # this is an upload id?
 ##                        att_key = UPLOAD_ID
 ##                    att = {
@@ -2113,7 +2174,7 @@ class FeatureLayer(MapServiceLayer):
 ##                # cannot get this to work :(
 ##                if layer.canApplyEditsWithAttachments:
 ##                    att_key = DATA
-##                    if isinstance(attachment, basestring) and attachment.startswith('{'):
+##                    if isinstance(attachment, six.string_types) and attachment.startswith('{'):
 ##                        # this is an upload id?
 ##                        att_key = UPLOAD_ID
 ##                    att = {
@@ -2176,13 +2237,13 @@ class FeatureLayer(MapServiceLayer):
                     self._deletes.append(oid)
 
             def applyEdits(self):
-                attCount = filter(None, [len(atts) for op, atts in self._attachments.iteritems()])
+                attCount = filter(None, [len(atts) for op, atts in six.iteritems(self._attachments)])
                 if (self.has_oid or (self.has_globalid and layer.canUseGlobalIdsForEditing and self.useGlobalIds)) \
                 and any([self._updates, self._deletes, attCount]):
                     kwargs = {UPDATES: self._updates, DELETES: self._deletes}
                     if layer.canApplyEditsWithAttachments and self._attachments:
                         kwargs[ATTACHMENTS] = self._attachments
-                    for k,v in self._kwargs.iteritems():
+                    for k,v in six.iteritems(self._kwargs):
                         kwargs[k] = v
                     if layer.canUseGlobalIdsForEditing:
                         kwargs[USE_GLOBALIDS] = self.useGlobalIds
@@ -2237,7 +2298,7 @@ class FeatureLayer(MapServiceLayer):
                 Required:
                     row -- list/tuple/dict/Feature/Row that has been updated
                 """
-                feature = {k:v for k,v in self.template.iteritems()}
+                feature = {k:v for k,v in six.iteritems(self.template)}
                 if isinstance(row, (list, tuple)):
                     for i, value in enumerate(row):
                         try:
@@ -2258,13 +2319,13 @@ class FeatureLayer(MapServiceLayer):
                     if GEOMETRY in row and self.has_geometry:
                         feature[GEOMETRY] = Geometry(row[GEOMETRY]).json
                     if ATTRIBUTES in row:
-                        for f, value in row[ATTRIBUTES].iteritems():
+                        for f, value in six.iteritems(row[ATTRIBUTES]):
                             if f in feature[ATTRIBUTES]:
                                 if isinstance(value, datetime.datetime):
                                     value = date_to_mil(value)
                                 feature[ATTRIBUTES][f] = value
                     else:
-                        for f, value in row.iteritems():
+                        for f, value in six.iteritems(row):
                             if f in feature[ATTRIBUTES]:
                                 if isinstance(value, datetime.datetime):
                                     value = date_to_mil(value)
@@ -2535,14 +2596,14 @@ class FeatureLayer(MapServiceLayer):
 ##                                print(att[DATA][:50])
 ##                            if GLOBALID_CAMEL not in att:
 ##                                att[GLOBALID_CAMEL] = 'f5e0f368-17a1-4062-b848-48eee2dee1d5'
-##                        temp = {k:v for k,v in att.iteritems() if k != 'data'}
+##                        temp = {k:v for k,v in six.iteritems(att) if k != 'data'}
 ##                        temp[DATA] = att['data'][:50]
 ##                        print(json.dumps(temp, indent=2))
 ##            params[ATTACHMENTS] = attachments
 ##            if any([params[ATTACHMENTS].get(k) for k in (ADDS, UPDATES, DELETES)]):
 ##                params[USE_GLOBALIDS] = TRUE
         # add other keyword arguments
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             kwargs[k] = v
         return self.__edit_handler(self.request(edits_url, params))
 
@@ -2593,7 +2654,7 @@ class FeatureLayer(MapServiceLayer):
             att_url = '{}/{}/deleteAttachments'.format(self.url, oid)
             if isinstance(attachmentIds, (list, tuple)):
                 attachmentIds = ','.join(map(str, attachmentIds))
-            elif isinstance(attachmentIds, basestring) and attachmentIds.title() == 'All':
+            elif isinstance(attachmentIds, six.string_types) and attachmentIds.title() == 'All':
                 attachmentIds = ','.join(map(str, [getattr(att, ID) for att in self.attachments(oid)]))
             if not attachmentIds:
                 return
@@ -2602,7 +2663,7 @@ class FeatureLayer(MapServiceLayer):
                 params[TOKEN] = str(self.token)
             if gdbVersion:
                 params[GDB_VERSION] = gdbVersion
-            for k,v in kwargs.iteritems():
+            for k,v in six.iteritems(kwargs):
                 params[k] = v
             return self.__edit_handler(requests.post(att_url, params, cookies=self._cookie, verify=False).json(), oid)
         else:
@@ -2709,10 +2770,10 @@ class GeometryService(RESTEndpoint):
                 that same value is returned.  This argument is expecting a string from
                 linear_units list.  Valid options can be viewed with GeometryService.linear_units
         """
-        if isinstance(unit_name, int) or unicode(unit_name).isdigit():
+        if isinstance(unit_name, int) or six.text_type(unit_name).isdigit():
             return int(unit_name)
 
-        for k,v in LINEAR_UNITS.iteritems():
+        for k,v in six.iteritems(LINEAR_UNITS):
             if k.lower() == unit_name.lower():
                 return int(v[WKID])
 
@@ -2773,12 +2834,12 @@ class GeometryService(RESTEndpoint):
         }
 
         # add kwargs
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in (GEOMETRIES, DISTANCES, UNIT):
                 params[k] = v
 
         # perform operation
-        print('params: {}'.format({k:v for k,v in params.iteritems() if k != GEOMETRIES}))
+        print('params: {}'.format({k:v for k,v in six.iteritems(params) if k != GEOMETRIES}))
         return GeometryCollection(self.request(buff_url, params),
                                   spatialReference=outSR if outSR else inSR)
 
@@ -2921,7 +2982,7 @@ class ImageService(BaseService):
             boundingBox -- bounding box string (comma separated)
         """
         cell_size = int(self.pixelSizeX)
-        if isinstance(boundingBox, basestring):
+        if isinstance(boundingBox, six.string_types):
             boundingBox = boundingBox.split(',')
         return ','.join(map(str, map(lambda x: Round(x, cell_size), boundingBox)))
 
@@ -2969,7 +3030,7 @@ class ImageService(BaseService):
             RETURN_CATALOG_ITEMS: FALSE,
         }
 
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in params:
                 params[k] = v
 
@@ -3059,7 +3120,7 @@ class ImageService(BaseService):
             }
 
         # overwrite with kwargs
-        for k,v in kwargs.iteritems():
+        for k,v in six.iteritems(kwargs):
             if k not in [SIZE, BBOX_SR]:
                 p[k] = v
 
@@ -3204,7 +3265,7 @@ class GPTask(BaseService):
         gp_exe_url = '/'.join([self.url, runType])
         if not params_json:
             params_json = {}
-            for k,v in kwargs.iteritems():
+            for k,v in six.iteritems(kwargs):
                 params_json[k] = v
         params_json['env:outSR'] = outSR
         params_json['env:processSR'] = processSR

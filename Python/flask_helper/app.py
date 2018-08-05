@@ -13,10 +13,10 @@ import json
 import os
 import zipfile
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'flask_helper', 'lib'))
+thisDir = os.path.dirname(__file__)
+sys.path.append(os.path.join(thisDir, 'flask_helper', 'lib'))
 import shapefile
-with open('app_config.json', 'r') as f:
+with open(os.path.join(thisDir, 'app_config.json'), 'r') as f:
     config = json.load(f)
 
 # init app

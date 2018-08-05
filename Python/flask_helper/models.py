@@ -12,14 +12,14 @@ import os
 import sys
 thisDir = os.path.dirname(__file__)
 sys.path.append(os.path.join(thisDir, 'lib'))
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, Binary
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 #from app import app
 
-__all__ = ('BEER_TYPES', 'Beer', 'Brewery', 'engine', 'db')
+__all__ = ('BEER_TYPES', 'Beer', 'Brewery', 'BeerPhotos', 'engine', 'Base')
 
 BEER_TYPES = ['IPA Pilsner', 'Lager', 'Stoute Gose', 'Pale Ale', 'Ale', 'Saison',
     'Wheat Beer', 'Bock', 'Porter', 'Brown Ale', 'Pale Lager', 'Mild Ale',
@@ -40,6 +40,13 @@ brewery_str = 'sqlite:///{}/beer.db'.format(db_path)
 ##db.create_all(bind=['brewery'])
 Base = declarative_base()
 
+class BeerPhotos(Base):
+    __tablename__ = 'beer_photos'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    beer_id = Column(Integer, ForeignKey('beers.id'))
+    photo_name = Column(String(100))
+    data = Column(LargeBinary)
+
 class Beer(Base):
     __tablename__ = 'beers'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -50,8 +57,11 @@ class Beer(Base):
     alc = Column(Float)
     ibu = Column(Integer)
     color = Column(String(25))
-    photo = Column(Binary)
-##    brewery = db.relationship(Brewery, backref='beers')
+    photos = relationship(BeerPhotos)
+    brewery = relationship('Brewery', back_populates='beers')
+
+    def __repr__(self):
+        return '<Beer: "{}" ({})>'.format(self.name, self.style)
 
 
 class Brewery(Base):
@@ -69,11 +79,14 @@ class Brewery(Base):
     saturday = Column(String(30))
     sunday = Column(String(30))
     comments = Column(String(255))
-    style = Column(String(50))
+    brew_type = Column(String(50))
     website = Column(String(255))
     x = Column(Float)
     y = Column(Float)
-##    beers = db.relationship(Beer, backref='beers')
+    beers = relationship('Beer', back_populates='brewery')
+
+    def __repr__(self):
+        return '<Brewery: "{}">'.format(self.name)
 
 engine = create_engine(brewery_str)
 
