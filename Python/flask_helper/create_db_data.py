@@ -65,7 +65,7 @@ def create_data():
     lyr = restapi.FeatureLayer(url)
 
     # query
-    fs = lyr.query()
+    fs = lyr.query(outSR=4326)
 
     # iterate through query results and add to db
     for feature in fs:

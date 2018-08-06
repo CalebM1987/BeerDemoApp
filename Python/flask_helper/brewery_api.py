@@ -23,12 +23,23 @@ beer_fields = list_fields(Beer)
 beer_photo_fields = list_fields(BeerPhotos)
 print(brewery_fields)
 
+def addIcon(d, iconName='harbor'):
+    d['icon'] = iconName
+    return d
+
 # toGeoJson() handler for results
 def toGeoJson(d):
     if not isinstance(d, list):
         d = [d]
     return {
         "type": "FeatureCollection",
+        # "layout": {
+        #     "icon-image": "{icon}-15",
+        #     "text-field": "{name}",
+        #     "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        #     "text-offset": [0, 0.6],
+        #     "text-anchor": "top"
+        # },
         "crs": {
             "type": "name",
             "properties": {
@@ -38,7 +49,7 @@ def toGeoJson(d):
        "features": [
             {
                 "type": "Feature",
-                "properties": f,
+                "properties": addIcon(f),
                 "geometry": {
                     "type": "Point",
                     "coordinates": [f.get('x'), f.get('y')]

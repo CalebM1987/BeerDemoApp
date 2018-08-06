@@ -29,7 +29,7 @@ BEER_TYPES = ['IPA Pilsner', 'Lager', 'Stoute Gose', 'Pale Ale', 'Ale', 'Saison'
 
 # db path
 db_path = os.path.join(os.path.dirname(thisDir), 'db').replace(os.sep, '/')
-brewery_str = 'sqlite:///{}/beer.db'.format(db_path)
+brewery_str = 'sqlite:///{}/beer2.db'.format(db_path)
 
 ##db = SQLAlchemy(app)
 ##app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
