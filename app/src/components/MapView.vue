@@ -1,48 +1,21 @@
 <template>
-  <div id="map-container">
-    <mgl-map
-            :accessToken="$root.config.accessToken"
-            :mapStyle.sync="$root.config.mapStyle"
-            :center="$root.config.center"
-            :zoom="$root.config.zoom">
+  <div id="map">
 
-      <mgl-navigation-control position="top-left"/>
-      <mgl-geolocate-control position="top-left" />
-
-      <!-- add Breweries from our database -->
-      <mgl-geojson-layer
-              v-if="brewerySource"
-              type="fill"
-              :sourceId="'Breweries'"
-              :layerId="'Breweries'"
-              :source.sync="brewerySource">
-      </mgl-geojson-layer>
-
-    </mgl-map>
 
   </div>
   
 </template>
 
 <script>
-  // import mapboxgl from 'mapbox-gl';
+  import mapboxgl from 'mapbox-gl';
   import api from '../modules/api';
   hook.api = api;
-  import {
-    MglMap,
-    MglNavigationControl,
-    MglGeolocateControl,
-    MglGeojsonLayer
-  } from 'vue-mapbox';
+
 
 
   export default {
     name: "map-view",
     components: {
-      MglMap,
-      MglNavigationControl,
-      MglGeolocateControl,
-      MglGeojsonLayer
     },
     data(){
       return {
@@ -52,26 +25,67 @@
     },
     async mounted(){
       console.log('mapview is: ', this);
-      console.log('mapgl: ', MglMap)
+      // console.log('mapgl: ', MglMap)
       hook.mp = this;
 
-      this.brewerySource = await api.getBreweries();
-      // mapboxgl.accessToken = this.$root.config.accessToken;
-      // this.map = new mapboxgl.Map({
-      //   container: 'map', // container id
-      //   style: this.$root.config.mapStyle,
-      //   center: [-93.50, 44], // starting position [lng, lat]
-      //   zoom: 9 // starting zoom
-      // });
+      // set access token
+      mapboxgl.accessToken = this.$root.config.accessToken;
+
+      // initialize map
+      const map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: this.$root.config.mapStyle,
+        center: this.$root.config.center, // starting position [lng, lat]
+        zoom: this.$root.config.zoom // starting zoom
+      });
+
+      // some es6 functions will not work here, using arrow functions breaks the app. ¯\_(ツ)_/¯
+      let brewerySource;
+      const _this = this;
+      api.getBreweries().then(function(resp){
+        brewerySource = resp;
+        _this.brewerySource = brewerySource;
+        console.log(brewerySource);
+
+        map.on('load', function() {
+          map.loadImage('./assets/beer.png', async function (error, image) {
+            if (error) throw error;
+            map.addImage('beer', image);
+            map.addLayer({
+              "id": "points",
+              "type": "symbol",
+              "source": {
+                "type": "geojson",
+                "data": brewerySource
+              },
+              "layout": {
+                "icon-image": "beer",
+                "icon-size": 0.1
+              }
+            });
+          });
+
+        });
+
+      });
+
+      this.map = map;
+
     }
   }
 </script>
 
 <style>
-  .mapboxgl-map {
-    width: 100%;
-    height: 500px;
+  #map {
+    position:absolute;
+    top: 60px;
+    bottom:0;
+    width:100%;
   }
+  /*.mapboxgl-map {*/
+    /*width: 100%;*/
+    /*height: 500px;*/
+  /*}*/
 
   /* need to override this */
   .mapboxgl-canvas{

@@ -6,6 +6,7 @@ import Mapbox from 'mapbox-gl';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '@fortawesome/fontawesome-free/js/all';
 
 Vue.use(BootstrapVue);
 Vue.use(VueMapbox, { mapboxgl: Mapbox });

@@ -1,48 +1,62 @@
 <template>
   <div id="app">
-    <!--<mapbox-->
-      <!--:access-token="$root.config.mapbox_token"-->
-      <!--:map-options="{-->
-      <!--style: 'mapbox://styles/mapbox/light-v9',-->
-      <!--center: [-93, 44.8],-->
-      <!--zoom: 3-->
-      <!--}"-->
-      <!--:geolocate-control="{-->
-      <!--show: true,-->
-      <!--position: 'top-left'-->
-      <!--}"-->
-      <!--:scale-control="{-->
-      <!--show: true,-->
-      <!--position: 'top-left'-->
-      <!--}"-->
-      <!--:fullscreen-control="{-->
-      <!--show: true,-->
-      <!--position: 'top-left'-->
-    <!--}">-->
-    <!--</mapbox>-->
+    <app-nav-bar></app-nav-bar>
 
     <!--<mgl-map-->
             <!--:accessToken="$root.config.accessToken"-->
             <!--:mapStyle.sync="$root.config.mapStyle">-->
     <!--</mgl-map>-->
-    <map-view></map-view>
-  </div>
-</template>
+    <!--<Slideout :toggleSelectors="['.test-btn']" @on-open="slideoutOpened">-->
 
-</div>
+    <!--</Slideout>-->
+    <sidebar>
+      <!-- slot for sidebar content -->
+      <brewery-info :feature="selectedBrewery" v-if="selectedBrewery"></brewery-info>
+
+    </sidebar>
+    <map-view
+      @brewery-identified="showBreweryInfo">
+
+    </map-view>
+
+  </div>
 </template>
 
 <script>
 // import Mapbox from 'mapbox-gl-vue';
 // import { MglMap } from 'vue-mapbox'
-import MapView from './components/MapView';
+import MapView from './components/MapViewMglv';
+import AppNavBar from './components/AppNavBar';
+import Slideout from 'vue-slideout';
+import Sidebar from './components/Sidebar';
+import BreweryInfo from './components/BreweryInfo';
 
 export default {
   name: 'app',
   components: {
     // Mapbox
     // MglMap
-    MapView
+    AppNavBar,
+    MapView,
+    Slideout,
+    Sidebar,
+    BreweryInfo
+  },
+
+  data(){
+    return {
+      selectedBrewery: null
+    }
+  },
+
+  methods: {
+    slideoutOpened(){
+      console.log('slideout opened');
+    },
+
+    showBreweryInfo(brewery){
+      this.selectedBrewery = brewery;
+    }
   }
 }
 </script>
@@ -55,7 +69,7 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
+    /*margin-top: 60px;*/
   }
 
 </style>

@@ -24,9 +24,40 @@ const api = {
 
   getBrewery(id, options=default_request_options){
     if (id){
-      return request(`/breweries/${id}`);
+      return request(`${api.baseUrl}//breweries/${id}`);
     }
 
+  },
+
+  getBeersFromBrewery(breweryId, options={}){
+    const url = `${api.baseUrl}/breweries/${breweryId}/beers`;
+    return request(url, options);
+  },
+
+  getBeers(options={}){
+    return request(`${api.baseUrl}/breweries`, options);
+  },
+
+  getBeerPhotos(beerId, options={}){
+    const url = `${api.baseUrl}/beers/${beerId}/photos`;
+    return request(url, options);
+  },
+
+  queryBeerPhotos(photo_id, options={}){
+    let url = `${api.baseUrl}/beer_photos`;
+    if (photo_id){
+      url += `/${photo_id}`;
+    }
+    return request(url, options);
+  },
+
+  getPhotoUrl(photo_id){
+    return `${api.baseUrl}/beer_photos/${photo_id}/download`;
+  },
+
+  downloadPhoto(photo_id, options){
+    const url = `${api.baseUrl}/beer_photos/${photo_id}`;
+    return request(url, options);
   }
 };
 

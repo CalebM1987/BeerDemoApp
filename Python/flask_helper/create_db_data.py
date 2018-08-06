@@ -26,7 +26,7 @@ from sqlalchemy.orm import sessionmaker
 url = 'https://services2.arcgis.com/ZkOsbg84o8DsPPaP/arcgis/rest/services/Minnesota_Beer/FeatureServer/0'
 
 def get_mankato_beers():
-    data_folder = os.path.join(os.path.dirname(thisDir), 'db', 'beer_sample')
+    data_folder = os.path.join(os.path.dirname(thisDir), 'beer_sample')
     photo_dir = os.path.join(data_folder, 'photos')
     beers_json = os.path.join(data_folder, 'beers-mankato.json')
 

@@ -133,6 +133,31 @@ def to_json(results, fields=None):
             fields = list_fields(results)
         return {f: getattr(results, f) for f in fields}
 
+# toGeoJson() handler for results
+def toGeoJson(d):
+    if not isinstance(d, list):
+        d = [d]
+    return {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "urn:ogc:def:crs:EPSG::3857"
+            }
+        },
+       "features": [
+            {
+                "type": "Feature",
+                "properties": f,
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [f.get('x'), f.get('y')]
+                }
+            } for f in d
+        ]
+    }
+
+
 def get_row(table, d, key):
     val = d.get(key)
     if val:
