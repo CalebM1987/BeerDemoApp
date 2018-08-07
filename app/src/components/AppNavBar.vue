@@ -3,7 +3,8 @@
     <b-navbar-brand href="#">Brewery Finder</b-navbar-brand>
 
     <b-navbar-nav class="ml-auto">
-      <b-btn title="save configuration changes" class="mr-3 test-btn">Add Brewery</b-btn>
+      <!--<div title="login" class="mr-3 login-btn"><i class="fas fa-user-circle"></i></div>-->
+      <i title="sign in" class="fas fa-user-circle login-btn mr-2"></i>
     </b-navbar-nav>
 
   </b-navbar>
@@ -23,6 +24,20 @@
 
   .app-header {
     background-color: forestgreen;
+  }
+
+  .login-btn{
+    color: orange;
+    font-size: 2.5rem;
+    /*border-radius: 50%;*/
+    cursor: pointer;
+  }
+
+  .login-btn:hover{
+    background-color: orange;
+    font-weight: bold;
+    border-radius: 50%;
+    color: gray;
   }
 
 </style>

@@ -35,7 +35,7 @@ const api = {
   },
 
   getBeers(options={}){
-    return request(`${api.baseUrl}/breweries`, options);
+    return request(`${api.baseUrl}/beers`, options);
   },
 
   getBeerPhotos(beerId, options={}){

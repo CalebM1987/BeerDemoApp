@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
+import axios from 'axios';
 import { request } from "./modules/xhr";
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
@@ -8,12 +9,14 @@ import '@fortawesome/fontawesome-free/js/all';
 
 Vue.use(BootstrapVue);
 
+// set $http property for typeahead component
+Vue.prototype.$http = axios;
 
 Vue.config.productionTip = false;
 
 // wait for config to load before initializing Vue instance
 request('./config.json').then((config) => {
-  console.log(config)
+  console.log(config);
 
   new Vue({
     render: h => h(App),

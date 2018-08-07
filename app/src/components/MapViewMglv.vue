@@ -1,11 +1,11 @@
 <template>
   <div class="map-container">
     <mapbox
-            :access-token="$root.config.accessToken"
+            :access-token="$root.config.map.accessToken"
             :map-options="{
-                style: $root.config.mapStyle,
-                center: $root.config.center,
-                zoom: $root.config.zoom
+                style: $root.config.map.mapStyle,
+                center: $root.config.map.center,
+                zoom: $root.config.map.zoom
             }"
             :nav-control="{
               show: true,
@@ -30,8 +30,10 @@
 <script>
   import Mapbox from 'mapbox-gl-vue';
   import api from '../modules/api';
-  import { MenuButtonControl } from '../modules/MenuButtonControl';
+  // import { MenuButtonControl } from '../modules/MenuButtonControl';
+  import { createControlButton } from "../modules/MenuButtonControl";
   import { EventBus } from "../modules/EventBus";
+  hook.api = api;
 
   export default {
     name: "map-view-mglv",
@@ -46,11 +48,6 @@
     },
     mounted(){
       hook.mp = this;
-      // listen for sidebar to open and update left position
-      EventBus.$on('sidebar-expanded', (expanded)=>{
-        console.log('exanded sidebar: ', expanded);
-        document.querySelector('#map').style.left = `${expanded ? 350: 0}px`;
-      });
     },
     methods: {
       mapInitialized(map){
@@ -88,8 +85,36 @@
             }
           });
         });
+
+        // add control buttons
+
         // add menu button for slideout
-        map.addControl(new MenuButtonControl(), 'top-left');
+        const toggleMenu =(evt)=>{
+          this.$emit('toggle-menu');
+        };
+
+        const menuButton = createControlButton({
+          className: 'expand-menu',
+          iconClass: 'fas fa-bars',
+          onClick: toggleMenu,
+          title: 'expand menu'
+        });
+
+        map.addControl(menuButton, 'top-left');
+
+
+        // add identify button
+        const toggleIdentify =(evt)=>{
+          this.$emit('toggle-identify');
+        };
+
+        const identifyButton = createControlButton({
+          className: 'expand-identify',
+          iconClass: 'fas fa-info',
+          onClick: toggleIdentify,
+          title: 'expand identify window'
+        });
+        map.addControl(identifyButton, 'top-left');
       },
 
       mapClick(map, e){
@@ -126,7 +151,7 @@
 
 <style>
   #map {
-    position:absolute;
+    position: absolute;
     top: 60px;
     bottom:0;
     right: 0;

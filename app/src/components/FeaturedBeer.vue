@@ -41,11 +41,10 @@
     },
     async beforeMount(){
       // send off request before this is mounted
-      console.log('before fb mount: ', JSON.stringify(Object.assign({}, this.beer)));
       const photos = await api.getBeerPhotos(this.beer.id);
       console.log('beer photos: ', photos);
       if (photos.length){
-        console.log('setting photo url: ', api.getPhotoUrl(photos[0].id))
+        console.log('setting photo url: ', api.getPhotoUrl(photos[0].id));
         this.imgSrc = api.getPhotoUrl(photos[0].id)
       }
     },
@@ -66,7 +65,8 @@
   }
 
   .beer-info > p {
-    margin-top: 2px;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
   }
 
 </style>

@@ -1,5 +1,6 @@
 <template>
-  <div id="sidebar" :class="{'active': active}">
+  <!--<div id="sidebar" :class="{'active': active}" :style="{width: `${active ? expandWidth: hiddenWidth}px`}">-->
+  <div id="sidebar" :class="{'active': active}" :style="{width: `${expandWidth}px`, display: active ? 'block': 'none'}">
     <slot></slot>
   </div>
 </template>
@@ -9,9 +10,16 @@
 
   export default {
     name: "sidebar",
+    props: {
+      expandWidth: {
+        type: Number,
+        default: 350
+      }
+    },
     data() {
       return {
-        active: false
+        active: false,
+        hiddenWidth: 0
       }
     },
     mounted(){
@@ -24,10 +32,23 @@
 
       });
     },
-    methods: {},
+    methods: {
+      expand(){
+        this.active = true;
+      },
+
+      collapse(){
+        this.active = false;
+      },
+
+      toggle(){
+        this.active = !this.active;
+      }
+    },
     watch: {
       active(newVal){
-        EventBus.$emit('sidebar-expanded', newVal);
+        this.$emit('toggled', newVal);
+        this.$emit(newVal ? 'expanded': 'collapsed');
       }
     }
   }
@@ -35,8 +56,9 @@
 
 <style scoped>
   #sidebar{
-    display: none;
-    width: 350px;
+    /*display: none;*/
+    /*width: 350px;*/
+    display: block;
     background: whitesmoke;
     height: calc(100vh - 60px);
     overflow-y: scroll;
