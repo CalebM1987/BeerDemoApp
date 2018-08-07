@@ -19,7 +19,7 @@ INVALID_CREDENTIALS = 'INVALID_CREDENTIALS'
 # allow safe imports
 __all__ = ('collect_args', 'SecurityHandler', 'JSONExceptionHandler', 'INVALID_CREDENTIALS',
            'VALID_CREDENTIALS', 'date_to_mil', 'mil_to_date', 'query_wrapper', 'to_json',
-           'list_fields', 'get_row', 'update_row')
+           'list_fields', 'get_row', 'update_row', 'toGeoJson')
 
 def date_to_mil(date=None):
     """converts datetime.datetime() object to milliseconds
@@ -99,10 +99,11 @@ def query_wrapper(table, **kwargs):
     """
     conditions = []
     wildcards = kwargs.get('wildcards', [])
+    if isinstance(wildcards, six.string_types):
+        wildcards = wildcards.split(',')
     for kwarg, val in six.iteritems(kwargs):
         if hasattr(table, kwarg):
             col = getattr(table, kwarg)
-            #print('col: {}, type: {}'.format(col, type(col)))
             if isinstance(col, (Column, InstrumentedAttribute)):
                 if kwarg in wildcards:
                     conditions.append(col.like('%{}%'.format(val)))

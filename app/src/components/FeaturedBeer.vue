@@ -49,10 +49,6 @@
         this.imgSrc = api.getPhotoUrl(photos[0].id)
       }
     },
-    mounted(){
-
-
-    },
     methods: {},
     watch: {
       imgSrc(newVal){

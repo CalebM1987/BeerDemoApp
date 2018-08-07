@@ -19,10 +19,6 @@
                 show: true,
                 position: 'bottom-right'
             }"
-            :fullscreen-control="{
-                show: true,
-                position: 'top-left'
-            }"
             @map-init="mapInitialized"
             @map-load="mapLoaded"
             @map-click="mapClick">
@@ -36,7 +32,6 @@
   import api from '../modules/api';
   import { MenuButtonControl } from '../modules/MenuButtonControl';
   import { EventBus } from "../modules/EventBus";
-  // import MenuButtonControl from './MenuButtonControl';
 
   export default {
     name: "map-view-mglv",
@@ -84,7 +79,12 @@
             },
             "layout": {
               "icon-image": "beer",
-              "icon-size": 0.1
+              "icon-size": 0.1,
+              "text-field": "{name}",
+              "text-size": 10,
+              "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              "text-offset": [0, 1.2],
+              "text-anchor": "top"
             }
           });
         });

@@ -1,6 +1,8 @@
 from flask import jsonify, Blueprint, request, send_file
 from models import *
 from sqlalchemy.orm import sessionmaker
+import utils
+reload(utils)
 from utils import *
 from io import BytesIO
 

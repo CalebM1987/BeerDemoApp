@@ -200,6 +200,6 @@ class FlaskExtension(Flask):  # inherit from Flask object
 
                 methods = ','.join(rule.methods)
                 url = url_for(rule.endpoint, **options)
-                output.append({'function': rule.endpoint, 'methods': methods, 'url': urllib.unquote(url)})
+                output.append({'methods': methods, 'url': urllib.unquote(url)})
             return jsonify({'endpoints': sorted(output, key=lambda d: d.get('url'))})
 

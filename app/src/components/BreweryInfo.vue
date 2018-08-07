@@ -4,7 +4,7 @@
       <h4><strong>{{ properties.name }}</strong></h4>
       <hr>
       <p>{{ properties.address }}</p>
-      <p> {{ properties.city }}</p>
+      <p>{{ properties.city }}</p>
       <b-link :href="properties.website" target="_blank" v-if="properties.website">view website</b-link>
 
 

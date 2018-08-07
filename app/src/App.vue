@@ -27,7 +27,7 @@
 // import { MglMap } from 'vue-mapbox'
 import MapView from './components/MapViewMglv';
 import AppNavBar from './components/AppNavBar';
-import Slideout from 'vue-slideout';
+// import Slideout from 'vue-slideout';
 import Sidebar from './components/Sidebar';
 import BreweryInfo from './components/BreweryInfo';
 
@@ -38,7 +38,7 @@ export default {
     // MglMap
     AppNavBar,
     MapView,
-    Slideout,
+    // Slideout,
     Sidebar,
     BreweryInfo
   },
