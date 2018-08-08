@@ -7,8 +7,8 @@
     </template>
 
     <input type="text"
-           class="Typeahead__input"
-           placeholder="Search twitter user"
+           class="typeahead-input"
+           placeholder="Search for brewery"
            autocomplete="off"
            v-model="query"
            @keydown.down="down"
@@ -36,9 +36,15 @@
     mixins: [VueTypeahead],
     data () {
       return {
-        src: 'https://typeahead-js-twitter-api-proxy.herokuapp.com/demo/search',
+        src: 'http://localhost:5000/breweries',
+        data: {
+
+          wildcards: 'name'
+
+        },
+        queryParamName: 'name',
         limit: 5,
-        minChars: 3
+        minChars: 2
       }
     },
 
@@ -50,17 +56,16 @@
   }
 </script>
 
-
-
 <style scoped>
   .Typeahead {
     position: relative;
   }
 
-  .Typeahead__input {
+  .typeahead-input {
     width: 80%;
     font-size: 14px;
-    color: #2c3e50;
+    /*color: #2c3e50;*/
+    color: black !important;
     line-height: 1.42857143;
     box-shadow: inset 0 1px 4px rgba(0,0,0,.4);
     -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
@@ -73,7 +78,7 @@
     box-sizing: border-box;
   }
 
-  .Typeahead__input:focus {
+  .typeahead-input:focus {
     border-color: #4fc08d;
     outline: 0;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px #4fc08d;
@@ -102,18 +107,18 @@
     box-shadow: 0 0 10px rgba(0,0,0, 0.25);
     z-index: 1000;
   }
-
+  
   li {
     padding: 10px 16px;
     border-bottom: 1px solid #ccc;
     cursor: pointer;
   }
-
+  
   li:first-child {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
   }
-
+  
   li:last-child {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
