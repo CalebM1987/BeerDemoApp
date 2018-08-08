@@ -8,6 +8,8 @@
       @toggled="handleExpand">
 
       <!-- slot for sidebar content -->
+      <sidebar-menu v-if="menuActive"></sidebar-menu>
+
       <brewery-info
               v-if="identifyActive"
               :feature="selectedBrewery">
@@ -30,6 +32,7 @@ import MapView from './components/MapViewMglv';
 import AppNavBar from './components/AppNavBar';
 import Sidebar from './components/Sidebar';
 import BreweryInfo from './components/BreweryInfo';
+import SidebarMenu from './components/SidebarMenu';
 
 export default {
   name: 'app',
@@ -37,6 +40,7 @@ export default {
     AppNavBar,
     MapView,
     Sidebar,
+    SidebarMenu,
     BreweryInfo
   },
 

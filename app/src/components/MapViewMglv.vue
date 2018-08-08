@@ -130,8 +130,8 @@
           const feature = features[0];
           this.$emit('brewery-identified', feature);
 
-          // emit menu-expanded as well to ensure it is always open when feature is selected
-          EventBus.$emit('toggle-menu', true);
+          // // emit menu-expanded as well to ensure it is always open when feature is selected
+          // EventBus.$emit('toggle-menu', true);
 
           // add marker to map
           if (!this.selectionMarker){
