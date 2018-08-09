@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-media>
-      <b-img rounded blank-color="#ccc" width="200" :src="imgSrc" v-if="imgSrcLoaded" :title="beer.name"></b-img>
+      <b-img rounded blank-color="#ccc" width="200" :src="imgSrc" v-show="imgSrcLoaded" :title="beer.name"></b-img>
 
       <h6 class="mt-2"><strong>{{ beer.name }}</strong></h6>
 

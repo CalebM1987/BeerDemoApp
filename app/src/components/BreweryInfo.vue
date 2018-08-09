@@ -50,7 +50,7 @@
     },
 
     mounted(){
-      console.log('breweryInfo: ', this.feature.properties);
+      console.log('breweryInfo: ', this.properties);
       this.fetchBeers();
     },
 
@@ -63,7 +63,7 @@
     },
     computed: {
       properties(){
-        return this.feature.properties || {};
+        return this.feature.properties || this.feature || {};
       }
     },
 

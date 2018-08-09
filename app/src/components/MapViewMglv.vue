@@ -48,6 +48,9 @@
     },
     mounted(){
       hook.mp = this;
+      EventBus.$on('brewery-search-result', (feature)=>{
+        this.handleIdentify(feature, true);
+      });
     },
     methods: {
       mapInitialized(map){
@@ -128,19 +131,33 @@
         console.log('found features: ', features);
         if (features.length){
           const feature = features[0];
-          this.$emit('brewery-identified', feature);
+          this.handleIdentify(feature);
+        }
 
-          // // emit menu-expanded as well to ensure it is always open when feature is selected
-          // EventBus.$emit('toggle-menu', true);
+      },
 
-          // add marker to map
-          if (!this.selectionMarker){
-            this.selectionMarker = new mapboxgl.Marker({color: 'red'})
-                .setLngLat(feature.geometry.coordinates)
-                .addTo(map);
-          } else {
-            this.selectionMarker.setLngLat(feature.geometry.coordinates)
-          }
+      handleIdentify(feature, updateCenter=false){
+        if (!feature){
+          return;
+        }
+        this.$emit('brewery-identified', feature);
+
+        // // emit menu-expanded as well to ensure it is always open when feature is selected
+        // EventBus.$emit('toggle-menu', true);
+
+        // add marker to map
+        if (!this.selectionMarker){
+
+          this.selectionMarker = new mapboxgl.Marker({color: 'red'})
+              .setLngLat(feature.geometry.coordinates)
+              .addTo(this.map);
+        } else {
+          console.log('using existing selection marker');
+          this.selectionMarker.setLngLat(feature.geometry.coordinates)//[feature.properties.x, feature.properties.y]
+        }
+
+        if (updateCenter){
+          this.map.setCenter(feature.geometry.coordinates);
         }
 
       }
