@@ -30,7 +30,7 @@
     color: orange;
     font-size: 2.5rem;
     background-color: white;
-    border-radius: 50%;
+    border-radius: 50%;]
     /*border-radius: 50%;*/
     cursor: pointer;
   }
