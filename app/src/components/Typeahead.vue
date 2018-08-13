@@ -1,13 +1,13 @@
 <template>
-  <div class="Typeahead">
-    <i class="fa fa-spinner fa-spin" v-if="loading"></i>
-    <template v-else>
-      <i class="fa fa-search" v-show="isEmpty"></i>
-      <i class="fa fa-times" v-show="isDirty" @click="reset"></i>
-    </template>
+  <div class="Typeahead mt-2">
+    <i class="fa fa-spinner fa-spin input-icon" v-show="loading"></i>
+    <div>
+      <span v-show="isEmpty"><i class="fa fa-search input-icon"></i></span>
+      <span v-show="isDirty" @click="reset"><i class="fa fa-times input-icon"></i></span>
+    </div>
 
     <b-form-input type="text"
-           class="typeahead-input"
+           class="typeahead-input mt-2 ml-2"
            placeholder="Search for brewery"
            autocomplete="off"
            v-model="query"
@@ -18,7 +18,7 @@
            @blur="reset"
            @input="update"/>
 
-    <b-list-group v-show="hasItems" class="mt-1">
+    <b-list-group v-show="hasItems" class="mt-1 search-results">
       <b-list-group-item v-for="(item, $item) in items"
         :class="activeClass($item)"
         @mousedown="hit"
@@ -28,12 +28,6 @@
       </b-list-group-item>
 
     </b-list-group>
-    <!--<ul v-show="hasItems">-->
-      <!--<li v-for="(item, $item) in items" :class="activeClass($item)" @mousedown="hit" @mousemove="setActive($item)">-->
-        <!--<span class="name" v-text="item.name"></span>-->
-        <!--<span class="screen-name" v-text="item.screen_name"></span>-->
-      <!--</li>-->
-    <!--</ul>-->
   </div>
 </template>
 
@@ -55,7 +49,7 @@
         minChars: 2
       }
     },
-
+    mounted(){hook.th = this;},
     methods: {
       onHit (item) {
         //window.location.href = 'http://twitter.com/' + item.screen_name
@@ -80,7 +74,7 @@
   }
 
   .typeahead-input {
-    width: 90%;
+    width: 95%;
     font-size: 14px;
     text-align: center;
     /*color: #2c3e50;*/
@@ -101,61 +95,27 @@
     color: black;
   }
 
+  .search-results > div.list-group-item {
+    cursor: pointer;
+  }
+
   .brewery-name {
     font-weight: bold;
   }
+
   .typeahead-input:focus {
     border-color: #4fc08d;
     outline: 0;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px #4fc08d;
   }
 
-  .fa-times {
+  .input-icon{
     cursor: pointer;
+    position: absolute;
+    top: 0.75rem;
+    right: 1.5rem;
+    color: lightgray;
   }
-
-
-  i {
-    float: right;
-    position: relative;
-    top: 30px;
-    right: 29px;
-    opacity: 0.4;
-  }
-
-  /*ul {*/
-    /*position: absolute;*/
-    /*padding: 0;*/
-    /*margin-top: 8px;*/
-    /*min-width: 100%;*/
-    /*background-color: #fff;*/
-    /*list-style: none;*/
-    /*border-radius: 4px;*/
-    /*box-shadow: 0 0 10px rgba(0,0,0, 0.25);*/
-    /*z-index: 1000;*/
-  /*}*/
-  
-  /*li {*/
-    /*padding: 10px 16px;*/
-    /*border-bottom: 1px solid #ccc;*/
-    /*cursor: pointer;*/
-  /*}*/
-  
-  /*li:first-child {*/
-    /*border-top-left-radius: 4px;*/
-    /*border-top-right-radius: 4px;*/
-  /*}*/
-  
-  /*li:last-child {*/
-    /*border-bottom-left-radius: 4px;*/
-    /*border-bottom-right-radius: 4px;*/
-    /*border-bottom: 0;*/
-  /*}*/
-
-  /*span {*/
-    /*display: block;*/
-    /*color: #2c3e50;*/
-  /*}*/
 
   .active {
     background-color: #3aa373 !important;

@@ -1,6 +1,6 @@
 <template>
   <b-navbar toggleable="md" type="dark" class="app-header" fixed>
-    <b-navbar-brand href="#">Brewery Finder</b-navbar-brand>
+    <b-navbar-brand href="#"><strong>Brewery Finder</strong></b-navbar-brand>
 
     <b-navbar-nav class="ml-auto">
       <!--<div title="login" class="mr-3 login-btn"><i class="fas fa-user-circle"></i></div>-->
@@ -29,6 +29,8 @@
   .login-btn{
     color: orange;
     font-size: 2.5rem;
+    background-color: white;
+    border-radius: 50%;
     /*border-radius: 50%;*/
     cursor: pointer;
   }
@@ -37,7 +39,7 @@
     background-color: orange;
     font-weight: bold;
     border-radius: 50%;
-    color: gray;
+    color: lightgray;
   }
 
 </style>

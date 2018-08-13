@@ -1,5 +1,4 @@
 <template>
-  <!--<div id="sidebar" :class="{'active': active}" :style="{width: `${active ? expandWidth: hiddenWidth}px`}">-->
   <div id="sidebar" :class="{'active': active}" :style="{width: `${expandWidth}px`, display: active ? 'block': 'none'}">
     <slot></slot>
   </div>
@@ -23,6 +22,7 @@
       }
     },
     mounted(){
+      hook.sb = this;
       EventBus.$on('toggle-menu', (toggleOn)=>{
         if (toggleOn === undefined){
           this.active = !this.active;

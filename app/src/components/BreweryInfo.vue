@@ -1,6 +1,6 @@
 <template>
   <div class="brewery-info-container">
-    <b-card>
+    <b-card v-if="Object.keys(feature || {}).length">
       <h4><strong>{{ properties.name }}</strong></h4>
       <hr>
       <p>{{ properties.address }}</p>
@@ -21,6 +21,11 @@
       </div>
 
     </b-card>
+
+    <div v-else>
+      <h4 class="no-features mt-4">No Features Found</h4>
+
+    </div>
   </div>
 </template>
 
@@ -56,6 +61,9 @@
 
     methods: {
       async fetchBeers(id){
+        if (!this.properties.id){
+          return;
+        }
         const beers = await api.getBeersFromBrewery(id || this.properties.id);
         console.log('beers found: ', beers);
         this.featuredBeers.push(...beers);
@@ -63,7 +71,7 @@
     },
     computed: {
       properties(){
-        return this.feature.properties || this.feature || {};
+        return (this.feature || {}).properties || this.feature || {};
       }
     },
 
@@ -81,6 +89,10 @@
 </script>
 
 <style scoped>
+
+  .no-features {
+    color: gray;
+  }
 
   .featured-beers-container {
     max-height: 650px;
