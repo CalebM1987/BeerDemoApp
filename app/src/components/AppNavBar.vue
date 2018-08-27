@@ -4,7 +4,7 @@
 
     <b-navbar-nav class="ml-auto">
       <!--<div title="login" class="mr-3 login-btn"><i class="fas fa-user-circle"></i></div>-->
-      <i title="sign in" class="fas fa-user-circle login-btn mr-2"></i>
+      <span v-b-modal.login-modal><i title="sign in" class="fas fa-user-circle login-btn mr-2"></i></span>
     </b-navbar-nav>
 
   </b-navbar>

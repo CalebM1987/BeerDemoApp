@@ -28,6 +28,10 @@
             @toggle-menu="menuActivePanel">
     </map-view>
 
+    <b-modal id="login-modal" :hide-footer="true">
+      <login-page @sign-up="signUp"></login-page>
+    </b-modal>
+
   </div>
 </template>
 
@@ -37,6 +41,7 @@
   import Sidebar from './components/Sidebar';
   import BreweryInfo from './components/BreweryInfo';
   import SidebarMenu from './components/SidebarMenu';
+  import LoginPage from './components/LoginPage';
 
   export default {
     name: 'app',
@@ -45,7 +50,8 @@
       MapView,
       Sidebar,
       SidebarMenu,
-      BreweryInfo
+      BreweryInfo,
+      LoginPage
     },
 
     data(){
@@ -56,7 +62,12 @@
       }
     },
     mounted(){hook.app = this;},
+
     methods: {
+
+      signUp(){
+        console.log('clicked signup')
+      },
 
       showBreweryInfo(brewery){
         // force panel to open with identify active

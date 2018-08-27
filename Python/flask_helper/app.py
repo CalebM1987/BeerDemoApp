@@ -9,6 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 from flask_helper import *
+from flask import jsonify, request
 import json
 import os
 import zipfile
@@ -22,6 +23,8 @@ with open(os.path.join(thisDir, 'app_config.json'), 'r') as f:
 # init app
 app_name = os.path.basename(__file__).split('.')[0]
 app = FlaskExtension(app_name, use_security=True, ldap_server=config.get('ldap_server'), domain_name=config.get('domain_name'))
+app.config['SECRET_KEY'] = 'beer-app'
+app.config['REMEMBER_COOKIE_NAME'] = 'beer_app_token'
 
 @app.route('/')
 def hello():
@@ -30,6 +33,10 @@ def hello():
 @app.route('/test')
 def test():
     return jsonify(collect_args())
+
+@app.route('/ip')
+def get_ip():
+    return jsonify({'env': request.environ.get('REMOTE_ADDR'), 'rem': request.remote_addr})
 
 # test a secured endpoint, a token must be generated first from inherited "genToken"
 #   method of FlaskExtension
@@ -94,4 +101,4 @@ def toGeoJson():
 if __name__ == '__main__':
 
     # run app on default port 5000
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

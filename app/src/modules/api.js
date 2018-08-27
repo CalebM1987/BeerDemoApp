@@ -58,6 +58,18 @@ const api = {
   downloadPhoto(photo_id, options){
     const url = `${api.baseUrl}/beer_photos/${photo_id}`;
     return request(url, options);
+  },
+
+  login: async function(usr, pw, remember_me=false){
+    const url = `${api.baseUrl}/users/login`;
+    const resp = await request(url, {
+      method: 'post',
+      username: usr,
+      password: pw,
+      remember: remember_me
+    });
+    console.log('LOGIN RESPONSE: ', resp);
+    return resp;
   }
 };
 
