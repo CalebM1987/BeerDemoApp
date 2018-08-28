@@ -1,44 +1,43 @@
-#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      calebma
-#
-# Created:     08/27/2018
-# Copyright:   (c) calebma 2018
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
 from base import FlaskExtension
-from flask import jsonify, request
-import json
+from flask import jsonify
 import os
 import zipfile
-import sys
-thisDir = os.path.dirname(__file__)
-sys.path.append(os.path.join(thisDir, 'lib'))
 from brewery_api import brewery_api
-from security import security_api, userStore
-from flask_login import LoginManager
+from security import security_api, userStore, unauthorized_callback
+from flask_login import LoginManager, login_required
 import shapefile
+import shutil
+import glob
+from utils import *
+from models import session
+from datetime import timedelta
 
-# init app
+# init app inherited from our base.FlaskExtension object
 app_name = os.path.basename(__file__).split('.')[0]
 app = FlaskExtension(app_name)
+
+# set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
 app.config['REMEMBER_COOKIE_NAME'] = 'beer_app_token'
+# app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=90)
 
-# flask-login
+# register flask-login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.unauthorized_handler(unauthorized_callback)
 
 # register blueprints to get functionality from brewery and security api's
 app.register_blueprint(brewery_api)
 app.register_blueprint(security_api)
 
-# callback to reload the user object
+# callback to reload the user object for flask-login
 @login_manager.user_loader
 def load_user(userid):
+    print('USERID IS: ', userid)
+    # with open('./text.txt', 'w') as f:
+    #     f.write(userid)
     return userStore.get_user(id=userid)
+
 
 # API METHODS BELOW
 @app.route('/')
@@ -50,6 +49,7 @@ def test():
     return jsonify(collect_args())
 
 @app.route('/conversion/toGeoJson', methods=['POST'])
+@login_required
 def toGeoJson():
     # get arguments
     args = collect_args()
@@ -70,7 +70,7 @@ def toGeoJson():
     with zipfile.ZipFile(fold + '.zip', 'r') as f:
         f.extractall(fold)
 
-    print 'extracted to: "{}"'.format(fold)
+    print('extracted to: "{}"'.format(fold))
     # get fc and conver to json
     # having issues with arcpy saying shapefile doesn't exist, even though FeaturesToJSON works???
     shp = glob.glob(os.path.join(fold, '*.shp'))[0]
@@ -100,9 +100,3 @@ def toGeoJson():
         'type': 'FeatureCollection',
         'features': features
     })
-
-
-if __name__ == '__main__':
-
-    # run app on default port 5000
-    app.run(debug=True, port=5000)

@@ -1,24 +1,42 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
-from werkzeug.exceptions import default_exceptions, HTTPException, Unauthorized
-from flask import Flask, request, jsonify, current_app, Response, make_response
-import ldap
+from flask import request, jsonify
 import six
 import flask_sqlalchemy
+from models import session
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
 
-VALID_CREDENTIALS = 'VALID_CREDENTIALS'
-INVALID_CREDENTIALS = 'INVALID_CREDENTIALS'
-
 # allow safe imports
-__all__ = ('collect_args', 'SecurityHandler', 'JSONExceptionHandler', 'INVALID_CREDENTIALS',
-           'VALID_CREDENTIALS', 'query_wrapper', 'to_json',
-           'list_fields', 'get_row', 'update_row', 'toGeoJson')
+__all__ = ('collect_args', 'to_json', 'json_exception_handler', 'query_wrapper', 'success',
+           'list_fields', 'get_row', 'update_object', 'toGeoJson',  'endpoint_query')
+
+def success(msg, **kwargs):
+    """ returns a Response() object as JSON
+
+    :param msg: message to send
+    :param kwargs: additional key word arguments to add to json response
+    :return: Response() object as JSON
+    """
+    kwargs['message'] = msg
+    return jsonify({'success': kwargs})
+
+def json_exception_handler(error):
+    response = jsonify({'error':
+        {
+            'code': error.code,
+            'name': error.description,
+            'message': error.message
+        }
+    })
+
+    response.status_code = error.code
+    return response
 
 def collect_args():
+    """ collects arguments from request including query string, form data, raw json, and files
+
+    :return: dict of request arguments
+    """
     # check query string first
     data = {}
     for arg in request.values:
@@ -79,9 +97,27 @@ def query_wrapper(table, **kwargs):
                     conditions.append(col==val)
     if conditions:
         #print('conditions: {}'.format(conditions))
-        return table.query.filter(*conditions).all()
+        return session.query(table).filter(*conditions).all()
     else:
-        return table.query.all()
+        return session.query(table).all()
+
+def endpoint_query(table, fields, id=None):
+    """ wrapper for for query endpoint that can query one feature by id
+    or query all features via the query_wrapper
+
+    :param table: Table to query
+    :param fields: fields to be returned in query
+    :param id: optional resource ID
+    :return: Response() object for query result as json
+    """
+    if id != None:
+        item = query_wrapper(table, id=int(id))
+        return jsonify(to_json(item, fields))
+
+    # check for args and do query
+    args = collect_args()
+    results = query_wrapper(table, **args)
+    return jsonify(to_json(results, fields))
 
 def to_json(results, fields=None):
     """casts query results to json
@@ -104,6 +140,11 @@ def to_json(results, fields=None):
 
 # toGeoJson() handler for results
 def toGeoJson(d):
+    """ return features as GeoJson (use this for brewery query)
+
+    :param d: dict of features to return as GeoJson
+    :return: GeoJson structure as dict
+    """
     if not isinstance(d, list):
         d = [d]
     return {
@@ -130,48 +171,9 @@ def toGeoJson(d):
 def get_row(table, d, key):
     val = d.get(key)
     if val:
-        return table.query.filter_by(**{key: val}).first()
+        return session.query(table).filter_by(**{key: val}).first()
     return None
 
-def update_row(table, **kwargs):
+def update_object(obj, **kwargs):
     for k,v in six.iteritems(kwargs):
-        setattr(table, k, v)
-
-class SecurityHandler(object):
-    def __init__(self, ldap_server, domain_name):
-        self._ldap_server = ldap_server
-        self.domain_name = domain_name
-
-    def validate_AD(self, usr, pw='xxx'):
-        usr = usr.split('\\')[-1]
-        dn = '{}\\{}'.format(self.domain_name, usr.split('\\')[-1])  #username with domain validation
-        print 'pw is: ', pw
-        try:
-            conn = ldap.initialize(self._ldap_server)
-            conn.protocol_version = 3
-            conn.set_option(ldap.OPT_REFERRALS, 0)
-            conn.simple_bind_s(dn, pw or 'xxx')  # need to be able to throw an error off an invalid pw
-            return VALID_CREDENTIALS
-        except ldap.INVALID_CREDENTIALS:
-            return INVALID_CREDENTIALS
-
-class JSONExceptionHandler(object):
-    """https://coderwall.com/p/xq88zg/json-exception-handler-for-flask"""
-
-    def __init__(self, app=None):
-        if app:
-            self.init_app(app)
-
-    def std_handler(self, error):
-        response = jsonify(message=error.message)
-        response.status_code = error.code if isinstance(error, HTTPException) else 500
-        return response
-
-    def init_app(self, app):
-        self.app = app
-        self.register(HTTPException)
-        for code, v in default_exceptions.iteritems():
-            self.register(code)
-
-    def register(self, exception_or_code, handler=None):
-        self.app.errorhandler(exception_or_code)(handler or self.std_handler)
+        setattr(obj, k, v)

@@ -1,36 +1,19 @@
-#-------------------------------------------------------------------------------
-# Name:        models.py
-# Purpose:
-#
-# Author:      calebma
-#
-# Created:     03/08/2018
-# Copyright:   (c) calebma 2018
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
 import os
-import sys
-thisDir = os.path.dirname(__file__)
-sys.path.append(os.path.join(thisDir, 'lib'))
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, LargeBinary, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
 
-__all__ = ('BEER_TYPES', 'Beer', 'Brewery', 'BeerPhotos', 'Category', 'Style', 'engine', 'Base', 'session')
-
-BEER_TYPES = ['IPA Pilsner', 'Lager', 'Stoute Gose', 'Pale Ale', 'Ale', 'Saison',
-    'Wheat Beer', 'Bock', 'Porter', 'Brown Ale', 'Pale Lager', 'Mild Ale',
-    'Lambic', 'American Pale Ale', 'Irish Red Ale', 'American Lager', 'Amber Ale',
-    'Cream Ale', 'Cider', 'Sour', 'Irish Stout', 'Malt', 'Blonde', 'Dark', 'Honey',
-    'Fruit', 'Bitter', 'Kolsch', 'Hefeweizen', 'Double IPA', 'Oatmeal Stout']
+__all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
 # db path, make sure "check_same_thread" is set to False
+thisDir = os.path.dirname(__file__)
 db_path = os.path.join(os.path.dirname(thisDir), 'db').replace(os.sep, '/')
-brewery_str = 'sqlite:///{}/beer2.db?check_same_thread=False'.format(db_path)
+brewery_str = 'sqlite:///{}/beer.db?check_same_thread=False'.format(db_path)
 
+# get declaritive base context
 Base = declarative_base()
 
 class BeerPhotos(Base):
@@ -96,7 +79,7 @@ class Category(Base):
     last_mod = Column(DateTime, default=datetime.utcnow())
     styles = relationship('Style', back_populates='category')
 
-class Users(Base, UserMixin):
+class User(Base, UserMixin):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
@@ -110,6 +93,7 @@ class Users(Base, UserMixin):
 
     @property
     def is_active(self):
+        """ override UserMixin.is_active property """
         return self.activated == 'True'
 
     def __repr__(self):
@@ -118,24 +102,8 @@ class Users(Base, UserMixin):
     def __str__(self):
         return repr(self)
 
-    # @property
-    # def is_authenticated(self):
-    #     return True
-    #
-    # @property
-    # def is_active(self):
-    #     return True
-    #
-    # @property
-    # def is_anonymous(self):
-    #     return False
-    #
-    # def get_id(self):
-    #     return self.id
-
-
 # make sure all databases are created
-engine = create_engine(brewery_str)#, poolclass=SingletonThreadPool)
+engine = create_engine(brewery_str)
 Base.metadata.create_all(engine)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)

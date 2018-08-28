@@ -1,36 +1,29 @@
-#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      calebma
-#
-# Created:     03/08/2018
-# Copyright:   (c) calebma 2018
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
 import os
 import sys
 import json
 import six
 thisDir = os.path.dirname(__file__)
-print(os.path.join(os.path.dirname(thisDir), 'app', 'lib'))
 sys.path.append(os.path.dirname(thisDir))
-sys.path.append(os.path.join(os.path.dirname(thisDir), 'app', 'lib'))
 import munch
 import restapi
 from app import models
-#import models
 reload(models)
 from app.models import Beer, Brewery, BeerPhotos, Category, Style, session
+from app.security import userStore
 from datetime import datetime
 import csv
 
 # url to AGOL layer with MN Brewery info
 url = 'https://services2.arcgis.com/ZkOsbg84o8DsPPaP/arcgis/rest/services/Minnesota_Beer/FeatureServer/0'
 
+# function get utc time string to datetime()
 timestamp_to_date = lambda s: datetime.strptime(s,'%Y-%m-%d %H:%M:%S UTC')
 
+
 def get_mankato_beers():
+    """generator to popuplate beers from mankato brewery
+    :return:
+    """
     photo_dir = os.path.join(thisDir, 'photos')
     beers_json = os.path.join(thisDir, 'beers-mankato.json')
 
@@ -51,55 +44,73 @@ def get_mankato_beers():
                 yield (beerObj, p.read())
 
 
+def load_csv(table, csv_file):
+    """loads a csv into a database table, must share the same schema.
+
+    :param table: sqlalchemy.Base Table object
+    :param csv_file: path to csv file
+    :return: None
+    """
+    with open(csv_file, 'r') as csvfile:
+        for row in csv.DictReader(csvfile):
+            # convert date string to datetime() object
+            row['last_mod'] = timestamp_to_date(row['last_mod'])
+
+            # write row, unpack dict to key word arguments
+            record = table(**row)
+            session.add(record)
+
+
 def create_data():
+    """ creates the necessary base data for workshop demo """
 
     # create feature layer from service
-    # lyr = restapi.FeatureLayer(url)
-    #
-    # # query
-    # fs = lyr.query(outSR=4326)
-    #
-    # # iterate through query results and add to db
-    # for feature in fs:
-    #
-    #     # add new brewery
-    #     ft = feature.attributes
-    #     newBrewery = Brewery(
-    #         name=restapi.rest_utils.fix_encoding(ft.Name),
-    #         county=ft.COUNTY,
-    #         city=ft.CITY,
-    #         address=ft.ADDRESS,
-    #         monday=ft.MONDAY,
-    #         tuesday=ft.TUESDAY,
-    #         wednesday=ft.WEDNESDAY,
-    #         thursday=ft.THURSDAY,
-    #         friday=ft.FRIDAY,
-    #         saturday=ft.SATURDAY,
-    #         sunday=ft.SUNDAY,
-    #         comments=ft.NOTES,
-    #         brew_type=ft.TYPE,
-    #         website=ft.Website,
-    #         x=feature.geometry.x,
-    #         y=feature.geometry.y
-    #     )
-    #
-    #     # add mankato beers sample data if brewery is Mankato Brewery
-    #     if newBrewery.name == 'Mankato Brewery':
-    #         for beer, photoBlob in get_mankato_beers():
-    #
-    #             # create new beer first
-    #             photo_name = beer.photo_name
-    #             del beer.photo_name
-    #             newBeer = Beer(**beer)
-    #
-    #             # create new beer photo
-    #             newBeer.photos.append(BeerPhotos(photo_name=photo_name, data=photoBlob))
-    #             newBrewery.beers.append(newBeer)
-    #
-    #     print('new brewery: ', newBrewery)
-    #
-    #     # add to session manager
-    #     session.add(newBrewery)
+    lyr = restapi.FeatureLayer(url)
+
+    # query
+    fs = lyr.query(outSR=4326)
+
+    # iterate through query results and add to db
+    for feature in fs:
+
+        # add new brewery
+        ft = feature.attributes
+        newBrewery = Brewery(
+            name=restapi.rest_utils.fix_encoding(ft.Name),
+            county=ft.COUNTY,
+            city=ft.CITY,
+            address=ft.ADDRESS,
+            monday=ft.MONDAY,
+            tuesday=ft.TUESDAY,
+            wednesday=ft.WEDNESDAY,
+            thursday=ft.THURSDAY,
+            friday=ft.FRIDAY,
+            saturday=ft.SATURDAY,
+            sunday=ft.SUNDAY,
+            comments=ft.NOTES,
+            brew_type=ft.TYPE,
+            website=ft.Website,
+            x=feature.geometry.x,
+            y=feature.geometry.y
+        )
+
+        # add mankato beers sample data if brewery is Mankato Brewery
+        if newBrewery.name == 'Mankato Brewery':
+            for beer, photoBlob in get_mankato_beers():
+
+                # create new beer first
+                photo_name = beer.photo_name
+                del beer.photo_name
+                newBeer = Beer(**beer)
+
+                # create new beer photo
+                newBeer.photos.append(BeerPhotos(photo_name=photo_name, data=photoBlob))
+                newBrewery.beers.append(newBeer)
+
+        print('new brewery: ', newBrewery)
+
+        # add to session manager
+        session.add(newBrewery)
 
     # test child
     # newBrewery.beers.append(Beer(name='test beer'))
@@ -107,30 +118,20 @@ def create_data():
     # load categories and styles
     categories = os.path.join(thisDir, 'categories.csv')
     styles = os.path.join(thisDir, 'styles.csv')
-    # with open(categories, 'r') as csvfile:
-    #     for row in list(iter(csv.reader(csvfile)))[1:]:
-    #         # print row
-    #         vals = row[:-1] + [timestamp_to_date(row[-1])]
-    #         print vals, len(vals)
-    #
-    #         # category = Category(*row[1:-1] + [timestamp_to_date(row[-1])])
-    #         category = Category(*vals)
-    #         session.add(category)
 
-    with open(styles, 'r') as csvfile:
-        for row in list(iter(csv.reader(csvfile)))[1:]:
-
-            print row
-            ts = timestamp_to_date(row[-1])
-            print ts
-            style = Style(*row[:-1] + [ts])
-            print row, len(row)
-            session.add(style)
+    # call our function to load data to SQLite
+    load_csv(Category, categories)
+    load_csv(Style, styles)
 
     # commit db changes
     session.commit()
-    return session
+
+    # create test_user
+    user = userStore.create_user('John Doe', 'test_user@gmail.com', 'test_user', 'user123', activated='True')
+    print('created test user: {}'.format(user))
 
 
 if __name__ == '__main__':
-    sesseion = create_data()
+
+    # run function to create the data
+    create_data()

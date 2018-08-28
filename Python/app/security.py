@@ -1,35 +1,27 @@
 import random
 import string
-import os
-import sys
 from datetime import datetime
-thisDir = os.path.dirname(__file__)
-sys.path.append(os.path.join(thisDir, 'lib'))
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 import models
 reload(models)
-from models import Users, session
+from models import User, session
 import utils
 reload(utils)
 from utils import *
 from exceptions import *
 
-# # make sure all databases are created
-# Base.metadata.create_all(engine)
-# Base.metadata.bind = engine
-# DBSession = sessionmaker(bind=engine)
-# session = DBSession()
-
-Users.query = session.query(Users)
-
 # user fields to return
 user_fields = ['id', 'name', 'username', 'email']
 
+# create blue print
 security_api = Blueprint('security_api', __name__)
 
-__all__ = ('Users', 'security_api', 'userStore')
+__all__ = ('User', 'security_api', 'userStore', 'unauthorized_callback')
+
+# unauthorized user callback for flask login (must return a Response() )
+unauthorized_callback = lambda: json_exception_handler(UnauthorizedUser)
 
 def create_random_string(length=64):
     return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(length or 64)])
@@ -39,35 +31,25 @@ class UserStore(object):
 
     @property
     def users(self):
-        return session.query(Users).all()
+        return session.query(User).all()
 
-    def get_user(self, **kwargs): #id=None, username=None, email=None):
+    def get_user(self, **kwargs):
         try:
-            return query_wrapper(Users, **kwargs)[0]
+            return query_wrapper(User, **kwargs)[0]
         except IndexError:
-            return jsonify({'error': {'message': 'user not found'}})
-        # if id:
-        #     return session.query(Users, id=int(id)).first()
-        #
-        # elif username:
-        #     return session.query(Users, username=username).first()
-        #
-        # elif email:
-        #     return session.query(Users, email=email).first()
-
+            raise UserNotFound
 
     def get_users(self, **kwargs):
-        return query_wrapper(Users, **kwargs)
+        return query_wrapper(User, **kwargs)
 
-    def create_user(self, name, email, username, password):
+    def create_user(self, name, email, username, password, activated='False'):
 
         # create a token for this user, this hash is used by service to lookup user
         token = create_random_string()
         pw = generate_password_hash(password, salt_length=16)
-        user = Users(name=name, email=email, username=username, password=pw, token=token)
+        user = User(name=name, email=email, username=username, password=pw, token=token, activated=activated)
         session.add(user)
         session.commit()
-        # return { 'token': token, 'expires': user.expires }
         return user
 
     def check_user(self, username, password):
@@ -76,44 +58,61 @@ class UserStore(object):
             return None
         return user if check_password_hash(user.password, password) else None
 
-
 userStore = UserStore()
+
+# API METHODS BELOW
+
+@security_api.route('/error')
+def error():
+    """ test the JSON Exception Handler """
+    raise TestException
+
+@security_api.route('/auth/test')
+@login_required
+def auth_test():
+    return success('congratulations, you\'re authenticated')
 
 @security_api.route('/users')
 @security_api.route('/users/<id>')
 def get_users(id=None):
-    if id:
-        user = query_wrapper(Users, id=int(id))
-        return jsonify(to_json(user, user_fields))
-
-    # check for args and do query
-    args = collect_args()
-    results = query_wrapper(Users, **args)
-    return jsonify(to_json(results, user_fields))
+    return endpoint_query(User, user_fields, id)
 
 @security_api.route('/users/create', methods=['POST'])
 def create_user():
     args = collect_args()
     try:
         userStore.create_user(**args)
-        return jsonify({'success': 'successfully created user: {}'.format(args.get('username'))})
-    except Exception as e:
-        return jsonify({'error': {'message': 'could not create user', 'code': str(e)}})
+        return success('successfully created user: {}'.format(args.get('username')))
+    except:
+        raise CreateUserError
+
+# @security_api.route('/users/restore', methods=['POST'])
+# def restoreLogin():
+#     if hasattr(current_user, 'token'):
+#         return success('user logged in', token=current_user.token)
+#     raise UnauthorizedUser
 
 @security_api.route('/users/login', methods=['POST'])
 def login():
     args = collect_args()
+    # with open('./text1.txt', 'w') as f:
+    #     f.write(args.__class__.__name__)
+    print(args)
     username = args.get('username')
     password = args.get('password')
     remember_me = args.get('remember', False) in ('true', True)
-    print('remember me: ', remember_me)
     validatedUser = userStore.check_user(username, password)
     if validatedUser:
         login_user(validatedUser, remember=remember_me)
         validatedUser.last_login = datetime.utcnow()
         session.commit()
-        return jsonify({'success': 'user logged in', 'token': validatedUser.token})
+        return success('user logged in', token=validatedUser.token)
     raise InvalidCredentials
+
+@security_api.route('/users/welcome')
+@login_required
+def welcome():
+    return jsonify({'message': 'Welcome {}'.format(current_user.name)})
 
 @security_api.route('/users/logout', methods=['POST'])
 @login_required
@@ -121,10 +120,5 @@ def logout():
     try:
         logout_user()
     except Exception as e:
-        return jsonify({'error': {'message': str(e)}})
-    return jsonify({'success': 'successfully logged out'})
-
-@security_api.route('/security/test')
-@login_required
-def sec_test():
-    return jsonify({'success': 'passed security'})
+        raise UnauthorizedUser
+    return success('successfully logged out')
