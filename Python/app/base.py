@@ -19,7 +19,7 @@ HANDLERS = [
 
 class FlaskExtension(Flask):  # inherit from Flask object
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
 
         # call super class
         super(self.__class__, self).__init__(name)

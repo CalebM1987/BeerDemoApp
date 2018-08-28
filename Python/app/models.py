@@ -19,7 +19,7 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
 
-__all__ = ('BEER_TYPES', 'Beer', 'Brewery', 'BeerPhotos', 'engine', 'Base', 'session')
+__all__ = ('BEER_TYPES', 'Beer', 'Brewery', 'BeerPhotos', 'Category', 'Style', 'engine', 'Base', 'session')
 
 BEER_TYPES = ['IPA Pilsner', 'Lager', 'Stoute Gose', 'Pale Ale', 'Ale', 'Saison',
     'Wheat Beer', 'Bock', 'Porter', 'Brown Ale', 'Pale Lager', 'Mild Ale',
@@ -27,9 +27,9 @@ BEER_TYPES = ['IPA Pilsner', 'Lager', 'Stoute Gose', 'Pale Ale', 'Ale', 'Saison'
     'Cream Ale', 'Cider', 'Sour', 'Irish Stout', 'Malt', 'Blonde', 'Dark', 'Honey',
     'Fruit', 'Bitter', 'Kolsch', 'Hefeweizen', 'Double IPA', 'Oatmeal Stout']
 
-# db path
+# db path, make sure "check_same_thread" is set to False
 db_path = os.path.join(os.path.dirname(thisDir), 'db').replace(os.sep, '/')
-brewery_str = 'sqlite:///{}/beer2.db'.format(db_path)
+brewery_str = 'sqlite:///{}/beer2.db?check_same_thread=False'.format(db_path)
 
 Base = declarative_base()
 
@@ -80,6 +80,21 @@ class Brewery(Base):
 
     def __repr__(self):
         return '<Brewery: "{}">'.format(self.name)
+
+class Style(Base):
+    __tablename__ = 'styles'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cat_id = Column(Integer, ForeignKey('categories.id'))
+    style_name = Column(String(100), nullable=False)
+    last_mod = Column(DateTime, default=datetime.utcnow())
+    category = relationship('Category', back_populates='styles')
+
+class Category(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cat_name = Column(String(100), nullable=False)
+    last_mod = Column(DateTime, default=datetime.utcnow())
+    styles = relationship('Style', back_populates='category')
 
 class Users(Base, UserMixin):
     __tablename__ = 'users'
