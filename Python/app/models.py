@@ -16,12 +16,18 @@ brewery_str = 'sqlite:///{}/beer.db?check_same_thread=False'.format(db_path)
 # get declaritive base context
 Base = declarative_base()
 
+# basic repr
+basic_repr = lambda obj, attr: '<{}: "{}">'.format(obj.__class__.__name__, getattr(obj, attr))
+
 class BeerPhotos(Base):
     __tablename__ = 'beer_photos'
     id = Column(Integer, primary_key=True, autoincrement=True)
     beer_id = Column(Integer, ForeignKey('beers.id'))
     photo_name = Column(String(100))
     data = Column(LargeBinary)
+
+    def __repr__(self):
+        return basic_repr(self, 'photo_name')
 
 class Beer(Base):
     __tablename__ = 'beers'
@@ -37,7 +43,7 @@ class Beer(Base):
     brewery = relationship('Brewery', back_populates='beers')
 
     def __repr__(self):
-        return '<Beer: "{}" ({})>'.format(self.name, self.style)
+        return '<{}: "{}" ({})>'.format(self.__class__.__name__, self.name, self.style)
 
 
 class Brewery(Base):
@@ -62,7 +68,7 @@ class Brewery(Base):
     beers = relationship('Beer', back_populates='brewery')
 
     def __repr__(self):
-        return '<Brewery: "{}">'.format(self.name)
+        return basic_repr(self, 'name')
 
 class Style(Base):
     __tablename__ = 'styles'
@@ -72,12 +78,18 @@ class Style(Base):
     last_mod = Column(DateTime, default=datetime.utcnow())
     category = relationship('Category', back_populates='styles')
 
+    def __repr__(self):
+        return basic_repr(self, 'style_name')
+
 class Category(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True, autoincrement=True)
     cat_name = Column(String(100), nullable=False)
     last_mod = Column(DateTime, default=datetime.utcnow())
     styles = relationship('Style', back_populates='category')
+
+    def __repr__(self):
+        return basic_repr(self, 'cat_name')
 
 class User(Base, UserMixin):
     __tablename__ = 'users'
@@ -97,7 +109,7 @@ class User(Base, UserMixin):
         return self.activated == 'True'
 
     def __repr__(self):
-        return '<User: "{}">'.format(self.username)
+        return basic_repr(self, 'username')
 
     def __str__(self):
         return repr(self)

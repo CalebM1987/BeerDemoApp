@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import six
+for p in sys.path:
+    print p
 thisDir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(thisDir))
 import munch
@@ -12,6 +14,7 @@ from app.models import Beer, Brewery, BeerPhotos, Category, Style, session
 from app.security import userStore
 from datetime import datetime
 import csv
+
 
 # url to AGOL layer with MN Brewery info
 url = 'https://services2.arcgis.com/ZkOsbg84o8DsPPaP/arcgis/rest/services/Minnesota_Beer/FeatureServer/0'

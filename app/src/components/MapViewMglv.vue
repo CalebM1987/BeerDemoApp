@@ -90,8 +90,6 @@
         });
 
         // add control buttons
-
-        // add menu button for slideout
         const toggleMenu =(evt)=>{
           this.$emit('toggle-menu');
         };
@@ -130,8 +128,16 @@
 
         console.log('found features: ', features);
         if (features.length){
+
+          // handle selection on map
           const feature = features[0];
           this.handleIdentify(feature);
+        } else if (this.selectionMarker){
+
+          // clear selection on map and close identify
+          this.selectionMarker.remove();
+          this.selectionMarker = null;
+          this.$emit('cleared-selection')
         }
 
       },

@@ -24,6 +24,7 @@
     <map-view
             ref="mapView"
             @toggle-identify="identifyActivePanel"
+            @cleared-selection="clearSelection"
             @brewery-identified="showBreweryInfo"
             @toggle-menu="menuActivePanel">
     </map-view>
@@ -76,6 +77,13 @@
           this.$refs.sidebar.expand();
           this.menuActive = false;
           this.identifyActive = true;
+        }
+      },
+
+      clearSelection(){
+        this.selectedBrewery = null;
+        if (this.identifyActive){
+          this.$refs.sidebar.collapse();
         }
       },
 

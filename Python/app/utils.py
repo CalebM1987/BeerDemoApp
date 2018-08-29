@@ -18,11 +18,13 @@ def success(msg, **kwargs):
     :return: Response() object as JSON
     """
     kwargs['message'] = msg
-    return jsonify({'success': kwargs})
+    kwargs['status'] = 'success'
+    return jsonify(kwargs)
 
 def json_exception_handler(error):
-    response = jsonify({'error':
-        {
+    response = jsonify({
+        'status': 'error',
+        'details': {
             'code': error.code,
             'name': error.description,
             'message': error.message

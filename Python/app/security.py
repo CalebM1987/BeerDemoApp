@@ -86,12 +86,6 @@ def create_user():
     except:
         raise CreateUserError
 
-# @security_api.route('/users/restore', methods=['POST'])
-# def restoreLogin():
-#     if hasattr(current_user, 'token'):
-#         return success('user logged in', token=current_user.token)
-#     raise UnauthorizedUser
-
 @security_api.route('/users/login', methods=['POST'])
 def login():
     args = collect_args()
@@ -112,7 +106,7 @@ def login():
 @security_api.route('/users/welcome')
 @login_required
 def welcome():
-    return jsonify({'message': 'Welcome {}'.format(current_user.name)})
+    return success('Welcome {}'.format(current_user.name))
 
 @security_api.route('/users/logout', methods=['POST'])
 @login_required

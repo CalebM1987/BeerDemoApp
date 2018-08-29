@@ -74,7 +74,8 @@ def get_breweries(id=None):
     return jsonify(handler(to_json(results, fields)))
 
 @brewery_api.route('/breweries/<id>/beers')
-def get_beers_from_brewery(id=None):
+@brewery_api.route('/breweries/<id>/beers/<bid>')
+def get_beers_from_brewery(id=None, bid=None):
     if not id:
         raise InvalidResource
 
@@ -82,6 +83,14 @@ def get_beers_from_brewery(id=None):
     brewery = query_wrapper(Brewery, id=int(id))[0]
 
     # fetch beers
+    if bid:
+        try:
+            beers = brewery.beers
+            # should be a way to achieve this via filter or join?
+            return jsonify(to_json([b for b in beers if b.id ==int(bid)][0], beer_fields))
+        except Exception as e:
+            #return jsonify({'error': str(e), })
+            raise InvalidResource
     return jsonify(to_json(brewery.beers, beer_fields))
 
 @brewery_api.route('/beers')
