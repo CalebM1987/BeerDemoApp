@@ -12,6 +12,7 @@
 
       <keep-alive>
 
+        <!-- BREWERY IDENTIFY CONTENT -->
         <brewery-info
                 v-if="identifyActive"
                 :feature="selectedBrewery">
@@ -21,6 +22,7 @@
 
     </sidebar>
 
+    <!-- MAP VIEW-->
     <map-view
             ref="mapView"
             @toggle-identify="identifyActivePanel"

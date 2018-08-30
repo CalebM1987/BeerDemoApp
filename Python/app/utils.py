@@ -103,7 +103,7 @@ def query_wrapper(table, **kwargs):
     else:
         return session.query(table).all()
 
-def endpoint_query(table, fields, id=None):
+def endpoint_query(table, fields=None, id=None, **kwargs):
     """ wrapper for for query endpoint that can query one feature by id
     or query all features via the query_wrapper
 
@@ -118,8 +118,23 @@ def endpoint_query(table, fields, id=None):
 
     # check for args and do query
     args = collect_args()
+    for k,v in six.iteritems(kwargs):
+        args[k] = v
     results = query_wrapper(table, **args)
     return jsonify(to_json(results, fields))
+
+def validate_fields(table, fields=None):
+    """
+
+    :param table:
+    :param fields:
+    :return:
+    """
+    if isinstance(fields, six.string_types):
+        fields = map(lambda f: f.strip(), fields.split(','))
+    if not fields or not isinstance(fields, (list, tuple)):
+        fields = list_fields(table)
+    return fields
 
 def to_json(results, fields=None):
     """casts query results to json
@@ -128,16 +143,13 @@ def to_json(results, fields=None):
     :param fields: list of field names to include
     :return:
     """
+    fields = validate_fields(results[0] if isinstance(results, list) else results, fields)
     if isinstance(results, list):
         if len(results):
-            if not fields or not isinstance(fields, (list, tuple)):
-                fields = list_fields(results[0])
             return [{f: getattr(r, f) for f in fields} for r in results]
         else:
             return []
     else:
-        if not fields or not isinstance(fields, (list, tuple)):
-            fields = list_fields(results)
         return {f: getattr(results, f) for f in fields}
 
 # toGeoJson() handler for results

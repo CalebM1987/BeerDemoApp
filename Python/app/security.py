@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime
-from flask import jsonify, Blueprint, current_app
+from flask import Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 import models
@@ -24,7 +24,7 @@ __all__ = ('User', 'security_api', 'userStore', 'unauthorized_callback')
 unauthorized_callback = lambda: json_exception_handler(UnauthorizedUser)
 
 def create_random_string(length=64):
-    return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(length or 64)])
+    return ''.join([random.choice(string.ascii_letters + string.digits) for _ in xrange(length or 64)])
 
 class UserStore(object):
     """helper class for user store"""
