@@ -89,9 +89,6 @@ def create_user():
 @security_api.route('/users/login', methods=['POST'])
 def login():
     args = collect_args()
-    # with open('./text1.txt', 'w') as f:
-    #     f.write(args.__class__.__name__)
-    print(args)
     username = args.get('username')
     password = args.get('password')
     remember_me = args.get('remember', False) in ('true', True)

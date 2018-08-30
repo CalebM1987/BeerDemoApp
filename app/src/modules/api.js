@@ -6,7 +6,7 @@ const default_request_options = {
 }
 
 const api = {
-  host: 'localhost',
+  host: '127.0.0.1',
   port: '5000',
   // baseUrl: `${api.host}:${api.port}`,
   baseUrl: 'http://localhost:5000',
@@ -70,6 +70,15 @@ const api = {
     });
     console.log('LOGIN RESPONSE: ', resp);
     return resp;
+  },
+
+  logout(){
+    const url = `${api.baseUrl}/users/login`;
+    return request(url);
+  },
+
+  authTest(){
+    return request(`${api.baseUrl}/auth/test`);
   }
 };
 

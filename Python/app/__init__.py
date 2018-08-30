@@ -19,6 +19,7 @@ app = FlaskExtension(app_name)
 # set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
 app.config['REMEMBER_COOKIE_NAME'] = 'beer_app_token'
+app.config['REMEMBER_COOKIE_DOMAIN'] = '.beerapp.com'
 # app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=90)
 
 # register flask-login manager
@@ -42,7 +43,7 @@ def load_user(userid):
 # API METHODS BELOW
 @app.route('/')
 def hello():
-    return jsonify({'message': 'wellcome to the brewery api!'})
+    return jsonify({'message': 'welcome to the brewery api!'})
 
 @app.route('/test')
 def test():

@@ -143,7 +143,7 @@ def to_json(results, fields=None):
     :param fields: list of field names to include
     :return:
     """
-    fields = validate_fields(results[0] if isinstance(results, list) else results, fields)
+    fields = validate_fields(results[0] if isinstance(results, list) and len(results) else results, fields)
     if isinstance(results, list):
         if len(results):
             return [{f: getattr(r, f) for f in fields} for r in results]
@@ -152,7 +152,7 @@ def to_json(results, fields=None):
     else:
         return {f: getattr(results, f) for f in fields}
 
-# toGeoJson() handler for results
+# toGeoJson() handler for breweries
 def toGeoJson(d):
     """ return features as GeoJson (use this for brewery query)
 

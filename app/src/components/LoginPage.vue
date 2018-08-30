@@ -27,6 +27,7 @@
     name: "login-page",
     data(){
       return {
+        state: null,
         username: null,
         password: null,
         rememberMe: false
