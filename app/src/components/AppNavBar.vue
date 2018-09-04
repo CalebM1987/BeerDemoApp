@@ -43,7 +43,19 @@
         }
       }
     },
-    mounted(){hook.nb = this;},
+    mounted: async function(){
+      // check if user is already logged in via the remember me token cookie
+      try {
+        const resp = await api.authTest();
+        if (resp.status === 'success'){
+          this.userLoggedIn = true;
+        }
+      } catch (err){
+        // ignore, just means user isn't authenticated from a prior session
+      }
+
+      hook.nb = this;
+    },
     methods: {
       logout(){
         this.$emit('user-logged-out');

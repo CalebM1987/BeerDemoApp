@@ -1,15 +1,20 @@
-import { request } from './xhr';
+import { request, axios } from './xhr';
+
 
 const default_request_options = {
   method: 'get',
   f: 'geojson'
+};
+
+// request wrapper to pass in token
+function _request(url, options={}){
+  // api.token ? options.token = api.token: null;
+  console.log('OPTIONS IS: ', options);
+  return request(url, options);
 }
 
 const api = {
-  host: 'dev.localhost', //'127.0.0.1',
-  port: '5000',
-  // baseUrl: `${api.host}:${api.port}`,
-  baseUrl: 'http://127.0.0.1:5000', //'http://192.168.1.20:5000',
+  token: null,
 
   getBreweries(options=default_request_options){
 
@@ -18,33 +23,30 @@ const api = {
     options.f = options.f || 'geojson';
 
     // make request
-    return request(`${api.baseUrl}/breweries`, options);
-    
+    return request('/breweries', options);
   },
 
   getBrewery(id, options=default_request_options){
     if (id){
-      return request(`${api.baseUrl}//breweries/${id}`);
+      return _request(`/breweries/${id}`);
     }
 
   },
 
   getBeersFromBrewery(breweryId, options={}){
-    const url = `${api.baseUrl}/breweries/${breweryId}/beers`;
-    return request(url, options);
+    return request(`/breweries/${breweryId}/beers`, options);
   },
 
   getBeers(options={}){
-    return request(`${api.baseUrl}/beers`, options);
+    return request('/beers', options);
   },
 
   getBeerPhotos(beerId, options={}){
-    const url = `${api.baseUrl}/beers/${beerId}/photos`;
-    return request(url, options);
+    return request(`/beers/${beerId}/photos`, options);
   },
 
   queryBeerPhotos(photo_id, options={}){
-    let url = `${api.baseUrl}/beer_photos`;
+    let url = '/beer_photos';
     if (photo_id){
       url += `/${photo_id}`;
     }
@@ -52,35 +54,34 @@ const api = {
   },
 
   getPhotoUrl(photo_id){
-    return `${api.baseUrl}/beer_photos/${photo_id}/download`;
+    return `/beer_photos/${photo_id}/download`;
   },
 
   downloadPhoto(photo_id, options){
-    const url = `${api.baseUrl}/beer_photos/${photo_id}`;
-    return request(url, options);
+    return request(`/beer_photos/${photo_id}`, options);
   },
 
   login: async function(usr, pw, remember_me=false){
-    const url = `${api.baseUrl}/users/login`;
-    const resp = await request(url, {
+    const resp = await request('/users/login', {
       method: 'post',
       username: usr,
       password: pw,
       remember: remember_me
-    }, false);
+    });
+    api.token = resp.token;
+    axios.defaults.headers.common.Authorization = resp.token;
     console.log('LOGIN RESPONSE: ', resp);
-    return resp.data;
+    return resp;
   },
 
   logout: async function(){
-    const url = `${api.baseUrl}/users/logout`;
-    const response = await request(url, {method: 'post'}, false);
+    const response = await _request('/users/logout', {method: 'post'}, false);
     console.log('FULL LOGOUT RESPONSE: ', response);
     return response.data;
   },
 
   authTest(){
-    return request(`${api.baseUrl}/users/welcome`);//auth/test`);
+    return _request('/users/welcome');
   }
 };
 

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios';
-import { request } from "./modules/xhr";
+import { request, axios } from "./modules/xhr";
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -19,6 +19,10 @@ Vue.config.productionTip = false;
 // wait for config to load before initializing Vue instance
 request('./config.json').then((config) => {
   console.log(config);
+
+  // set base url for API from config file
+  //setBaseUrl(config.api_base);
+  axios.defaults.baseURL = config.api_base;
 
   new Vue({
     render: h => h(App),

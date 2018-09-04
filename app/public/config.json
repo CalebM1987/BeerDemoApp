@@ -8,6 +8,5 @@
     ],
     "zoom": 9
   },
-
-  "api_base": "127.0.0.1:5000"
+  "api_base": "http://localhost:5000"
 }

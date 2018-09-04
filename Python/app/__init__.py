@@ -11,6 +11,7 @@ import glob
 from utils import *
 from models import session
 from datetime import timedelta
+from exceptions import UserNotFound
 
 # init app inherited from our base.FlaskExtension object
 app_name = os.path.basename(__file__).split('.')[0]
@@ -39,6 +40,21 @@ def load_user(userid):
     # with open('./text.txt', 'w') as f:
     #     f.write(userid)
     return userStore.get_user(id=userid)
+
+@login_manager.request_loader
+def load_user_from_request(request):
+    """allow users to be loaded via request params or authorization header"""
+    # check for token in request params or in Authorization header
+    args = collect_args()
+    print('args from request_loader: ', args)
+    token = args.get('token') or request.headers.get('Authorization')
+    if token:
+        try:
+            return userStore.get_user(token=token)
+        except UserNotFound:
+            return None
+
+    return None
 
 
 # API METHODS BELOW
