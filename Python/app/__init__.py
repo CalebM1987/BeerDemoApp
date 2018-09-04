@@ -19,7 +19,8 @@ app = FlaskExtension(app_name)
 # set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
 app.config['REMEMBER_COOKIE_NAME'] = 'beer_app_token'
-app.config['REMEMBER_COOKIE_DOMAIN'] = '.beerapp.com'
+# app.config['SERVER_NAME'] = '192.168.1.20' #'dev.localhost.com'
+# app.config['REMEMBER_COOKIE_DOMAIN'] = '.192.168.1.20' #'.dev.localhost.com' #'.beerapp.com'
 # app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=90)
 
 # register flask-login manager

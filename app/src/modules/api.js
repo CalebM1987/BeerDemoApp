@@ -6,10 +6,10 @@ const default_request_options = {
 }
 
 const api = {
-  host: '127.0.0.1',
+  host: 'dev.localhost', //'127.0.0.1',
   port: '5000',
   // baseUrl: `${api.host}:${api.port}`,
-  baseUrl: 'http://localhost:5000',
+  baseUrl: 'http://127.0.0.1:5000', //'http://192.168.1.20:5000',
 
   getBreweries(options=default_request_options){
 
@@ -67,18 +67,20 @@ const api = {
       username: usr,
       password: pw,
       remember: remember_me
-    });
+    }, false);
     console.log('LOGIN RESPONSE: ', resp);
-    return resp;
+    return resp.data;
   },
 
-  logout(){
-    const url = `${api.baseUrl}/users/login`;
-    return request(url);
+  logout: async function(){
+    const url = `${api.baseUrl}/users/logout`;
+    const response = await request(url, {method: 'post'}, false);
+    console.log('FULL LOGOUT RESPONSE: ', response);
+    return response.data;
   },
 
   authTest(){
-    return request(`${api.baseUrl}/auth/test`);
+    return request(`${api.baseUrl}/users/welcome`);//auth/test`);
   }
 };
 

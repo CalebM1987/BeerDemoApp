@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <b-card class="login-card">
+    <b-card class="login-card" v-if="state === 'default'">
       <b-img src="./assets/avatar_2x.png" class="avatar"></b-img>
 
       <div class="mt-4">
@@ -13,10 +13,24 @@
       </div>
 
       <hr style="background-color: white;">
-      <p class="acc">Don't have an Account? <a href="#" class="sign-up" @click="$emit('sign-up')">Sign Up</a></p>
 
+      <!--  SIGN UP LINK -->
+      <!--  @click=$emit('sign-up')-->
+      <p class="acc">Don't have an Account? <a href="#" class="sign-up">Sign Up</a></p>
 
     </b-card>
+
+    <div v-else>
+      <div class="login-spinner" v-if="state === 'logging_in'">
+        <h4>Logging In</h4>
+        <span style="font-size: 2.5rem;" class="fas fa-spinner fa-spin"></span>
+      </div>
+
+      <b-alert :show="2" @dismissed="handleUserLogin" v-if="state === 'logged_in'" variant="success">Successfully Logged In</b-alert>
+      <b-alert :show="2" @dismissed="state = 'default'" v-if="state === 'login_failed'" variant="danger">Login Failed, please try again.</b-alert>
+
+    </div>
+
   </div>
 </template>
 
@@ -27,22 +41,45 @@
     name: "login-page",
     data(){
       return {
-        state: null,
         username: null,
         password: null,
-        rememberMe: false
+        rememberMe: false,
+        state: 'default'
       }
     },
 
     methods: {
-      login(){
-        return api.login(this.username, this.password, this.rememberMe);
+      login: async function(){
+        this.state = 'logging_in';
+        try {
+          const result = await api.login(this.username, this.password, this.rememberMe);
+          if (result.status === 'success'){
+            this.state = 'logged_in';
+          }
+        }
+
+        catch(err) {
+          this.state = 'login_failed';
+        }
+      },
+
+      handleUserLogin(){
+        this.$emit('user-logged-in');
+        // do a short timeout before switching state back to normal so user doesn't see
+        // login screen again.
+        setTimeout(()=>{
+          this.state = 'default';
+        }, 500);
       }
     }
   }
 </script>
 
 <style scoped>
+
+  .login-spinner {
+    color: gray;
+  }
 
   .avatar {
     border-radius: 50%;

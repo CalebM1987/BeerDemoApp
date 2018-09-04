@@ -97,7 +97,10 @@ def login():
         login_user(validatedUser, remember=remember_me)
         validatedUser.last_login = datetime.utcnow()
         session.commit()
-        return success('user logged in', token=validatedUser.token)
+        resp = success('user logged in', token=validatedUser.token)
+        resp.set_cookie('test_token', value=validatedUser.token)#, domain='127.0.0.1')
+        print(resp)
+        return resp
     raise InvalidCredentials
 
 @security_api.route('/users/welcome')
@@ -108,6 +111,7 @@ def welcome():
 @security_api.route('/users/logout', methods=['POST'])
 @login_required
 def logout():
+    print('CURRENT USER: ', current_user)
     try:
         logout_user()
     except Exception as e:
