@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios';
-import { request, axios } from "./modules/xhr";
+import { request } from "./modules/xhr";
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'

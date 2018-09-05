@@ -1,4 +1,5 @@
-import { request, axios } from './xhr';
+import { request } from './xhr';
+import axios from 'axios';
 
 
 const default_request_options = {
@@ -54,7 +55,7 @@ const api = {
   },
 
   getPhotoUrl(photo_id){
-    return `/beer_photos/${photo_id}/download`;
+    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/download`;
   },
 
   downloadPhoto(photo_id, options){

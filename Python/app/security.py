@@ -97,10 +97,7 @@ def login():
         login_user(validatedUser, remember=remember_me)
         validatedUser.last_login = datetime.utcnow()
         session.commit()
-        resp = success('user logged in', token=validatedUser.token)
-        resp.set_cookie('test_token', value=validatedUser.token)#, domain='127.0.0.1')
-        print(resp)
-        return resp
+        return success('user logged in', token=validatedUser.token)
     raise InvalidCredentials
 
 @security_api.route('/users/welcome')

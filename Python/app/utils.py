@@ -113,7 +113,7 @@ def endpoint_query(table, fields=None, id=None, **kwargs):
     :return: Response() object for query result as json
     """
     if id != None:
-        item = query_wrapper(table, id=int(id))
+        item = query_wrapper(table, id=int(id))[0]
         return jsonify(to_json(item, fields))
 
     # check for args and do query
