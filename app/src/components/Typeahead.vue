@@ -19,7 +19,7 @@
            @input="update"/>
 
     <b-list-group v-show="hasItems" class="mt-1 search-results">
-      <b-list-group-item v-for="(item, $item) in items"
+      <b-list-group-item v-for="(item, $item) in items" :key="item.id"
         :class="activeClass($item)"
         @mousedown="hit"
         @mousemove="setActive($item)">

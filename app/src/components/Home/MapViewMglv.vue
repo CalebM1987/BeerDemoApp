@@ -29,10 +29,10 @@
 
 <script>
   import Mapbox from 'mapbox-gl-vue';
-  import api from '../modules/api';
+  import api from '../../modules/api';
   // import { MenuButtonControl } from '../modules/MenuButtonControl';
-  import { createControlButton } from "../modules/MenuButtonControl";
-  import { EventBus } from "../modules/EventBus";
+  import { createControlButton } from "../../modules/MenuButtonControl";
+  import { EventBus } from "../../modules/EventBus";
   hook.api = api;
 
   export default {

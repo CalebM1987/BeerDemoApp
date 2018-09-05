@@ -1,7 +1,15 @@
 <template>
   <div class="brewery-info-container">
     <b-card v-if="Object.keys(feature || {}).length">
-      <h4><strong>{{ properties.name }}</strong></h4>
+      <span class="brewery-info-header">
+        <h4><strong>{{ properties.name }}</strong></h4>
+        <span class="float-right edit-btn"
+              title="edit brewery info"
+              v-show="userIsAuthenticated" >
+          <font-awesome-icon prefix="fas" icon="pen" />
+        </span>
+      </span>
+
       <hr>
       <p>{{ properties.address }}</p>
       <p>{{ properties.city }}</p>
@@ -13,10 +21,9 @@
         <hr>
         <h5><strong>Featured Beers</strong></h5>
         <b-list-group class="featured-beers-container">
-          <b-list-group-item v-for="beer in featuredBeers">
+          <b-list-group-item v-for="beer in featuredBeers" :key="beer.id">
             <featured-beer :beer="beer"></featured-beer>
           </b-list-group-item>
-
         </b-list-group>
       </div>
 
@@ -30,7 +37,7 @@
 </template>
 
 <script>
-  import api from '../modules/api';
+  import api from '../../modules/api';
   import FeaturedBeer from './FeaturedBeer';
 
   export default {
@@ -46,7 +53,8 @@
             properties: {}
           }
         }
-      }
+      },
+      userIsAuthenticated: false
     },
     data() {
       return {
@@ -56,6 +64,7 @@
 
     mounted(){
       console.log('breweryInfo: ', this.properties);
+      hook.bi = this;
       this.fetchBeers();
     },
 
@@ -89,6 +98,16 @@
 </script>
 
 <style scoped>
+
+  .edit-btn {
+    color: forestgreen;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+  .brewery-info-header{
+    display: flex;
+    justify-content: space-between;
+  }
 
   .no-features {
     color: gray;

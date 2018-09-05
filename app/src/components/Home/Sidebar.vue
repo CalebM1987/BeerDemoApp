@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import { EventBus } from "../modules/EventBus";
+  import { EventBus } from "../../modules/EventBus";
 
   export default {
     name: "sidebar",

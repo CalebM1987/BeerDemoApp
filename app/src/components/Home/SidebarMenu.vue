@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import Typeahead from './Typeahead';
+  import Typeahead from '../Typeahead';
   export default {
     name: "sidebar-menu",
     components: {

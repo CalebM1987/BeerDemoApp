@@ -15,9 +15,20 @@
 
     </b-navbar-nav>
 
-    <!--  PLACEHOLDER FOR MODAL -->
+    <!--  PLACEHOLDER FOR LOGIN MODAL -->
     <b-modal id="login-modal" :hide-footer="true" ref="loginModal" v-model="showModal">
       <login-page @user-logged-in="handleLogin"></login-page>
+    </b-modal>
+
+    <!-- PLACEHOLDER FOR LOGOUT MODAL -->
+    <b-modal id="logout-modal" v-model="showLogout" :hide-footer="true">
+      <div class="logout-container">
+        <div class="logout-spinner" v-if="state === 'logging_out'">
+          <h4>Logging Out</h4>
+          <span style="font-size: 2.5rem;" class="fas fa-spinner fa-spin"></span>
+        </div>
+        <b-alert :show="2" v-if="state === 'logged_out'" @dismissed="showLogout = false" variant="success">Successfully Logged Out</b-alert>
+      </div>
     </b-modal>
 
   </b-navbar>
@@ -25,7 +36,7 @@
 
 <script>
   import api from '../modules/api';
-  import LoginPage from './LoginPage';
+  import LoginPage from './Home/LoginPage';
 
   export default {
     name: "app-nav-bar",
@@ -34,13 +45,10 @@
     },
     data() {
       return {
+        state: null,
         showModal: false,
         userLoggedIn: false,
-        logStyle: {
-          color: 'gainsboro',
-          'font-size': '2.5rem',
-          cursor: 'pointer'
-        }
+        showLogout: false
       }
     },
     mounted: async function(){
@@ -57,22 +65,41 @@
       hook.nb = this;
     },
     methods: {
-      logout(){
-        this.$emit('user-logged-out');
-        console.log('user logged out')
+      logout: async function(){
+        this.showLogout = true;
+        this.state = 'logging_out';
+        const resp = await api.logout();
         this.userLoggedIn = false;
-        return api.logout();
+        this.state = 'logged_out';
+
+        // bubble up logout event
+        this.$emit('user-logged-out');
+        return resp;
       },
 
       handleLogin(){
         this.userLoggedIn = true;
+        this.state = 'logged_in';
         this.showModal = false;
+
+        // bubble up login event
+        this.$emit('user-logged-in');
       }
     }
   }
 </script>
 
 <style scoped>
+
+  .logout-container {
+    margin: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .logout-spinner {
+    color: gray;
+  }
 
   .app-header {
     background-color: forestgreen;

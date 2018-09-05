@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import api from '../modules/api';
+  import api from '../../modules/api';
 
   export default {
     name: "login-page",
@@ -103,6 +103,8 @@
 
   .login-container {
     /*max-width: 350px;*/
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
     width: 75%;
     margin: auto;
   }
