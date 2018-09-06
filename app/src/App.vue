@@ -2,10 +2,13 @@
   <div id="app">
 
     <!-- App Navbar -->
-    <app-nav-bar @user-logged-in="isAuthenticated = true" @user-logged-out="isAuthenticated = false"></app-nav-bar>
+    <app-nav-bar />
 
     <!-- ROUTER VIEW -->
-    <home :userIsAuthenticated="isAuthenticated"></home>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
+
 
   </div>
 </template>
@@ -26,7 +29,9 @@
         isAuthenticated: false,
       }
     },
-    mounted(){hook.app = this;},
+    mounted(){
+      hook.app = this;
+    },
 
     methods: {},
   }
@@ -48,7 +53,6 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    /*margin-top: 60px;*/
   }
 
 </style>

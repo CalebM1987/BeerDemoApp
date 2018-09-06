@@ -5,6 +5,7 @@
         <h4><strong>{{ properties.name }}</strong></h4>
         <span class="float-right edit-btn"
               title="edit brewery info"
+              @click="editBrewery"
               v-show="userIsAuthenticated" >
           <font-awesome-icon prefix="fas" icon="pen" />
         </span>
@@ -69,6 +70,11 @@
     },
 
     methods: {
+
+      editBrewery(){
+        this.$router.push(`/brewery/${this.feature.properties.id}`);
+      },
+
       async fetchBeers(id){
         if (!this.properties.id){
           return;

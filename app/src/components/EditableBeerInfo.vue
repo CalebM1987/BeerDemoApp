@@ -26,7 +26,8 @@
         }
       },
       photoUrl: String
-    }
+    },
+
   }
 </script>
 

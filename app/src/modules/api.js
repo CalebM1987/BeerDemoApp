@@ -29,7 +29,7 @@ const api = {
 
   getBrewery(id, options=default_request_options){
     if (id){
-      return _request(`/breweries/${id}`);
+      return _request(`/breweries/${id}`, options);
     }
 
   },

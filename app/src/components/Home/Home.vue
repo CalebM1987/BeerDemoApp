@@ -35,6 +35,7 @@
   import Sidebar from './Sidebar';
   import BreweryInfo from './BreweryInfo';
   import SidebarMenu from './SidebarMenu';
+  import { EventBus } from "../../modules/EventBus";
 
   export default {
     name: "home",
@@ -45,21 +46,27 @@
       BreweryInfo
     },
 
-    props: {
-      userIsAuthenticated: false,
-    },
-
     data(){
       return {
         selectedBrewery: null,
         menuActive: true,
         identifyActive: false,
         sidebarActive: false,
-        // userIsAuthenticated: false,
-        //
+        userIsAuthenticated: false,
       }
     },
-    mounted(){hook.home = this;},
+    mounted(){
+      hook.home = this;
+
+      // listen for user login/logout events
+      EventBus.$on('user-logged-in', ()=>{
+        this.userIsAuthenticated = true;
+      });
+
+      EventBus.$on('user-logged-out', ()=>{
+        this.userIsAuthenticated = false;
+      });
+    },
 
     methods: {
 

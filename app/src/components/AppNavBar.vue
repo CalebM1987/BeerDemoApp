@@ -37,6 +37,7 @@
 <script>
   import api from '../modules/api';
   import LoginPage from './Home/LoginPage';
+  import { EventBus } from "../modules/EventBus";
 
   export default {
     name: "app-nav-bar",
@@ -73,7 +74,7 @@
         this.state = 'logged_out';
 
         // bubble up logout event
-        this.$emit('user-logged-out');
+        EventBus.$emit('user-logged-out');
         return resp;
       },
 
@@ -83,7 +84,7 @@
         this.showModal = false;
 
         // bubble up login event
-        this.$emit('user-logged-in');
+        EventBus.$emit('user-logged-in');
       }
     }
   }

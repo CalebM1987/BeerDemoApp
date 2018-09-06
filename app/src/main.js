@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios';
+import router from './modules/router';
 import { request } from "./modules/xhr";
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
@@ -16,6 +17,8 @@ Vue.prototype.$http = axios;
 
 Vue.config.productionTip = false;
 
+console.log('ROUTER: ', router);
+
 // wait for config to load before initializing Vue instance
 request('./config.json').then((config) => {
   console.log(config);
@@ -27,11 +30,25 @@ request('./config.json').then((config) => {
   new Vue({
     render: h => h(App),
 
+    // register router with vue
+    router,
+
+
+    mounted(){
+
+
+      // now that vue instance has been mounted, navigate to home
+      this.$router.push('home');
+
+    },
+
     // data must be a function that returns an object
     data(){
       return {
-        config: config
+        config: config,
+        userIsAuthenticated: false
       }
     }
   }).$mount('#app');
+
 });
