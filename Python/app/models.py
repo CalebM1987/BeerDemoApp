@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
+from datetime import timedelta
 
 __all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
@@ -40,7 +41,9 @@ class Beer(Base):
     ibu = Column(Integer)
     color = Column(String(25))
     photos = relationship(BeerPhotos)
+    created_by = Column(Integer, ForeignKey('users.id'))
     brewery = relationship('Brewery', back_populates='beers')
+    user = relationship('User', back_populates='submitted_beers')
 
     def __repr__(self):
         return '<{}: "{}" ({})>'.format(self.__class__.__name__, self.name, self.style)
@@ -50,9 +53,10 @@ class Brewery(Base):
     __tablename__ = 'breweries'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100))
-    county = Column(String(3))
-    city = Column(String(50))
     address = Column(String(100))
+    city = Column(String(50))
+    state = Column(String(2))
+    zip = Column(String(11))
     monday = Column(String(30))
     tuesday = Column(String(30))
     wednesday = Column(String(30))
@@ -65,6 +69,8 @@ class Brewery(Base):
     website = Column(String(255))
     x = Column(Float)
     y = Column(Float)
+    created_by = Column(Integer, ForeignKey('users.id'))
+    user = relationship('User', back_populates='submitted_breweries')
     beers = relationship('Beer', back_populates='brewery')
 
     def __repr__(self):
@@ -101,7 +107,10 @@ class User(Base, UserMixin):
     token = Column(String(64))
     created = Column(DateTime, default=datetime.utcnow())
     last_login = Column(DateTime)
+    expires = Column(DateTime, default=datetime.utcnow() + timedelta(hours=8))
     activated = Column(String(5), default='False')
+    submitted_breweries = relationship('Brewery')
+    submitted_beers = relationship('Beer')
 
     @property
     def is_active(self):

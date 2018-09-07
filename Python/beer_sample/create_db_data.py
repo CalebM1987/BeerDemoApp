@@ -2,14 +2,9 @@ import os
 import sys
 import json
 import six
-for p in sys.path:
-    print p
 thisDir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(thisDir))
 import munch
-import restapi
-from app import models
-reload(models)
 from app.models import Beer, Brewery, BeerPhotos, Category, Style, session
 from app.security import userStore
 from datetime import datetime
@@ -47,7 +42,7 @@ def get_mankato_beers():
                 yield (beerObj, p.read())
 
 
-def load_csv(table, csv_file):
+def load_csv(table, csv_file, **kwargs):
     """loads a csv into a database table, must share the same schema.
 
     :param table: sqlalchemy.Base Table object
@@ -56,82 +51,54 @@ def load_csv(table, csv_file):
     """
     with open(csv_file, 'r') as csvfile:
         for row in csv.DictReader(csvfile):
+
             # convert date string to datetime() object
-            row['last_mod'] = timestamp_to_date(row['last_mod'])
+            if 'last_mod' in row:
+                row['last_mod'] = timestamp_to_date(row['last_mod'])
+
+            # add any additional key word arguments
+            for k,v in six.iteritems(kwargs):
+                row[k] = v
 
             # write row, unpack dict to key word arguments
             record = table(**row)
             session.add(record)
-
+    print('loaded "{}" into SQLite database'.format(csv_file))
 
 def create_data():
     """ creates the necessary base data for workshop demo """
 
-    # create feature layer from service
-    lyr = restapi.FeatureLayer(url)
+    # create test_user
+    user = userStore.create_user('John Doe', 'test_user@gmail.com', 'test_user', 'user123', activated='True')
+    print('created test user: {}'.format(user))
 
-    # query
-    fs = lyr.query(outSR=4326)
-
-    # iterate through query results and add to db
-    for feature in fs:
-
-        # add new brewery
-        ft = feature.attributes
-        newBrewery = Brewery(
-            name=restapi.rest_utils.fix_encoding(ft.Name),
-            county=ft.COUNTY,
-            city=ft.CITY,
-            address=ft.ADDRESS,
-            monday=ft.MONDAY,
-            tuesday=ft.TUESDAY,
-            wednesday=ft.WEDNESDAY,
-            thursday=ft.THURSDAY,
-            friday=ft.FRIDAY,
-            saturday=ft.SATURDAY,
-            sunday=ft.SUNDAY,
-            comments=ft.NOTES,
-            brew_type=ft.TYPE,
-            website=ft.Website,
-            x=feature.geometry.x,
-            y=feature.geometry.y
-        )
-
-        # add mankato beers sample data if brewery is Mankato Brewery
-        if newBrewery.name == 'Mankato Brewery':
-            for beer, photoBlob in get_mankato_beers():
-
-                # create new beer first
-                photo_name = beer.photo_name
-                del beer.photo_name
-                newBeer = Beer(**beer)
-
-                # create new beer photo
-                newBeer.photos.append(BeerPhotos(photo_name=photo_name, data=photoBlob))
-                newBrewery.beers.append(newBeer)
-
-        print('new brewery: ', newBrewery)
-
-        # add to session manager
-        session.add(newBrewery)
-
-    # test child
-    # newBrewery.beers.append(Beer(name='test beer'))
-
-    # load categories and styles
+    # load csv's into SQLite
+    breweries = os.path.join(thisDir, 'breweries.csv')
     categories = os.path.join(thisDir, 'categories.csv')
     styles = os.path.join(thisDir, 'styles.csv')
 
     # call our function to load data to SQLite
     load_csv(Category, categories)
     load_csv(Style, styles)
+    load_csv(Brewery, breweries, created_by=user.id)
+
+    # find mankato brewrey and load beers from json file
+    mankatoBrewery = session.query(Brewery).filter(Brewery.name == 'Mankato Brewery').first()
+    for beer, photoBlob in get_mankato_beers():
+        # create new beer first
+        photo_name = beer.photo_name
+        del beer.photo_name
+
+        # add created by
+        beer['created_by'] = user.id
+        newBeer = Beer(**beer)
+
+        # create new beer photo
+        newBeer.photos.append(BeerPhotos(photo_name=photo_name, data=photoBlob))
+        mankatoBrewery.beers.append(newBeer)
 
     # commit db changes
     session.commit()
-
-    # create test_user
-    user = userStore.create_user('John Doe', 'test_user@gmail.com', 'test_user', 'user123', activated='True')
-    print('created test user: {}'.format(user))
 
 
 if __name__ == '__main__':

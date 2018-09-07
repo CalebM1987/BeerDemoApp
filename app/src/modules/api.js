@@ -83,6 +83,27 @@ const api = {
 
   authTest(){
     return _request('/users/welcome');
+  },
+
+  maboxReverseGeocode: async function(lat, lng, access_token){
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng}%2C${lat}.json?access_token=${access_token}`;
+    const resp = await request(url);
+    if ((resp.features || []).length){
+      const parts = resp.features[0].place_name.split(',');
+      const stZip = parts[2].split(' ');
+      return {
+        address: parts[0],
+        city: parts[1],
+        state: stZip[0],
+        zip: stZip[1]
+      }
+    }
+    return {
+      address: null,
+      city: null,
+      state: null,
+      zip: null
+    }
   }
 };
 
