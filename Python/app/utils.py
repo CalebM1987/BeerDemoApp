@@ -1,14 +1,32 @@
 from flask import request, jsonify
 import six
+import json
+import os
 import flask_sqlalchemy
 from models import session
+import csv
+import time
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
 
-# allow safe imports
-__all__ = ('collect_args', 'to_json', 'json_exception_handler', 'query_wrapper', 'success',
-           'list_fields', 'get_row', 'update_object', 'toGeoJson',  'endpoint_query')
+# download folder
+download_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'downloads')
+
+# # allow safe imports
+# __all__ = ('collect_args', 'to_json', 'json_exception_handler', 'query_wrapper', 'success',
+#            'list_fields', 'get_row', 'update_object', 'toGeoJson',  'endpoint_query')
+
+def load_config():
+    config_file = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
+    try:
+        with open(config_file, 'r') as f:
+            return json.load(f)
+    except:
+        return {}
+
+def get_timestamp(s=''):
+    return '_'.join(filter(None, [s, time.strftime('%Y%m%d%H%M%S')]))
 
 def success(msg, **kwargs):
     """ returns a Response() object as JSON
@@ -151,6 +169,28 @@ def to_json(results, fields=None):
             return []
     else:
         return {f: getattr(results, f) for f in fields}
+
+def export_data(table, fields=None, format='csv', **kwargs):
+    fields = validate_fields(table, fields)
+    if format == 'shapefile' and table.__tablename__ == 'breweries':
+        pass
+
+    else:
+
+        # export data as csv
+        results = to_json(query_wrapper(table,fields=fields, **kwargs), fields)
+
+        # write csv file
+        csvFilePath = os.path.join(download_folder, '{}.csv'.format(get_timestamp(table.__tablename__)))
+
+        with open(csvFilePath, 'w') as csvFile:
+            writer = csv.DictWriter(csvFile, fields)
+            writer.writeheader()
+            for result in results:
+                writer.writerow(result)
+
+        return csvFilePath
+
 
 # toGeoJson() handler for breweries
 def toGeoJson(d):

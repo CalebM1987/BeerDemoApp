@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint, send_file
+from flask import url_for, Blueprint, send_file
 from models import *
 from exceptions import *
 import utils
@@ -18,6 +18,12 @@ beer_photo_fields = filter(lambda f: f != 'data', list_fields(BeerPhotos))
 PHOTO_MIMETYPE = 'application/octet-stream'
 category_fields = list_fields(Category)
 style_fields = list_fields(Style)
+table_dict = {
+    'breweries': Brewery,
+    'beers': Beer,
+    'styles': Style,
+    'categories': Category
+}
 
 
 # REST API METHODS BELOW
@@ -56,6 +62,7 @@ def get_styles(id=None):
     #     d['category'] = r.category.cat_name
     #     js.append(d)
     # return jsonify(js)
+
 
 @brewery_api.route('/breweries')
 @brewery_api.route('/breweries/<id>')
@@ -118,3 +125,19 @@ def download_beer_photo(id):
 
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
+
+
+@brewery_api.route('/data/<tablename>/export', methods=['POST'])
+def export_table_data(tablename):
+    table = table_dict.get(tablename)
+    print(tablename, table)
+    if table:
+        args = collect_args()
+        fields = args.get('fields')
+        f = args.get('f', 'csv')
+        if fields:
+            del args['fields']
+        csvFile = export_data(table, fields, f, **args)
+        url = url_for('static', filename=os.path.basename(csvFile))
+        return success('Successfully exported data', url=url)
+    raise InvalidResource

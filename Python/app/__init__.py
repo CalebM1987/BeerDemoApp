@@ -13,9 +13,13 @@ from models import session
 from datetime import timedelta
 from exceptions import UserNotFound
 
+# downloads folder for exports
+if not os.path.exists(download_folder):
+    os.makedirs(download_folder)
+
 # init app inherited from our base.FlaskExtension object
 app_name = os.path.basename(__file__).split('.')[0]
-app = FlaskExtension(app_name)
+app = FlaskExtension(app_name, static_url_path=download_folder)
 
 # set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
