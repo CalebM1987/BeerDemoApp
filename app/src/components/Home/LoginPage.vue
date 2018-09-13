@@ -26,8 +26,8 @@
         <span style="font-size: 2.5rem;" class="fas fa-spinner fa-spin"></span>
       </div>
 
-      <b-alert :show="2" @dismissed="handleUserLogin" v-if="state === 'logged_in'" variant="success">Successfully Logged In</b-alert>
-      <b-alert :show="2" @dismissed="state = 'default'" v-if="state === 'login_failed'" variant="danger">Login Failed, please try again.</b-alert>
+      <b-alert :show="1" @dismissed="handleUserLogin" v-if="state === 'logged_in'" variant="success">Successfully Logged In</b-alert>
+      <b-alert :show="1" @dismissed="state = 'default'" v-if="state === 'login_failed'" variant="danger">Login Failed, please try again.</b-alert>
 
     </div>
 
@@ -93,6 +93,7 @@
 
   .sign-in-btn {
     background-color: orange;
+    border-color: orange;
     font-weight: bold;
   }
 

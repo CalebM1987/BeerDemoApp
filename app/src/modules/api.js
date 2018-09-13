@@ -54,15 +54,16 @@ const api = {
     return request(url, options);
   },
 
-  getPhotoUrl(photo_id){
-    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/download`;
+  getPhotoUrl(photo_id, thumbnail=false){
+    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/${thumbnail ? 'thumbnail': 'download'}`;
   },
+
 
   downloadPhoto(photo_id, options){
     return request(`/beer_photos/${photo_id}`, options);
   },
 
-  login: async function(usr, pw, remember_me=false){
+  async login(usr, pw, remember_me=false){
     const resp = await request('/users/login', {
       method: 'post',
       username: usr,
@@ -75,7 +76,7 @@ const api = {
     return resp;
   },
 
-  logout: async function(){
+  async logout(){
     const response = await _request('/users/logout', {method: 'post'}, false);
     console.log('FULL LOGOUT RESPONSE: ', response);
     return response.data;
@@ -85,15 +86,16 @@ const api = {
     return _request('/users/welcome');
   },
 
-  maboxReverseGeocode: async function(lat, lng, access_token){
+  async maboxReverseGeocode(lat, lng, access_token){
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng}%2C${lat}.json?access_token=${access_token}`;
     const resp = await request(url);
     if ((resp.features || []).length){
       const parts = resp.features[0].place_name.split(',');
-      const stZip = parts[2].split(' ');
+      const stZip = parts[2].split(' ').filter(s => s.length);
+      console.log('stZip: ', stZip, ', parts: ', parts);
       return {
         address: parts[0],
-        city: parts[1],
+        city: parts[1].trim(),
         state: stZip[0],
         zip: stZip[1]
       }

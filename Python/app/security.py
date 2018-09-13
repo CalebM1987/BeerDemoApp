@@ -4,11 +4,7 @@ from datetime import datetime
 from flask import Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-import models
-reload(models)
-from models import User, session
-import utils
-reload(utils)
+from models import User
 from utils import *
 from exceptions import *
 

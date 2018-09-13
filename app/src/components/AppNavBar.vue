@@ -4,6 +4,13 @@
 
     <b-navbar-nav class="ml-auto">
 
+      <span v-if="userLoggedIn">
+        <i class="fas fa-file-download download-btn"
+           title="export brewery data"
+           v-b-modal.export-modal>
+        </i>
+      </span>
+
       <span @click="userLoggedIn ? logout(): showModal = true"
             :title="`sign ${ userLoggedIn ? 'out': 'in' }`">
         <font-awesome-icon
@@ -29,6 +36,11 @@
         </div>
         <b-alert :show="2" v-if="state === 'logged_out'" @dismissed="showLogout = false" variant="success">Successfully Logged Out</b-alert>
       </div>
+    </b-modal>
+
+    <!-- PLACEHOLDER FOR EXPORT DATA MODAL -->
+    <b-modal id="export-modal">
+
     </b-modal>
 
   </b-navbar>
@@ -66,7 +78,7 @@
       hook.nb = this;
     },
     methods: {
-      logout: async function(){
+      async logout(){
         this.showLogout = true;
         this.state = 'logging_out';
         const resp = await api.logout();

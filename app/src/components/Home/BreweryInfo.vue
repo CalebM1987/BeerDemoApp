@@ -32,8 +32,8 @@
 
     <div v-else>
       <h4 class="no-features mt-4">No Features Found</h4>
-
     </div>
+
   </div>
 </template>
 

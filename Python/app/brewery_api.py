@@ -12,7 +12,7 @@ brewery_api = Blueprint('brewery_api', __name__)
 # get list of brewery fields to use as default
 brewery_fields = list_fields(Brewery)
 beer_fields = list_fields(Beer)
-beer_photo_fields = filter(lambda f: f != 'data', list_fields(BeerPhotos))
+beer_photo_fields = filter(lambda f: f not in ('data', 'thumbnail'), list_fields(BeerPhotos))
 
 # constants
 PHOTO_MIMETYPE = 'application/octet-stream'
@@ -125,6 +125,14 @@ def download_beer_photo(id):
 
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
+
+@brewery_api.route('/beer_photos/<id>/thumbnail')
+def download_beer_thumbnail(id):
+    if not id:
+        raise InvalidResource
+
+    beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
+    return send_file(BytesIO(beer_photo.thumbnail), attachment_filename=beer_photo.photo_name, as_attachment=True)
 
 
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])
