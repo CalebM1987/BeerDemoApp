@@ -16,15 +16,12 @@
 
       <!--  SIGN UP LINK -->
       <!--  @click=$emit('sign-up')-->
-      <p class="acc">Don't have an Account? <a href="#" class="sign-up">Sign Up</a></p>
+      <p class="acc">Don't have an Account? <a href="#" class="sign-up" @click="goToSignUp">Sign Up</a></p>
 
     </b-card>
 
     <div v-else>
-      <div class="login-spinner" v-if="state === 'logging_in'">
-        <h4>Logging In</h4>
-        <span style="font-size: 2.5rem;" class="fas fa-spinner fa-spin"></span>
-      </div>
+      <spinner :visible="state === 'logging_in'" :text="'Logging In...'"/>
 
       <b-alert :show="1" @dismissed="handleUserLogin" v-if="state === 'logged_in'" variant="success">Successfully Logged In</b-alert>
       <b-alert :show="1" @dismissed="state = 'default'" v-if="state === 'login_failed'" variant="danger">Login Failed, please try again.</b-alert>
@@ -36,9 +33,13 @@
 
 <script>
   import api from '../../modules/api';
+  import Spinner from '../UI/Spinner';
 
   export default {
     name: "login-page",
+    components: {
+      Spinner,
+    },
     data(){
       return {
         username: null,
@@ -70,16 +71,17 @@
         setTimeout(()=>{
           this.state = 'default';
         }, 500);
+      },
+
+      goToSignUp(){
+        this.$emit('dismiss-login-modal');
+        this.$router.push({path: '/signup'});
       }
     }
   }
 </script>
 
 <style scoped>
-
-  .login-spinner {
-    color: gray;
-  }
 
   .avatar {
     border-radius: 50%;

@@ -1,5 +1,5 @@
 import os
-import io
+# import io
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, LargeBinary, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
 from datetime import timedelta
-from PIL import Image
+# from PIL import Image
 
 __all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
@@ -28,7 +28,7 @@ class BeerPhotos(Base):
     beer_id = Column(Integer, ForeignKey('beers.id'))
     photo_name = Column(String(100))
     data = Column(LargeBinary)
-    thumbnail = Column(LargeBinary)
+    # thumbnail = Column(LargeBinary)
 
     # def __init__(self, photo_name, data):
     #     self.photo_name = photo_name

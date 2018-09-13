@@ -39,6 +39,31 @@
 
 <style>
 
+  .theme {
+    color: forestgreen;
+    font-weight: bold;
+  }
+
+  .theme-banner {
+    background-color: forestgreen;
+    font-weight: bold;
+    color: white;
+  }
+
+  button.theme {
+    min-width: 6rem;
+    background-color: orange;
+    border-color: orange;
+    font-weight: bold;
+    color: white;
+  }
+
+  button.theme:hover {
+    background-color: darkorange;
+    border-color: darkorange;
+    font-weight: bold;
+    color: white;
+  }
   .control-btn-active {
     background-color: orange;
   }

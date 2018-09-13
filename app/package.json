@@ -17,7 +17,8 @@
     "sweetalert2": "^7.26.14",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
-    "vue-typeahead": "^2.3.2"
+    "vue-typeahead": "^2.3.2",
+    "vuelidate": "^0.7.4"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",

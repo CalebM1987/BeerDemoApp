@@ -8,8 +8,10 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import '@fortawesome/fontawesome-free/js/all';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import Vuelidate from 'vuelidate'
 
 Vue.use(BootstrapVue);
+Vue.use(Vuelidate)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 // set $http property for typeahead component

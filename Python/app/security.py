@@ -82,6 +82,17 @@ def create_user():
     except:
         raise CreateUserError
 
+@security_api.route('/users/<id>/activate', methods=['POST'])
+def activate_user(id):
+    user = userStore.get_user(id=int(id))
+    if user:
+        if user.activated == 'True':
+            return success('User is already activated!')
+        user.activated = 'True'
+        session.commit()
+        return success('Successfully activated user')
+    return UserNotFound
+
 @security_api.route('/users/login', methods=['POST'])
 def login():
     args = collect_args()

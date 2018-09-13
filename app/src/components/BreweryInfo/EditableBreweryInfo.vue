@@ -3,8 +3,7 @@
 
     <!--  SPINNER FOR LOADING -->
     <span style="font-size: 3.5rem;" class="centered" v-show="isLoading">
-      <h5>loading brewery info...</h5>
-      <i class="fas fa-spinner fa-spin"></i>
+      <spinner :text="'loading brewery info...'" :visible="isLoading"/>
     </span>
 
     <!-- EDITABLE BREWERY CONTENT -->
@@ -68,7 +67,7 @@
         </b-col>
 
         <b-col sm="6">
-          <b-btn @click="submitEdits" class="save-btn mt-2">Save</b-btn>
+          <b-btn @click="submitEdits" class="theme mt-2">Save</b-btn>
         </b-col>
 
       </b-row>
@@ -77,12 +76,16 @@
       <!--  BEER ROWS -->
       <b-row class="mt-4">
         <accordion :header="'Featured Beers'" @action-btn-clicked="addBeer">
-          <template slot="action_btn"><i class="fas fa-plus-circle" title="add new beer"></i></template>
+          <template slot="action_btn">
+            <i class="fas fa-plus-circle" title="add new beer"></i>
+          </template>
 
-          <b-list-group v-for="beer in beers">
+          <b-list-group v-for="beer in beers" v-show="beers.length">
             <beer-preview :beer="beer"/>
 
           </b-list-group>
+
+          <h5 v-show="!beers.length" style="color: gray;" class="mt-2">No beers found, use plus button to add new beers</h5>
 
         </accordion>
       </b-row>
@@ -99,12 +102,14 @@
   import BeerPreview from './BeerPreview';
   import enums from '../../modules/enums';
   import Accordion from '../UI/Accordion';
+  import Spinner from '../UI/Spinner';
 
   export default {
     name: "brewery-info",
     components: {
       BeerPreview,
-      Accordion
+      Accordion,
+      Spinner
     },
     data(){
       return {
@@ -167,18 +172,6 @@
 
   .weekday {
     text-transform: capitalize;
-  }
-
-  .save-btn {
-    width: 6rem;
-    background-color: orange;
-    border-color: orange;
-    font-weight: bold;
-  }
-
-  .save-btn:hover{
-    background-color: darkorange;
-    border-color: darkorange;
   }
 
   .centered {

@@ -24,16 +24,13 @@
 
     <!--  PLACEHOLDER FOR LOGIN MODAL -->
     <b-modal id="login-modal" :hide-footer="true" ref="loginModal" v-model="showModal">
-      <login-page @user-logged-in="handleLogin"></login-page>
+      <login-page @user-logged-in="handleLogin" @dismiss-login-modal="dismissLogin"></login-page>
     </b-modal>
 
     <!-- PLACEHOLDER FOR LOGOUT MODAL -->
     <b-modal id="logout-modal" v-model="showLogout" :hide-footer="true">
       <div class="logout-container">
-        <div class="logout-spinner" v-if="state === 'logging_out'">
-          <h4>Logging Out</h4>
-          <span style="font-size: 2.5rem;" class="fas fa-spinner fa-spin"></span>
-        </div>
+        <spinner :text="'Logging Out'" :visible="state === 'logging_out'" />
         <b-alert :show="2" v-if="state === 'logged_out'" @dismissed="showLogout = false" variant="success">Successfully Logged Out</b-alert>
       </div>
     </b-modal>
@@ -49,12 +46,14 @@
 <script>
   import api from '../modules/api';
   import LoginPage from './Home/LoginPage';
+  import Spinner from './UI/Spinner';
   import { EventBus } from "../modules/EventBus";
 
   export default {
     name: "app-nav-bar",
     components: {
-      LoginPage
+      LoginPage,
+      Spinner
     },
     data() {
       return {
@@ -90,6 +89,10 @@
         return resp;
       },
 
+      dismissLogin(){
+        this.$refs.loginModal.hide();
+      },
+
       handleLogin(){
         this.userLoggedIn = true;
         this.state = 'logged_in';
@@ -110,18 +113,9 @@
     margin-bottom: 2rem;
   }
 
-  .logout-spinner {
-    color: gray;
-  }
 
   .app-header {
     background-color: forestgreen;
-  }
-
-  .logged-in {
-    color: orange !important;
-    background-color: white;
-    border-radius: 50%;
   }
 
   .login-btn{
