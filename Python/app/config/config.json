@@ -1,4 +1,6 @@
 {
-  "outputs_path": "",
-  "downloads_url": ""
+	"out_email_address": "gis.lis.demo@gmail.com",
+	"out_email_pw": "gislis2017",
+	"out_email_port": 587,
+	"out_email_host": "smtp.gmail.com"
 }

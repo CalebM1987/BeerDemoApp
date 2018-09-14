@@ -54,8 +54,8 @@ const api = {
     return request(url, options);
   },
 
-  getPhotoUrl(photo_id, thumbnail=false){
-    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/${thumbnail ? 'thumbnail': 'download'}`;
+  getPhotoUrl(photo_id){
+    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/download`;
   },
 
 
@@ -80,6 +80,24 @@ const api = {
     const response = await _request('/users/logout', {method: 'post'}, false);
     console.log('FULL LOGOUT RESPONSE: ', response);
     return response.data;
+  },
+
+  async fetchUsernames(){
+    const resp = await request('/users?fields=username');
+    return resp.map(u => u.username);
+  },
+
+  createUser(name, email, username, password){
+    return request('/users/create', {
+      method: 'post',
+      data: {
+        name: name,
+        email: email,
+        username: username,
+        password: btoa(password)
+      }
+    })
+
   },
 
   authTest(){

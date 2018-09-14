@@ -103,7 +103,7 @@ def get_beers_from_brewery(id=None, bid=None):
 @brewery_api.route('/beers')
 @brewery_api.route('/beers/<id>')
 def get_beer_by_id(id=None):
-    return endpoint_query(Beer, beer_fields, id)
+    return endpoint_query(Beer, id=id)
 
 @brewery_api.route('/beers/<id>/photos')
 def get_beer_photos(id=None):
@@ -125,15 +125,6 @@ def download_beer_photo(id):
 
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
-
-@brewery_api.route('/beer_photos/<id>/thumbnail')
-def download_beer_thumbnail(id):
-    if not id:
-        raise InvalidResource
-
-    beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
-    return send_file(BytesIO(beer_photo.thumbnail), attachment_filename=beer_photo.photo_name, as_attachment=True)
-
 
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])
 def export_table_data(tablename):

@@ -1,5 +1,6 @@
 import random
 import string
+import base64
 from datetime import datetime
 from flask import Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +8,9 @@ from flask_login import login_user, login_required, logout_user, current_user
 from models import User
 from utils import *
 from exceptions import *
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # user fields to return
 user_fields = ['id', 'name', 'username', 'email']
@@ -38,7 +42,7 @@ class UserStore(object):
     def get_users(self, **kwargs):
         return query_wrapper(User, **kwargs)
 
-    def create_user(self, name, email, username, password, activated='False'):
+    def create_user(self, name=None, email=None, username=None, password=None, activated='False'):
 
         # create a token for this user, this hash is used by service to lookup user
         token = create_random_string()
@@ -56,6 +60,15 @@ class UserStore(object):
 
 userStore = UserStore()
 
+# send authentication email
+def send_authentication_email(to_addr):
+    config = load_config()
+    host = config.get('out_email_host')
+    port = config.get('out_email_port')
+    out_addr = config.get('out_email_address')
+    pw = config.get('out_email_pw')
+    s = smtplib.SMTP(host, port)
+
 # API METHODS BELOW
 
 @security_api.route('/error')
@@ -71,16 +84,20 @@ def auth_test():
 @security_api.route('/users')
 @security_api.route('/users/<id>')
 def get_users(id=None):
-    return endpoint_query(User, user_fields, id)
+    args = collect_args()
+    fields = args.get('fields') or user_fields
+    return endpoint_query(User, fields, id)
 
 @security_api.route('/users/create', methods=['POST'])
 def create_user():
     args = collect_args()
-    try:
-        userStore.create_user(**args)
-        return success('successfully created user: {}'.format(args.get('username')))
-    except:
-        raise CreateUserError
+    args['activated'] = 'False'
+    print(args)
+    # try:
+    userStore.create_user(**args)
+    return success('successfully created user: {}'.format(args.get('username')))
+    # except:
+    #     raise CreateUserError
 
 @security_api.route('/users/<id>/activate', methods=['POST'])
 def activate_user(id):
@@ -97,7 +114,7 @@ def activate_user(id):
 def login():
     args = collect_args()
     username = args.get('username')
-    password = args.get('password')
+    password = base64.b64decode(args.get('password', ''))
     remember_me = args.get('remember', False) in ('true', True)
     validatedUser = userStore.check_user(username, password)
     if validatedUser:

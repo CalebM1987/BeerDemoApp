@@ -40,7 +40,7 @@ request('./config.json').then((config) => {
 
 
       // now that vue instance has been mounted, navigate to home
-      this.$router.push('home');
+      // this.$router.push('home');
 
     },
 

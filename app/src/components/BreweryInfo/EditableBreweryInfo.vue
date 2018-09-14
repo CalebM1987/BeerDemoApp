@@ -10,51 +10,59 @@
     <b-container class="brewery-content" v-show="!isLoading">
 
       <b-row>
-        <b-col sm="3"> <label for="brewreyName" class="float-right" style="margin-top: 0.5rem; font-size: 1.25rem;">Brewery Name:</label></b-col>
-        <b-col sm="9"><b-form-input id="breweryName" class="brewery-name mt-2" v-model="brewery.name" type="text" placeholder="brewery name"/></b-col>
+        <b-col sm="2"> <label for="brewreyName" class="float-right" style="margin-top: 0.5rem; font-size: 1.25rem;">Brewery Name:</label></b-col>
+        <b-col sm="10"><b-form-input id="breweryName" class="brewery-name mt-2" v-model="brewery.name" type="text" placeholder="brewery name"/></b-col>
       </b-row>
 
       <!-- ADDRESS -->
       <b-row class="mt-2">
-        <b-col sm="3"><label for="address" class="float-right">Address:</label></b-col>
-        <b-col sm="9"><b-form-input id="address" v-model="brewery.address"/></b-col>
+        <b-col sm="2"><label for="address" class="float-right">Address:</label></b-col>
+        <b-col sm="10"><b-form-input id="address" v-model="brewery.address"/></b-col>
       </b-row>
 
       <!-- WEBSITE -->
       <b-row class="mt-2">
-        <b-col sm="3"><label for="website" class="float-right">Website:</label></b-col>
-        <b-col sm="9"><b-form-input id="website" v-model="brewery.website"/></b-col>
+        <b-col sm="2"><label for="website" class="float-right">Website:</label></b-col>
+        <b-col sm="10"><b-form-input id="website" v-model="brewery.website"/></b-col>
       </b-row>
 
       <!--  city, st zip -->
       <b-row class="mt-2">
         <!--<div class="row justify-content-end">-->
-          <b-col sm="3"><label for="city" class="city-align float-right">City:</label></b-col>
-          <b-col sm="4"><b-form-input v-model="brewery.city" class="city-align"/></b-col>
+          <b-col sm="2"><label for="city" class="city-align float-right">City:</label></b-col>
+          <b-col sm="5"><b-form-input v-model="brewery.city" class="city-align"/></b-col>
           <b-col sm="3">
-            <b-form-group label="State" label-text-align="left">
+            <b-form-group label="State:" label-text-align="left">
               <b-form-select :options="stateList" v-model="brewery.state"></b-form-select>
             </b-form-group>
           </b-col>
 
           <b-col sm="2">
-            <b-form-group label="Zip Code" label-text-align="left">
+            <b-form-group label="Zip Code:" label-text-align="left">
               <b-form-input v-model="brewery.zip"/>
             </b-form-group>
           </b-col>
         <!--</div>-->
       </b-row>
 
-      <!-- DESCRIPTION -->
-      <b-row class="mt-2">
-        <b-col sm="3"><label for="description" class="float-right">Description:</label></b-col>
-        <b-col sm="9"><b-form-textarea rows="3" v-model="brewery.description"/></b-col>
-      </b-row>
-
       <!--  WEEKDAY HOURS -->
-      <b-row class="mt-2" v-for="weekday in weekday_fields" :key="weekday">
-        <b-col sm="3"><label :for="weekday" class="weekday float-right">{{ weekday }} Hours:</label></b-col>
-        <b-col sm="9"><b-form-input :id="weekday" v-model="brewery[weekday]" placeholder="ex: 11am-7pm"/></b-col>
+      <b-row class="mt-2" >
+        <b-col sm="6">
+          <b-form-group v-for="weekday in weekday_fields"
+                        horizontal
+                        :label-cols="4"
+                        label-class="capitalize"
+                        :label="`${weekday} Hours:`"
+                        :key="weekday" class="mt-2">
+            <b-form-input :id="weekday" v-model="brewery[weekday]" placeholder="ex: 11am-7pm" />
+          </b-form-group>
+        </b-col>
+        <b-col sm="6">
+          <b-form-group label="Brewery Description:" label-text-align="left" class="mt-2" id="description">
+            <b-form-textarea :rows="weekday_fields.length + 6" v-model="brewery.comments"></b-form-textarea>
+          </b-form-group>
+        </b-col>
+
       </b-row>
 
       <!--  SAVE BUTTON AND TYPE -->
@@ -103,6 +111,9 @@
   import enums from '../../modules/enums';
   import Accordion from '../UI/Accordion';
   import Spinner from '../UI/Spinner';
+  import { FormTextarea } from 'bootstrap-vue/es/components';
+  import Vue from 'vue';
+  Vue.use(FormTextarea);
 
   export default {
     name: "brewery-info",
@@ -168,18 +179,6 @@
 
   .city-align {
     margin-top: 2rem;
-  }
-
-  .weekday {
-    text-transform: capitalize;
-  }
-
-  .centered {
-    color: gray;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 
   .editable-brewery {

@@ -39,6 +39,18 @@
 
 <style>
 
+  .centered {
+    color: gray;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .capitalize {
+    text-transform: capitalize !important;
+  }
+
   .theme {
     color: forestgreen;
     font-weight: bold;
@@ -50,6 +62,10 @@
     color: white;
   }
 
+  .bold {
+    font-weight: bold !important;
+  }
+
   button.theme {
     min-width: 6rem;
     background-color: orange;
@@ -58,9 +74,9 @@
     color: white;
   }
 
-  button.theme:hover {
-    background-color: darkorange;
-    border-color: darkorange;
+  button.theme:hover, button.theme.active {
+    background-color: darkorange !important;
+    border-color: darkorange !important;
     font-weight: bold;
     color: white;
   }

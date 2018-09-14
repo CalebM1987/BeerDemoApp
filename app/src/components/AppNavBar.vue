@@ -5,7 +5,7 @@
     <b-navbar-nav class="ml-auto">
 
       <span v-if="userLoggedIn">
-        <i class="fas fa-file-download download-btn"
+        <i class="fas fa-file-download mr-4 download-btn app-nav-btn"
            title="export brewery data"
            v-b-modal.export-modal>
         </i>
@@ -16,7 +16,7 @@
         <font-awesome-icon
                 prefix="fas"
                 icon="user-circle"
-                :class="['login-btn', {'logged-in': userLoggedIn}]">
+                :class="['login-btn', 'app-nav-btn', {'logged-in': userLoggedIn}]">
         </font-awesome-icon>
       </span>
 
@@ -113,22 +113,39 @@
     margin-bottom: 2rem;
   }
 
-
   .app-header {
     background-color: forestgreen;
   }
 
-  .login-btn{
-    color: gainsboro;
+  .app-nav-btn {
     font-size: 2.5rem;
+    color: white;
     cursor: pointer;
+  }
+
+  .download-btn:hover {
+    color: orange;
+    background-color: white;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
   }
 
   .login-btn:hover{
     background-color: orange;
     font-weight: bold;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
     border-radius: 50%;
     color: lightgray;
+  }
+
+  .logged-in{
+    color: orange !important;
+    background-color: white;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
   }
 
   .logged-in:hover {

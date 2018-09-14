@@ -1,7 +1,7 @@
 <template>
   <b-list-group-item @click="goToBeer">
     <b-media>
-      <b-img slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl"/>
+      <b-img slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl" height="128"/>
       <h5>{{ beer.name }}
         <span class="float-right action-btn" @click="emitDeleteBeer(beer.id)">
           <i class="fas fa-minus-circle remove-beer"
@@ -53,7 +53,7 @@
         const photos = await api.getBeerPhotos(this.beer.id);
         console.log('beer photos: ', photos);
         if (photos.length){
-          console.log('setting photo url: ', api.getPhotoUrl(photos[0].id,  true));
+          console.log('setting photo url: ', api.getPhotoUrl(photos[0].id));
           this.thumbnailUrl = api.getPhotoUrl(photos[0].id, true)
         }
       }

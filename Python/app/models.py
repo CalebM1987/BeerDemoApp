@@ -1,5 +1,5 @@
 import os
-# import io
+import io
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, LargeBinary, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
 from datetime import timedelta
-# from PIL import Image
+from PIL import Image
 
 __all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
@@ -28,25 +28,22 @@ class BeerPhotos(Base):
     beer_id = Column(Integer, ForeignKey('beers.id'))
     photo_name = Column(String(100))
     data = Column(LargeBinary)
-    # thumbnail = Column(LargeBinary)
 
-    # def __init__(self, photo_name, data):
-    #     self.photo_name = photo_name
-    #     self.data = data
-    #
-    #     # create thumbnail version of photo
-    #     try:
-    #         ext = (photo_name.split('.')[-1] or 'png').upper()
-    #     except:
-    #         ext = 'PNG'
-    #     thumbnail = io.BytesIO()
-    #     im = Image.open(io.BytesIO(data))
-    #
-    #     # create thumbnail 128x128 pixels
-    #     im.thumbnail((128, 128))
-    #     im.save(thumbnail, ext)
-    #     self.thumbnail = thumbnail.getvalue()
-    #     del im, thumbnail
+    def __init__(self, photo_name, data):
+        """custom handler for inserting data"""
+        name, ext = os.path.splitext(photo_name)
+        self.photo_name = '{}.png'.format(os.path.basename(name))
+
+        # create thumbnail version of photo
+        thumbnail = io.BytesIO()
+        with Image.open(io.BytesIO(data)) as im:
+
+            # create thumbnail 256x256 pixels
+            im.thumbnail((256, 256), Image.ANTIALIAS)
+            im.save(thumbnail, 'PNG', optimize=True, quality=50, progressive=True)
+            self.data = thumbnail.getvalue()
+            thumbnail.close()
+        del thumbnail
 
 
     def __repr__(self):

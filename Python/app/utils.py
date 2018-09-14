@@ -136,6 +136,7 @@ def endpoint_query(table, fields=None, id=None, **kwargs):
 
     # check for args and do query
     args = collect_args()
+    print('args: ', args)
     for k,v in six.iteritems(kwargs):
         args[k] = v
     results = query_wrapper(table, **args)
@@ -231,3 +232,4 @@ def get_row(table, d, key):
 def update_object(obj, **kwargs):
     for k,v in six.iteritems(kwargs):
         setattr(obj, k, v)
+

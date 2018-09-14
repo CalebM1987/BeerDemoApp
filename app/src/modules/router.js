@@ -9,7 +9,7 @@ import PageNotFound from '../components/PageNotFound';
 Vue.use(Router);
 
 const routes = [
-  { path: '/home', name: 'home', component: Home },
+  { path: '/', name: 'home', component: Home },
   { path: '/signup', name: 'signup', component: SignUp },
   { path: '/brewery/:id', name: 'editableBreweryInfo', component: EditableBreweryInfo },
   { path: '/beers/:id', name: 'editableBeerInfo', component: EditableBeerInfo },
@@ -19,6 +19,6 @@ const routes = [
 ];
 
 export default new Router({
-  // mode: 'history',
+  mode: 'history',
   routes: routes
 });

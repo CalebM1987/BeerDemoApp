@@ -75,7 +75,7 @@
 
       goToSignUp(){
         this.$emit('dismiss-login-modal');
-        this.$router.push({path: '/signup'});
+        this.$router.push('signup');
       }
     }
   }
