@@ -61,13 +61,33 @@ class UserStore(object):
 userStore = UserStore()
 
 # send authentication email
-def send_authentication_email(to_addr):
+def send_authentication_email(to_addr, msg):
     config = load_config()
     host = config.get('out_email_host')
     port = config.get('out_email_port')
-    out_addr = config.get('out_email_address')
+    from_addr = config.get('out_email_address')
     pw = config.get('out_email_pw')
-    s = smtplib.SMTP(host, port)
+
+    # build email
+    emsg = MIMEMultipart('alternative')
+    emsg['Subject'] = 'Brewery Finder Registration'
+    emsg['TO'] = to_addr
+    emsg['FROM'] = from_addr
+
+    if msg.startswith('<'): # it is html?
+
+        emsg.attach(MIMEText(msg, 'html'))
+    else:
+        emsg.attach(MIMEText(msg, 'plain'))
+
+    # connect to email server
+    s = smtplib.SMTP(host)
+    s.starttls()
+    s.ehlo()
+    s.login(from_addr, pw)
+    s.sendmail(from_addr, to_addr, emsg.as_string())
+    s.quit()
+
 
 # API METHODS BELOW
 
@@ -92,9 +112,11 @@ def get_users(id=None):
 def create_user():
     args = collect_args()
     args['activated'] = 'False'
+    activation_url = args.get('activation_url')
     print(args)
     # try:
-    userStore.create_user(**args)
+    user = userStore.create_user(**args)
+    send_authentication_email(user.email, 'test message')
     return success('successfully created user: {}'.format(args.get('username')))
     # except:
     #     raise CreateUserError

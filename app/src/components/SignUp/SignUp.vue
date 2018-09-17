@@ -1,7 +1,7 @@
 <template>
   <div class="jumbotron signup-container mb-0">
     <h3 class="theme">Sign Up for Brewery Finder</h3>
-    <b-card class="w-50 mx-auto p-4">
+    <b-card class="mx-auto p-4 signup-card">
       <div class="signup-form" v-if="state === 'default'">
         <b-form-group label="Name:" label-text-align="left">
           <b-form-input type="text"
@@ -135,6 +135,11 @@
 
       usernameTaken(){
         return this.usernames.includes(this.username);
+      },
+
+      activationUrl(){
+        const urlParts = window.location.href.split('/');
+        return `${urlParts.slice(0, urlParts.length-1).join('/')}/activate`;
       }
     }
   }
@@ -143,9 +148,20 @@
 <style scoped>
 
   .signup-container {
-    height: calc(100vh - 60px);
-    /*background-color: rgba(34,139,34, .75);*/
-    /*color: white;*/
+    min-height: calc(100vh - 60px);
   }
+
+  @media screen and (max-width: 999px) {
+    .signup-card {
+      width: 75%;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    .signup-card {
+      width: 50%;
+    }
+  }
+
 
 </style>
