@@ -9,9 +9,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import '@fortawesome/fontawesome-free/js/all';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vuelidate from 'vuelidate'
+import Spinner from './components/UI/Spinner';
+
+// register this component globally
+Vue.component(Spinner);
 
 Vue.use(BootstrapVue);
-Vue.use(Vuelidate)
+Vue.use(Vuelidate);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 // set $http property for typeahead component
@@ -34,15 +38,6 @@ request('./config.json').then((config) => {
 
     // register router with vue
     router,
-
-
-    mounted(){
-
-
-      // now that vue instance has been mounted, navigate to home
-      // this.$router.push('home');
-
-    },
 
     // data must be a function that returns an object
     data(){

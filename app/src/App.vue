@@ -16,6 +16,7 @@
 <script>
   import AppNavBar from './components/AppNavBar';
   import Home from './components/Home/Home';
+  import { parseURI } from "./modules/utils";
 
   export default {
     name: 'app',
@@ -27,10 +28,16 @@
     data(){
       return {
         isAuthenticated: false,
+        args: {}
       }
     },
     mounted(){
       hook.app = this;
+      // this.args = parseURI();
+      // console.log('uri args: ', this.args);
+      // if ('activate' in this.args){
+      //   this.$router.push({name: 'activate', params: { id: 2 }});
+      // }
     },
 
     methods: {},
@@ -58,7 +65,7 @@
 
   .theme-banner {
     background-color: forestgreen;
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: white;
   }
 
@@ -72,6 +79,10 @@
     border-color: orange;
     font-weight: bold;
     color: white;
+  }
+
+  .btn-danger {
+    min-width: 6rem;
   }
 
   button.theme:hover, button.theme.active {

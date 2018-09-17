@@ -51,7 +51,9 @@ def load_user_from_request(request):
     token = args.get('token') or request.headers.get('Authorization')
     if token:
         try:
-            return userStore.get_user(token=token)
+            user = userStore.get_user(token=token)
+            if user.activated == 'False':
+                return None
         except UserNotFound:
             return None
 

@@ -1,8 +1,7 @@
 from flask import url_for, Blueprint, send_file
+from flask_login import login_required
 from models import *
 from exceptions import *
-import utils
-reload(utils)
 from utils import *
 from io import BytesIO
 
@@ -43,26 +42,6 @@ def get_category_styles(id):
 @brewery_api.route('/beer/styles/<id>')
 def get_styles(id=None):
     return endpoint_query(Style, style_fields, id)
-    # if id:
-    #     style = query_wrapper(Style, id=int(id))[0]
-    #     js = to_json(style, style_fields)
-    #
-    #     # append category from relationship
-    #     js['category'] = style.category.cat_name
-    #     return jsonify(js)
-    #
-    # # check for args and do query
-    # args = collect_args()
-    # results = query_wrapper(Style, **args)
-    # js = []
-    # for r in results:
-    #     d = to_json(r, style_fields)
-    #
-    #     # append category from relationship
-    #     d['category'] = r.category.cat_name
-    #     js.append(d)
-    # return jsonify(js)
-
 
 @brewery_api.route('/breweries')
 @brewery_api.route('/breweries/<id>')
@@ -127,16 +106,22 @@ def download_beer_photo(id):
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
 
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])
+@login_required
 def export_table_data(tablename):
     table = table_dict.get(tablename)
     print(tablename, table)
     if table:
         args = collect_args()
         fields = args.get('fields')
-        f = args.get('f', 'csv')
+        f = args.get('f')
+        if f:
+            del args['f']
+        else:
+            f = 'csv'
         if fields:
             del args['fields']
-        csvFile = export_data(table, fields, f, **args)
-        url = url_for('static', filename=os.path.basename(csvFile))
+
+        outfile = export_data(table, fields, f, **args)
+        url = url_for('static', filename=os.path.basename(outfile))
         return success('Successfully exported data', url=url)
     raise InvalidResource

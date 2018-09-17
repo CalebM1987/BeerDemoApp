@@ -104,7 +104,14 @@
       async submit(){
         this.state = 'loading';
         try {
-          const resp = await api.createUser(this.name, this.email, this.username, this.password);
+          const resp = await api.createUser({
+            name: this.name,
+            email: this.email,
+            username: this.username,
+            password: this.password,
+            activation_url: this.activationUrl
+          });
+          console.log('CREATE USER RESPONSE: ', resp);
           if (resp.status === 'success'){
             this.state = 'registered';
           } else {
@@ -139,8 +146,10 @@
 
       activationUrl(){
         const urlParts = window.location.href.split('/');
-        return `${urlParts.slice(0, urlParts.length-1).join('/')}/activate`;
-      }
+        return `${urlParts.slice(0, urlParts.length-1).join('/')}/users/{id}/activate`;
+      },
+
+
     }
   }
 </script>

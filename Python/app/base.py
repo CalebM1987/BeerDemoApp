@@ -2,14 +2,20 @@ from flask import Flask, jsonify, url_for
 from flask_cors import CORS
 from werkzeug.exceptions import default_exceptions, HTTPException
 import urllib
-from .exceptions import *
+from . import exceptions
 from utils import *
 import time
+import types
+
+# get all exceptions from our module
+exceptionFilter = lambda c: isinstance(c, (type, types.ClassType)) and issubclass(c, HTTPException)
+app_exceptions = filter(exceptionFilter, [getattr(exceptions, e) for e in dir(exceptions)])
+
 
 __all__ = ('FlaskExtension', 'collect_args', 'jsonify')
 
 # handlers for json exceptions
-HANDLERS = [(exc, json_exception_handler) for exc in (InvalidCredentials, UnauthorizedUser, TestException, TokenRequired, InvalidResource, CreateUserError)]
+HANDLERS = [(exc, json_exception_handler) for exc in app_exceptions]
 
 class JSONExceptionHandler(object):
     """https://coderwall.com/p/xq88zg/json-exception-handler-for-flask"""

@@ -1,13 +1,12 @@
 <template>
-  <b-navbar toggleable="md" type="dark" class="app-header" fixed>
+  <b-navbar toggleable="md" type="dark" class="theme-banner app-header" fixed>
     <b-navbar-brand href="#"><strong>Brewery Finder</strong></b-navbar-brand>
 
     <b-navbar-nav class="ml-auto">
 
-      <span v-if="userLoggedIn">
-        <i class="fas fa-file-download mr-4 download-btn app-nav-btn"
-           title="export brewery data"
-           v-b-modal.export-modal>
+      <span v-if="userLoggedIn" v-b-modal.export-modal>
+        <i class="fas fa-external-link-alt mr-2 download-btn app-nav-btn"
+           title="export brewery data">
         </i>
       </span>
 
@@ -36,7 +35,24 @@
     </b-modal>
 
     <!-- PLACEHOLDER FOR EXPORT DATA MODAL -->
-    <b-modal id="export-modal">
+    <b-modal id="export-modal"
+             title="Export Data"
+             header-text-variant="secondary"
+             body-text-variant="secondary"
+             cancel-variant="danger"
+             @ok="exportData"
+             ok-title="Export Data">
+      <b-card>
+        <b-form-select v-model="selectedTable" :options="exportTables" class="mt-3 mb-3"/>
+        <b-form-group label="Export Format" v-if="selectedTable === 'breweries'" label-class="bold mt-2">
+          <b-form-radio-group v-model="selectedExportType" :options="exportOptions"/>
+        </b-form-group>
+
+        <!-- slot to override ok button -->
+        <div slot="modal-ok">
+          <b-button class="theme">Export Data</b-button>
+        </div>
+      </b-card>
 
     </b-modal>
 
@@ -60,7 +76,20 @@
         state: null,
         showModal: false,
         userLoggedIn: false,
-        showLogout: false
+        showLogout: false,
+        selectedTable: null,
+        selectedExportType: null,
+        exportTables: [
+          { value: null, text: 'Select table to export' },
+          { value: 'breweries', text: 'Breweries' },
+          { value: 'beers', text: 'Beers' },
+          { value: 'styles', text: 'Beer Styles' },
+          { value: 'categories', text: 'Beer Categories' }
+        ],
+        exportOptions: [
+          { value: 'csv', text: 'CSV' },
+          { value: 'shapefile', text: 'Shapefile' }
+        ]
       }
     },
     mounted: async function(){
@@ -91,6 +120,11 @@
 
       dismissLogin(){
         this.$refs.loginModal.hide();
+
+        // for some reason the modal dismiss was causing a race condition and interfering with the router...
+        setTimeout(()=>{
+          this.$router.push('/sign-up');
+        }, 100)
       },
 
       handleLogin(){
@@ -100,6 +134,10 @@
 
         // bubble up login event
         EventBus.$emit('user-logged-in');
+      },
+
+      async exportData(){
+
       }
     }
   }
@@ -113,9 +151,9 @@
     margin-bottom: 2rem;
   }
 
-  .app-header {
-    background-color: forestgreen;
-  }
+  /*.app-header {*/
+    /*background-color: forestgreen;*/
+  /*}*/
 
   .app-nav-btn {
     font-size: 2.5rem;
@@ -125,10 +163,10 @@
 
   .download-btn:hover {
     color: orange;
-    background-color: white;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    border-radius: 50%;
+    /*background-color: white;*/
+    /*-webkit-border-radius: 50%;*/
+    /*-moz-border-radius: 50%;*/
+    /*border-radius: 50%;*/
   }
 
   .login-btn:hover{

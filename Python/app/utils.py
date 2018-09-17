@@ -6,6 +6,8 @@ import flask_sqlalchemy
 from models import session
 import csv
 import time
+import shapefile
+import shutil
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
@@ -16,6 +18,8 @@ download_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'down
 # # allow safe imports
 # __all__ = ('collect_args', 'to_json', 'json_exception_handler', 'query_wrapper', 'success',
 #            'list_fields', 'get_row', 'update_object', 'toGeoJson',  'endpoint_query')
+
+WGS_1984 = """GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]"""
 
 def load_config():
     config_file = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
@@ -171,15 +175,86 @@ def to_json(results, fields=None):
     else:
         return {f: getattr(results, f) for f in fields}
 
+def export_to_shapefile(table, fields=None, **kwargs):
+    results = toGeoJson(to_json(query_wrapper(table, **kwargs), fields=fields))
+    features = results.get('features')
+    if not len(features):
+        return None
+
+    # field mapping
+    field_map = {
+        'id':  { 'type': 'N' },
+        'name': { 'type': 'C', 'size': '100' },
+        'address': { 'type': 'C', 'size': '100' },
+        'city': { 'type': 'C', 'size': '50' },
+        'state': { 'type': 'C', 'size': '2' },
+        'zip': { 'type': 'C', 'size': '11' },
+        'monday': { 'type': 'C', 'size': '30' },
+        'tuesday': {'type': 'C', 'size': '30'},
+        'wendesday': {'type': 'C', 'size': '30'},
+        'thursday': {'type': 'C', 'size': '30'},
+        'friday': {'type': 'C', 'size': '30'},
+        'saturday': {'type': 'C', 'size': '30'},
+        'sunday': {'type': 'C', 'size': '30'},
+        'comments': {'type': 'C', 'size': '255'},
+        'brew_type': { 'type': 'C', 'size': '50' },
+        'website': {'type': 'C', 'size': '255' },
+        'x': { 'type': 'F' },
+        'y': {'type': 'F'},
+    }
+
+    # create output folder for zipping up shapefile
+    basename = get_timestamp(table.__tablename__)
+    folder = os.path.join(download_folder, basename)
+    output = os.path.join(folder, basename)
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    # build schema based on first record
+    first = features[0].get('properties', {})
+    field_list = filter(lambda f: f in field_map and f in first, list_fields(table))
+
+    # open shapefile writer
+    with shapefile.Writer(output, 1) as w:
+
+        # add fields
+        for field in field_list:
+            # get field definition
+            fd = field_map.get(field, {})
+
+            # specify name, type, field size, decimal size
+            w.field(field, fd.get('type'), fd.get('size', '50'), 6 if fd.get('type') == 'F' else 0)
+
+        # add features
+        for feature in features:
+            # write geometry first (accepts geojson)
+            w.shape(feature.get('geometry'))
+
+            # write attributes, filter by queried fields only
+            w.record(**{f: feature.get('properties', {}).get(f) for f in field_list })
+
+    # write .prj file with WGS 1984 coordinate info
+    prj = os.path.join(folder, basename + '.prj')
+    with open(prj, 'w') as f:
+        f.write(WGS_1984)
+
+    # zip all files for shapefile
+    shutil.make_archive(folder, 'zip', folder)
+    try:
+        shutil.rmtree(folder)
+    except:
+        pass
+    return folder + '.zip'
+
+
 def export_data(table, fields=None, format='csv', **kwargs):
     fields = validate_fields(table, fields)
-    if format == 'shapefile' and table.__tablename__ == 'breweries':
-        pass
+    if format.lower() == 'shapefile' and table.__tablename__ == 'breweries':
+        return export_to_shapefile(table, fields, **kwargs)
 
     else:
-
         # export data as csv
-        results = to_json(query_wrapper(table,fields=fields, **kwargs), fields)
+        results = to_json(query_wrapper(table, fields=fields, **kwargs), fields)
 
         # write csv file
         csvFilePath = os.path.join(download_folder, '{}.csv'.format(get_timestamp(table.__tablename__)))

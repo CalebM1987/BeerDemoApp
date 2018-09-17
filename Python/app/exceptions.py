@@ -37,6 +37,12 @@ class UserNotFound(HTTPException):
     message = 'Could not find user'
 
 
+class UserNotActivated(HTTPException):
+    code = 466
+    description = 'User is not Activated'
+    message = 'The user has not activated their account'
+
+
 class TestException(HTTPException):
     code = 462
     description = 'Test Exception'

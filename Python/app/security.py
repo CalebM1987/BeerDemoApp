@@ -23,6 +23,12 @@ __all__ = ('User', 'security_api', 'userStore', 'unauthorized_callback')
 # unauthorized user callback for flask login (must return a Response() )
 unauthorized_callback = lambda: json_exception_handler(UnauthorizedUser)
 
+# activation email template
+activation_msg = """<div>
+<h4 style="color: forestgreen; font-weight: bold; margin-top: 10px;">Thank you for signing up for Brewery Finder</h4>
+<p sytle="color: gray; font-size: 18px;">To complete the activation process for your account, please follow <a href="{}" style="color: orange; font-weight: bold; text-decoration: underline;">this link</a>.</p>
+</div>"""
+
 def create_random_string(length=64):
     return ''.join([random.choice(string.ascii_letters + string.digits) for _ in xrange(length or 64)])
 
@@ -74,8 +80,8 @@ def send_authentication_email(to_addr, msg):
     emsg['TO'] = to_addr
     emsg['FROM'] = from_addr
 
-    if msg.startswith('<'): # it is html?
-
+    if msg.startswith('<'):
+        # it is html?
         emsg.attach(MIMEText(msg, 'html'))
     else:
         emsg.attach(MIMEText(msg, 'plain'))
@@ -96,11 +102,6 @@ def error():
     """ test the JSON Exception Handler """
     raise TestException
 
-@security_api.route('/auth/test')
-@login_required
-def auth_test():
-    return success('congratulations, you\'re authenticated')
-
 @security_api.route('/users')
 @security_api.route('/users/<id>')
 def get_users(id=None):
@@ -112,12 +113,18 @@ def get_users(id=None):
 def create_user():
     args = collect_args()
     args['activated'] = 'False'
+    try:
+        args['password'] = base64.b64decode(args.get('password'))
+    except:
+        pass
     activation_url = args.get('activation_url')
+    if 'activation_url' in args:
+        del args['activation_url']
     print(args)
     # try:
     user = userStore.create_user(**args)
-    send_authentication_email(user.email, 'test message')
-    return success('successfully created user: {}'.format(args.get('username')))
+    # send_authentication_email(user.email, activation_msg.format(activation_url.format(id=user.id)))
+    return success('successfully created user: {}'.format(args.get('username')), activation_url=activation_url.format(id=user.id))
     # except:
     #     raise CreateUserError
 
@@ -140,6 +147,8 @@ def login():
     remember_me = args.get('remember', False) in ('true', True)
     validatedUser = userStore.check_user(username, password)
     if validatedUser:
+        if validatedUser.activated == 'False':
+            raise UserNotActivated
         login_user(validatedUser, remember=remember_me)
         validatedUser.last_login = datetime.utcnow()
         session.commit()

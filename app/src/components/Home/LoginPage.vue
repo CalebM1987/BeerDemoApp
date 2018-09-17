@@ -9,14 +9,14 @@
 
         <b-form-checkbox v-model="rememberMe" style="color: white;">Remember Me</b-form-checkbox>
 
-        <b-btn block class="sign-in-btn mt-4 mb-4" @click="login">Sign In</b-btn>
+        <b-button block class="sign-in-btn mt-4 mb-4" @click="login">Sign In</b-button>
       </div>
 
       <hr style="background-color: white;">
 
       <!--  SIGN UP LINK -->
       <!--  @click=$emit('sign-up')-->
-      <p class="acc">Don't have an Account? <a href="#" class="sign-up" @click="goToSignUp">Sign Up</a></p>
+      <p class="acc">Don't have an Account? <a href="#" class="sign-up" @click="$emit('dismiss-login-modal')">Sign Up</a></p>
 
     </b-card>
 
@@ -71,11 +71,6 @@
         setTimeout(()=>{
           this.state = 'default';
         }, 500);
-      },
-
-      goToSignUp(){
-        this.$emit('dismiss-login-modal');
-        this.$router.push('signup');
       }
     }
   }

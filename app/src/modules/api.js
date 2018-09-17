@@ -7,6 +7,8 @@ const default_request_options = {
   f: 'geojson'
 };
 
+const default_activation_url = window.location.href.replace('/sign-up', '/users/{id}/activate');
+
 // request wrapper to pass in token
 function _request(url, options={}){
   // api.token ? options.token = api.token: null;
@@ -67,7 +69,7 @@ const api = {
     const resp = await request('/users/login', {
       method: 'post',
       username: usr,
-      password: pw,
+      password: btoa(pw),
       remember: remember_me
     });
     api.token = resp.token;
@@ -87,17 +89,22 @@ const api = {
     return resp.map(u => u.username);
   },
 
-  createUser(name, email, username, password){
+  createUser({name, email, username, password, activation_url=default_activation_url } = {}){
     return request('/users/create', {
       method: 'post',
       data: {
         name: name,
         email: email,
         username: username,
-        password: btoa(password)
+        password: btoa(password),
+        activation_url: activation_url
       }
-    })
+    });
 
+  },
+
+  activate(id){
+    return request(`/users/${id}/activate`, { method: 'post' });
   },
 
   authTest(){
@@ -110,7 +117,6 @@ const api = {
     if ((resp.features || []).length){
       const parts = resp.features[0].place_name.split(',');
       const stZip = parts[2].split(' ').filter(s => s.length);
-      console.log('stZip: ', stZip, ', parts: ', parts);
       return {
         address: parts[0],
         city: parts[1].trim(),

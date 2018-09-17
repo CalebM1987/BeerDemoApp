@@ -112,7 +112,7 @@
   }
   .brewery-info-header{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
   }
 
   .no-features {

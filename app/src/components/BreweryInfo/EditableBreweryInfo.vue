@@ -75,7 +75,7 @@
         </b-col>
 
         <b-col sm="6">
-          <b-btn @click="submitEdits" class="theme mt-2">Save</b-btn>
+          <b-button @click="submitEdits" class="theme mt-2">Save</b-button>
         </b-col>
 
       </b-row>
@@ -90,7 +90,6 @@
 
           <b-list-group v-for="beer in beers" v-show="beers.length">
             <beer-preview :beer="beer"/>
-
           </b-list-group>
 
           <h5 v-show="!beers.length" style="color: gray;" class="mt-2">No beers found, use plus button to add new beers</h5>
@@ -182,7 +181,7 @@
   }
 
   .editable-brewery {
-    /*height: calc(100vh - 80px);*/
+    min-height: calc(100vh - 60px);
   }
 
   .brewery-name {

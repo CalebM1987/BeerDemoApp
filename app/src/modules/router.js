@@ -5,14 +5,16 @@ import SignUp from '../components/SignUp/SignUp';
 import EditableBreweryInfo from '../components/BreweryInfo/EditableBreweryInfo';
 import EditableBeerInfo from '../components/EditableBeerInfo';
 import PageNotFound from '../components/PageNotFound';
+import ActivationPage from '../components/ActivationPage';
 
 Vue.use(Router);
 
 const routes = [
   { path: '/', name: 'home', component: Home },
-  { path: '/signup', name: 'signup', component: SignUp },
+  { path: '/sign-up', name: 'signup', component: SignUp },
   { path: '/brewery/:id', name: 'editableBreweryInfo', component: EditableBreweryInfo },
   { path: '/beers/:id', name: 'editableBeerInfo', component: EditableBeerInfo },
+  { path: '/users/:id/activate', name: 'activate', component: ActivationPage },
 
   // catch all route
   { path: '*', component: PageNotFound }
