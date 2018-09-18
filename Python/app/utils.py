@@ -8,6 +8,9 @@ import csv
 import time
 import shapefile
 import shutil
+import datetime
+import operator
+import fnmatch
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
@@ -248,7 +251,13 @@ def export_to_shapefile(table, fields=None, **kwargs):
 
 
 def export_data(table, fields=None, format='csv', **kwargs):
+    # cleanup download directory by deleting files older than 30 minutes
+    remove_files(download_folder, minutes=30)
+
+    # get fields
     fields = validate_fields(table, fields)
+
+    # allow shapefile export if table selected is breweries
     if format.lower() == 'shapefile' and table.__tablename__ == 'breweries':
         return export_to_shapefile(table, fields, **kwargs)
 
@@ -259,7 +268,7 @@ def export_data(table, fields=None, format='csv', **kwargs):
         # write csv file
         csvFilePath = os.path.join(download_folder, '{}.csv'.format(get_timestamp(table.__tablename__)))
 
-        with open(csvFilePath, 'w') as csvFile:
+        with open(csvFilePath, 'wb') as csvFile:
             writer = csv.DictWriter(csvFile, fields)
             writer.writeheader()
             for result in results:
@@ -296,6 +305,76 @@ def toGeoJson(d):
             } for f in d
         ]
     }
+
+def remove_files(path, exclude=[], older_than=True, test=False, subdirs=False, pattern='*', **kwargs):
+    """removes old folders within a certain amount of days from today
+    Required:
+        path -- root directory to delete files from
+        days -- number of days back to delete from.  Anything older than
+            this many days will be deleted. Default is 7 days.
+    Optional:
+        exclude -- list of folders to skip over (supports wildcards).
+            These directories will not be removed.
+        older_than -- option to remove all folders older than a certain
+            amount of days. Default is True.  If False, will remove all
+            files within the last N days.
+        test -- Default is False.  If True, performs a test folder iteration,
+            to print out the mock results and does not actually delete files.
+        subdirs -- iterate through all sub-directories. Default is False.
+        pattern -- wildcard to match name scheme for files to delete, default is "*"
+    """
+    # if not kwargs, default to delete things older than one day
+    deltas = ['days', 'months', 'years', 'weeks', 'hours', 'minutes', 'seconds']
+    time_args = {}
+    for k,v in kwargs.iteritems():
+        if k in deltas:
+            time_args[k] = v
+    if not time_args:
+        time_args['days'] = 1
+
+    # get removal date and operator
+    remove_after = datetime.datetime.now() - datetime.timedelta(**time_args)
+    op = operator.lt
+    if not older_than:
+        op = operator.gt
+
+    # optional test
+    if test:
+        def remove(*args): pass
+    else:
+        def remove(*args):
+            os.remove(args[0])
+
+    # walk thru directory
+    for root, dirs, files in os.walk(path):
+        if not root.endswith('.gdb'):
+            for f in files:
+                if not f.lower().endswith('.lock') and fnmatch.fnmatch(f, pattern):
+                    if not any(map(lambda ex: fnmatch.fnmatch(f, ex), exclude)):
+                        last_mod = datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(root, f)))
+
+                        # check date
+                        if op(last_mod, remove_after):
+                            try:
+                                remove(os.path.join(root, f))
+                                print('deleted: "{0}"'.format(os.path.join(root, f)))
+                            except:
+                                print('\nCould not delete: "{0}"!\n'.format(os.path.join(root, f)))
+                        else:
+                            print('skipped: "{0}"'.format(os.path.join(root, f)))
+                    else:
+                        print('excluded: "{0}"'.format(os.path.join(root, f)))
+                else:
+
+                    print('skipped file: "{0}"'.format(os.path.join(root, f)))
+        else:
+            print('excluded files in: "{0}"'.format(root))
+
+        # break or continue if checking sub-directories
+        if not subdirs:
+            break
+
+    return
 
 
 def get_row(table, d, key):

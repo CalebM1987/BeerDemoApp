@@ -11,12 +11,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vuelidate from 'vuelidate'
 import Spinner from './components/UI/Spinner';
 
-// register this component globally
-Vue.component(Spinner);
-
+// use Bootstrap-Vue and Vuelidate
 Vue.use(BootstrapVue);
 Vue.use(Vuelidate);
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+// register these components globally
+Vue.component('spinner', Spinner);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 // set $http property for typeahead component
 Vue.prototype.$http = axios;

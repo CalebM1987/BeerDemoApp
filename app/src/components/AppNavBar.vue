@@ -35,26 +35,8 @@
     </b-modal>
 
     <!-- PLACEHOLDER FOR EXPORT DATA MODAL -->
-    <b-modal id="export-modal"
-             title="Export Data"
-             header-text-variant="secondary"
-             body-text-variant="secondary"
-             cancel-variant="danger"
-             @ok="exportData"
-             ok-title="Export Data">
-      <b-card>
-        <b-form-select v-model="selectedTable" :options="exportTables" class="mt-3 mb-3"/>
-        <b-form-group label="Export Format" v-if="selectedTable === 'breweries'" label-class="bold mt-2">
-          <b-form-radio-group v-model="selectedExportType" :options="exportOptions"/>
-        </b-form-group>
+    <export-data />
 
-        <!-- slot to override ok button -->
-        <div slot="modal-ok">
-          <b-button class="theme">Export Data</b-button>
-        </div>
-      </b-card>
-
-    </b-modal>
 
   </b-navbar>
 </template>
@@ -62,34 +44,23 @@
 <script>
   import api from '../modules/api';
   import LoginPage from './Home/LoginPage';
-  import Spinner from './UI/Spinner';
+  // import Spinner from './UI/Spinner';
+  import ExportData from './ExportData';
   import { EventBus } from "../modules/EventBus";
 
   export default {
     name: "app-nav-bar",
     components: {
       LoginPage,
-      Spinner
+      ExportData,
+      // Spinner
     },
     data() {
       return {
         state: null,
         showModal: false,
         userLoggedIn: false,
-        showLogout: false,
-        selectedTable: null,
-        selectedExportType: null,
-        exportTables: [
-          { value: null, text: 'Select table to export' },
-          { value: 'breweries', text: 'Breweries' },
-          { value: 'beers', text: 'Beers' },
-          { value: 'styles', text: 'Beer Styles' },
-          { value: 'categories', text: 'Beer Categories' }
-        ],
-        exportOptions: [
-          { value: 'csv', text: 'CSV' },
-          { value: 'shapefile', text: 'Shapefile' }
-        ]
+        showLogout: false
       }
     },
     mounted: async function(){
@@ -127,6 +98,10 @@
         }, 100)
       },
 
+      dismissExport(){
+        this.$refs.exportModal.hide();
+      },
+
       handleLogin(){
         this.userLoggedIn = true;
         this.state = 'logged_in';
@@ -136,9 +111,7 @@
         EventBus.$emit('user-logged-in');
       },
 
-      async exportData(){
 
-      }
     }
   }
 </script>

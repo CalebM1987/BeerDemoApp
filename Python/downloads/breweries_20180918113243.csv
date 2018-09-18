@@ -1,0 +1,194 @@
+id,name,address,city,state,zip,monday,tuesday,wednesday,thursday,friday,saturday,sunday,comments,brew_type,website,x,y,created_by
+1,Fulton Brewing Co,414 6th Ave N,Minneapolis,MN,55401,,3pm-10pm,3pm-10pm,3pm-10pm,3pm-11pm,12pm-11pm,12pm-6pm,"2014 - 13,000 barrels produced (5th in MN)",Brewery,http://www.fultonbeer.com/,-93.27920282199993,44.98494304000007,1
+2,Modist Brewing Co,505 N 3rd St ,Minneapolis,MN,55401,,4pm-10pm,4pm-10pm,4pm-10pm,12pm-12am,12pm-12am,12pm-6pm,,Brewery,http://modistbrewing.com/,-93.27648348799995,44.98508059400006,1
+3,Inbound BrewCo,701 N 5th St,Minneapolis,MN,55401,12pm-12am,12pm-12am,12pm-12am,12pm-12am,12pm-12am,11am-12am,11am-12am,,Brewery,http://inboundbrew.co,-93.28144093299993,44.98555874100003,1
+4,Sisyphus Brewing,712 Ontario Ave W,Minneapolis,MN,55403,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,12pm-12am,12pm-12am,12pm-5pm,,Brewery,https://www.sisyphusbrewing.com/,-93.28913847699994,44.97313894000007,1
+6,LynLake Brewery,2934 Lyndale Ave S,Minneapolis,MN,55408,5pm-11pm,5pm-11pm,5pm-11pm,5pm-11pm,2pm-1am,12pm-1am,12pm-10pm,,Brewery,http://www.lynlakebrewery.com/,-93.28836877499998,44.948910514000026,1
+7,Eastlake Brewery & Tavern,920 E Lake St #123,Minneapolis,MN,55407,12pm-11pm,12pm-11pm,12pm-11pm,12pm-11pm,12pm-11pm,12pm-11pm,12pm-11pm,Midtown Global Market,Brewery,http://www.eastlakemgm.com/,-93.26047050799997,44.948556938000074,1
+8,Insight Brewing,2821 E Hennepin,Minneapolis,MN,55413,3pm-11pm,3pm-11pm,3pm-11pm,3pm-11pm,3pm-12am,12pm-12am,12pm-11pm,,Brewery,http://www.insightbrewing.com/,-93.21316646799994,44.991793195000064,1
+9,Northgate Brewing,783 Harding St NE,Minneapolis,MN,55413,,,4pm-10pm,4pm-10pm,3pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.northgatebrew.com/,-93.22135185799999,44.99845084300006,1
+10,612 Brew,945 Broadway St NE,Minneapolis,MN,55413,4pm-10pm,4pm-10pm,4pm-10pm,4pm-10pm,2:30pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.612brew.com/,-93.24682450999995,44.998958824000056,1
+11,Bauhaus Brew Labs,1315 Tyler St NE,Minneapolis,MN,55413,,,4pm-11pm,4pm-11pm,3pm-11pm,12pm-11pm,,,Brewery,http://bauhausbrewlabs.com/,-93.24466857199997,45.000941731000054,1
+12,Sociable Cider Werks,1500 Fillmore St NE,Minneapolis,MN,55413,4pm-10pm,,4pm-10pm,4pm-11pm,4pm-12am,12pm-12am,12pm-9pm,,Brewery,http://sociablecider.com/,-93.24412786799996,45.00449865300004,1
+13,Able Seedhouse and Brewery,1121 Quincy St NE,Minneapolis,MN,55413,,,3pm-11pm,3pm-11pm,12pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://ablebeer.com/,-93.25101147999999,44.99932266200005,1
+14,Indeed Brewing,711 15th Ave NE,Minneapolis,,,,,3pm-11pm,3pm-11pm,12pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://www.indeedbrewing.com/,-93.25153592199996,45.00339951500006,1
+15,Dangerous Man Brewing Co,1300 2nd St NE,Minneapolis,MN,55413,,4pm-10pm,4pm-10pm,4pm-10pm,3pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.dangerousmanbrewing.com/,-93.26633927599994,45.001015539000036,1
+17,Fair State Brewing Cooperative,2506 Central Ave NE,Minneapolis,MN,55418,4pm-11pm,4pm-11pm,4pm-11pm,4pm-11pm,2pm-12am,12pm-12am,12pm-9pm,,Brewery,http://fairstate.coop/,-93.24756931899996,45.01353842600001,1
+18,Surly Brewing Co,520 Malcolm Ave SE,Minneapolis,MN,55414,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-12am,11am-12am,11am-11pm,"2014 - 39,000 barrels produced (4th in MN)",Brewery,http://www.surlybrewing.com/,-93.21013411399997,44.973163174000035,1
+19,Utepils Brewing Co,225 Thomas Ave N,Minneapolis,MN,55405,4pm-10pm,4pm-10pm,12pm-10pm,12pm-10pm,12pm-11pm,12pm-11pm,12pm-8pm,,Brewery,https://utepilsbrewing.com/,-93.312158519,44.97865078400008,1
+20,Wild Minds Artisan Ales,6031 Pillsbury Ave S,Minneapolis,MN,55419,,4pm-10pm,4pm-10pm,4pm-10pm,2pm-11pm,12pm-11pm,12pm-8pm,,Brewery,https://www.wildmindales.com/,-93.28169855199998,44.89317669300003,1
+23,Broken Clock Brewing Coop.,3134 California St NE,Minneapolis,MN,55418,,,,,one weekend,per,month,Pint sales one weekend a month,Brewery,http://brokenclockbrew.com/,-93.270706632,45.025418899000044,1
+25,Finnegan's Brewing Co,502 S 9th St,Minneapolis,MN,55414,,,,,,,,,,https://finnegans.org/,-93.26595146999993,44.97210059400004,1
+26,Ashby Brewing Co,109 Main St,Ashby,MN,56309,,,,,,,,,,http://ashbybrewing.us/,-95.81688158999998,46.09296098000004,1
+27,Venn Brewing Co,3550 E 46th St,Minneapolis,MN,55406,,,,,,,,,,http://www.vennbrewing.com/,-93.21987953199994,44.919938023000036,1
+29,Urban Growler Brewing Co,2325 Endicott St,St Paul,MN,55114,,11am-10pm,11am-10pm,11am-10pm,11am-11pm,11am-11pm,11am-8pm,,Brewery,http://www.urbangrowlerbrewing.com/,-93.19289447199998,44.97008309300003,1
+30,Lake Monster Brewing,550 Vandalia St,St Paul,MN,55114,4pm-10pm,4pm-10pm,4pm-10pm,4pm-10pm,2pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.lakemonsterbrewing.com/,-93.19091054499995,44.957685494000025,1
+31,Dual Citizen Brewing,735 Raymond Ave,St Paul,MN,55114,,,,,,,,,,,-93.19799848699995,44.96325504500004,1
+32,Burning Brothers Brewing Co,1750 W Thomas Ave,St Paul,MN,55104,,,4pm-10pm,4pm-10pm,2pm-10pm,12pm-10pm,12pm-6pm,,Brewery,http://www.burnbrosbrew.com/,-93.17453892199995,44.95899820700002,1
+33,Summit Brewing Co,910 Montreal Cir,St Paul,MN,55102,,,,4pm-8pm,4pm-10pm,12pm-10pm,,"2014 - 132,870 barrels produced (2nd in MN)",Brewery,http://www.summitbrewing.com/,-93.13977174099995,44.91358918300005,1
+34,Bad Weather Brewing Co,414 7th St W,St Paul,MN,55102,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,3pm-12am,12pm-12am,12pm-9pm,,Brewery,http://www.badweatherbrewery.com/,-93.11005112799995,44.93862839500008,1
+36,Wabasha Brewing Co,429 Wabasha St S,St Paul,MN,55107,,4pm-10pm,3pm-10pm,3pm-11pm,3pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://www.wabashabrewing.com/,-93.08470120699997,44.93293607700008,1
+37,Flat Earth Brewing Co,688 Minnehaha Ave E,St Paul,MN,55106,,3:30pm-9:30pm,3:30pm-8pm,3:30pm-10pm,3:30pm-11pm,12pm-11pm,12pm-6:30pm,,Brewery,http://www.flatearthbrewing.com/,-93.07182868799997,44.96229682400007,1
+38,BlackStack Brewing Co,755 Prior Ave N,St Paul,MN,55104,4pm-11pm,4pm-11pm,4pm-11pm,4pm-11pm,12pm-12am,12pm-12am,12pm-10pm,,Brewery,http://www.blackstackbrewing.com/,-93.18247252099997,44.963793387000074,1
+39,LowerTown Brewing Co,282 6th St E,St Paul,MN,55101,,,,,,,,,,http://www.lowertownbrewery.ca/,-93.08672645499995,44.95041162700005,1
+40,Barrel Theory,248 E 7th Street,St Paul,MN,55101,,,3pm-10pm,3pm-10pm,3pm-10pm,12pm-10pm,12pm-8pm,,Brewery,https://barreltheory.com/,-93.08825375999999,44.95090043100003,1
+41,Yoerg Brewing Co,427 Wabasha St S,St Paul,MN,55107,,,,,,,,,Brewery,http://yoergbeer.com,-93.08457331099997,44.93318498600006,1
+42,Waldmann Brewing,445 Smith Ave,St Paul,MN,55102,,11am - 10pm,11am - 10pm,11am - 10pm,11am - 12am,11am - 12am,11am - 9pm,,Brewery,http://waldmannbrewery.com,-93.10955653599996,44.93830234800003,1
+43,Clutch Brewing,399 Webster St,St Paul,MN,55102,,,,,,,,,Brewery,http://clutchbeer.com,-93.12458957499996,44.92874320600003,1
+44,12welve Eyes Brewing Co,141 E 4th St,St Paul,MN,55101,4pm-9pm,4pm-9pm,4pm-9pm,4pm-9pm,3pm-10pm,12pm-10pm,12pm-8pm,,Brewery,https://12welveeyes.com/,-93.08951669599998,44.947054244000064,1
+45,Culhane Brewing Co,201 4th St. E,St Paul,MN,55101,,,,,,,,,Brewery,http://culhanebrewing.com/menu/,-93.08738066599994,44.94813038100004,1
+46,Stacked Deck Brewing Co,425 Cedar St,St Paul,MN,55101,,,,,,,,,,http://www.stackeddeckbrewing.com/,-93.09466963299997,44.94727824400007,1
+47,Alloy Brewing Co,2700 Coon Rapids Blvd,Coon Rapids,MN,55433,,,4pm-10pm,4pm-10pm,4pm-11pm,12pm-11pm,12pm-8pm,,Brewery,https://www.alloybrewingcompany.com/,-93.33669429999999,45.16958652400006,1
+49,Bald Man Brewing Co,2020 Silver Bell Rd,Eagan,MN,55122,,3pm-11pm,3pm-11pm,3pm-11pm,11am-12am,11am-12am,11am-8pm,,Brewery,http://baldmanbrewing.com,-93.21089164499993,44.819624382000036,1
+50,Spilled Grain Brewhouse,300 Elm St E,Annandale,MN,55302,,,,4pm-10pm,3pm-11pm,11am-11pm,12pm-6pm,,Brewery,http://www.spilledgrainbrewhouse.com/,-94.11844180899999,45.259513221000084,1
+51,OMNI Brewing Co,9462 Deerwood Lane N,Osseo,MN,55369,,3pm-10pm,3pm-10pm,3pm-10pm,12pm-11pm,12pm-11pm,12pm-10pm,,Brewery,https://www.omnibrewing.com/,-93.42541391099996,45.126449713000056,1
+52,10K Brewing,2005 2nd Ave,Anoka,MN,55303,,,4pm-10pm,3pm-10pm,3pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://10kbrew.com/,-93.38954748099997,45.198265451000054,1
+53,The Wicked Wort Brewing Co,4165 W Broadway Ave,Robbinsdale,MN,55422,3pm-10pm,3pm-11pm,3pm-11pm,3pm-11pm,12pm-12:00am,12pm-12am,11:30am-9pm,,Brewery,http://www.wickedwortbrewingco.com/,-93.33915049099996,45.03091501400008,1
+54,Steel Toe Brewing Co,4848 W 35th St,St Louis Park,MN,55416,,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,12pm-10pm,12pm-6pm,,Brewery,http://www.steeltoebrewing.com/,-93.34126760299995,44.94143350100008,1
+55,Maple Island Brewing Co,225 Main St N,Stillwater,MN,55082,12pm-8pm,12pm-10pm,12pm-10pm,12pm-10pm,12pm-10pm,12pm-10pm,12pm-8pm,,Brewery,http://www.mapleislandbrewing.com/,-92.80658642099996,45.05816454700004,1
+56,Badger Hill Brewing Co,4571 Valley Industrial Blvd,Shakopee,MN,55379,,3pm-10pm,3pm-10pm,3pm-10pm,12pm-11pm,12pm-11pm,11:30am-10pm,,Brewery,http://www.badgerhillbrewing.com/,-93.46072117499995,44.79399181100006,1
+57,Mankato Brewery,1119 Center St,North Mankato,MN,56003,,4pm-7pm,,4pm-7pm,4pm-7pm,12pm-7pm,10am-4pm,,Brewery,http://mankatobrewery.com/,-94.01407390899999,44.181480918000034,1
+58,Montgomery Brewing Co,306 2nd St NW,Montgomery,MN,56069,,,3pm-8pm,3pm-8pm,3pm-8pm,1pm-8pm,11am-2pm,,Brewery,http://www.montgomerybrewing.com,-93.58282861699996,44.441277323000065,1
+59,Oswald Brewing Co,110 S Main St,Blue Earth,MN,56013,,,,3pm-7pm,3pm-10pm,1pm-10pm,1pm-5pm,,Brewery,https://www.oswaldbrewingcompany.com,-94.10260042199995,43.63822575900007,1
+60,Angry Inch Brewing Co,20730 Holyoke Ave,Lakeville,MN,55044,,,2pm-10pm,2pm-10pm,12pm-12am,12pm-12am,12pm-8pm,,Brewery,https://www.angryinchbrewing.com,-93.24301131699997,44.64760787900008,1
+61,Blacklist Artisan Ales,120 E Superior St,Duluth,MN,55802,3pm-12am,3pm-12am,3pm-12am,3pm-12am,11am-1am,11am-1am,11am-1am,2016 - 250 barrels produced,Brewery,https://blacklistbeer.com/,-92.09605749299999,46.78834544000006,1
+62,Clockwerks Brewing Co,25 4th St N,Minneapolis,MN,55401,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,3pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.clockwerksbrewing.com/,-93.27239277699994,44.980875791000074,1
+63,Roets Jordan Brewing Co,230 Broadway St S,Jordan,MN,55352,,,,,3pm-10pm,3pm-10pm,12pm-6pm,,Brewery,http://roetsjordanbrewery.com,-93.62625989599997,44.66549976600003,1
+64,Tanzenwald Brewing Co,103 Water St N,Northfield,MN,55057,,3pm-10pm,3pm-10pm,3pm-10pm,11am-11pm,11am-11pm,11am-8pm,,Brewery,http://www.tanzenwald.com,-93.16208770899999,44.45964725700003,1
+65,Tilion Brewing Co,432 Mill St W,Cannon Falls,MN,55009,,,,,,,,,Brewery,https://tilionbrewing.com,-92.90699473199999,44.508143308000044,1
+66,Spiral Brewery,109 2ND ST E,Hastings,MN,55033,,,,,,,,,Brewery,http://spiralbrewery.com,-92.851856469,44.744489041000065,1
+67,Imminent Brewing Co,519 Division St S,Northfield,MN,55057,,,,3pm-11pm,3pm-11pm,11am-11pm,11am-8pm,,Brewery,http://www.imminentbrewing.com,-93.15954669599995,44.45420936100004,1
+68,Chapel Brewing Co,15 Co Rd 1,Dundas,MN,55019,,,,,,,,,Brewery,http://chapelbrewing.com,-93.20389199999994,44.42969146200005,1
+69,Half Pint Brewing Co,40099 150th St,Waseca,MN,56093,,,,,,,,,,https://www.facebook.com/Half-Pint-Brewing-Company-1428278567395030/,-93.46933422699999,44.14021307200005,1
+70,Ward House Brewery,111 W ELM AVE,Waseca,MN,56093,,,,,,,,,Brewery,https://www.facebook.com/pg/Ward-House-Brewery-2035594406669494/photos/?ref=page_internal,-93.50803441199997,44.07747355500002,1
+71,Angry Hog Brewery,676-686 23RD Ave NW,Austin,MN,55912,,,,,,,,"coming soon, not open yet",Brewery,http://www.angryhogbrewery.com/about.html,-92.979878317,43.69157949100001,1
+72,Giesenbru Bier Co,1302 1st St NE,New Prague,MN,56071,,,,,,,,,Brewery,https://www.giesenbraubierco.com,-93.55877567499994,44.54389511800008,1
+73,Island City Brewing Co,65 E Front St,Winona,MN,55987,,4pm-10pm,4pm-10pm,4pm-10pm,12pm-12am,12pm-12am,12pm-8pm,,Brewery,http://islandcitybrew.com,-91.63466131099995,44.053685401000045,1
+74,Unmapped Brewing Co,14625 Excelsior Blvd,Minnetonka,MN,55345,4pm-10pm,4pm-10pm,4pm-10pm,3pm-10pm,3pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://unmappedbrewing.com/,-93.46592187199995,44.903820101000065,1
+75,Hamel Brewing Co,22 Hamel Rd,Hamel,MN,55340,,,,,,,,,,http://www.hamelbrewingcompany.com/,-93.52264877699997,45.040475763000074,1
+76,Wooden Hill Brewing Co,7405 Bush Lake Rd,Edina,MN,55439,,,,,,,,not open yet,Brewery,https://woodenhillbrewing.com,-93.35910840999998,44.86763901600005,1
+77,Shakopee Brew Hall,126 1st Ave E,Shakopee,MN,55379,,,3pm - 10pm,3pm - 10pm,3pm - 11pm,12pm - 11pm,12pm - 8pm,,Brewery,http://shakopeebrewhall.com,-93.52585090299999,44.79850707700007,1
+78,Defender Brewing,850 Chaska Blvd,Chaska,MN,55318,,,,,,,,,Brewery,https://www.facebook.com/DefenderBrewing/,-93.61161391099996,44.783830316000035,1
+79,Boathouse Brothers Brewing Co,16221 Main Ave SE,Prior Lake,MN,55372,3pm - 10pm,3pm - 10pm,3pm - 10pm,3pm - 10pm,3pm - 10pm,11am - 10pm,11am - 7pm,,Brewery,http://www.boathousebrothersbrewing.com,-93.42400432199997,44.714155597000065,1
+80,Cuyuna Brewing Co,1 Main St,Crosby,MN,56441,,,,7pm-11pm,12pm-11pm,12pm-11pm,1pm-4pm,,Brewery,http://www.cuyunabrewing.com/,-93.95211282299994,46.48257435900006,1
+81,Invictus Brewing,2033 105th Ave NE,Minneapolis,MN,55449,,,,,,,,,,http://invictusbrewingco.com/,-93.21942242799997,45.16097729100004,1
+82,Blue Wolf Brewing Co,8515 Edinburgh Centre Dr,Brooklyn Park,MN,55443,,,,,,,,,,https://untappd.com/BlueWolfBrewingCo,-93.30619960499997,45.109293115000064,1
+83,Cosmos Brewing,9686 140th St N,Hugo,MN,55038,,,,,,,,,Brewery,http://cosmosbrewing.com/21.html,-92.91200374999994,45.15316340900006,1
+84,Garphish Brewing,165 Main St,Bethel,MN,55005,,,,,,,,,Brewery,https://www.facebook.com/garphishbrewing/,-93.26935397899996,45.404147438000045,1
+85,Rustech Brewing Co,211 Pine St,Monticello,MN,55362,,,,,,,,expected to open in early 2018,Brewery,http://www.rustechbrewing.com,-93.79519699899998,45.30499964000006,1
+87,Grainy Days Brewery and Supply,1931 W Superior St,Duluth,MN,55806,,,,,,,,"This is not a brewery or brew pub, they sell home brewing supplies",,https://www.facebook.com/GrainyDays/,-92.12309223899996,46.76809372800005,1
+88,Oakhold Farmhouse Brewery,5623 N Cloquet Rd,Duluth,MN,55810,,,,,,,,,,http://www.oakholdbrewery.com/,-92.27895160099996,46.735494312000064,1
+89,Rapids Brewing Co,214 N Pokegama Ave,Grand Rapids,MN,55744,,,,,,,,,,http://www.gunflinttavern.com/,-93.52798039899994,47.23432484600004,1
+90,Klockow Brewing Co,36 SE 10th St,Grand Rapids,MN,55744,,,,,,,,,,https://klockowbrewing.com/,-93.52773819299993,47.22093104200007,1
+91,Starry Eyed Brewing Co,16757 11th St NE,Little Falls,MN,56345,,,,,,,,,,https://www.starryeyedbrewing.com/home-1,-94.34556547599998,46.00349981700003,1
+92,14 Lakes Brewing Co,36846 Co Rd 66,Crosslake,MN,56442,,,,,,,,,,https://www.ratebeer.com/brewers/14-lakes-craft-brewing-company/33000/,-94.11224985399997,46.68701791800003,1
+93,Pantown Brewing Co,408 37TH AVE N,St Cloud,MN,56303,,,,,,,,,,https://www.facebook.com/The-Pantown-Brewing-Company-1912021289018755/,-94.20222426699996,45.561702695000065,1
+94,Three Twenty Brewing Co,135 5th St SE,Pine City,MN,55063,,,,4pm-10pm,3pm-10pm,12pm-10pm,,,Brewery,http://www.threetwentybrewing.com/,-92.96943258099998,45.82803308800003,1
+95,Revelation Ale Works,146 S. Atlantic Ave,Hallock,MN,56728,,,,,4pm-8pm,4pm-8pm,,,Brewery,http://www.revales.com,-96.94581351399995,48.773399274000035,1
+96,Copper Trail Brewing Co,410 30th Ave E #103,Alexandria,MN,56308,,,,3:30pm-10pm,3:30pm-10pm,12pm-10pm,12pm-4pm,,Brewery,http://coppertrailbrewing.com/,-95.37194040999998,45.864465900000035,1
+97,Red Wing Brewery,1411 Old W Main St,Red Wing,MN,55066,,4pm-9pm,4pm-9pm,4pm-9pm,12pm-10pm,12pm-10pm,12pm-8pm,,Brewery,http://www.redwingbrewing.com,-92.54735653099999,44.562662356000025,1
+98,Kinney Creek Brewery,1016 7th St NW,Rochester,MN,55901,12pm-6pm,12pm-6pm,12pm-8pm,12pm-12am,12pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.kinneycreekbrewery.com/,-92.47824418499994,44.03100529500006,1
+99,LTS Brewing Co,2001 32nd Ave NW,Rochester,MN,55901,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,11am-10pm,11am-10pm,,Brewery,http://www.ltsbrewing.com,-92.51029748599997,44.044706116000036,1
+100,Karst Brewing Co,315 1st St,Fountain,MN,55935,,,,,5pm-10pm,12pm-10pm,,opened Memorial Day weekend,Brewery,http://karstbrewed.com,-92.13505331499994,43.74004735800001,1
+101,F-Town Brewing Co,22 4th St NE,Faribault,MN,55021,,,3pm-9pm,3pm-9pm,3pm-10pm,12pm-10pm,12pm-3pm,,Brewery,http://www.ftownbeer.com/ftown/,-93.26735406999995,44.29499072400005,1
+102,Bent Brewstillery,1744 Terrace Dr,Roseville,MN,55113,,4pm-10pm,4pm-10pm,4pm-10pm,2:30pm-12am,12pm-12am,12pm-9pm,,Brewery,http://www.bentbrewstillery.com/,-93.17386372099998,45.02434519700005,1
+103,Excelsior Brewing Co,421 3rd St,Excelsior,MN,55331,,4pm-9pm,4pm-10pm,4pm-10pm,12pm-11pm,12pm-11pm,12pm-6pm,,Brewery,http://excelsiorbrew.com/,-93.56683215199996,44.90209618900006,1
+104,Back Channel Brewing Collective,4787 Shoreline Dr,Spring Park,MN,55384,,,,4pm - 10pm,12pm - 10pm,12pm - 10pm,11pm - 6pm,,Brewery,https://www.backchannelbrewing.com,-93.64392886799999,44.936365238000064,1
+105,LTD Brewing Co,725 Main St,Hopkins,MN,55343,4pm-10pm,4pm-10pm,4pm-10pm,3pm-10pm,2pm-12am,12pm-12am,12pm-10pm,,Brewery,http://www.ltdbrewing.com/,-93.40994862799994,44.92456567100004,1
+106,Lift Bridge Brewery,1900 Tower Dr,Stillwater,MN,55082,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,12pm-10pm,12pm-10pm,12pm-6pm,,Brewery,http://www.liftbridgebrewery.com/,-92.83176774599997,45.039044942000025,1
+107,Big Wood Brewery,2222 4th St,White Bear Lake,MN,55110,,4pm-10pm,4pm-10pm,4pm-10pm,3pm-11pm,1pm-11pm,12pm-6pm,,Brewery,http://www.bigwoodbrewery.com/,-93.00808875999998,45.085112179000085,1
+108,Hammerheart Brewing Co,7785 Lake Dr,Lino Lakes,MN,55014,,2pm-10pm,2pm-10pm,2pm-10pm,2pm-10pm,2pm-10pm,12pm-8pm,,Brewery,http://www.hammerheartbrewing.com/,-93.10693847499994,45.188991326000064,1
+109,Bemidji Brewing Co,401 Beltrami Ave NW,Bemidji,MN,56601,,,4pm-10pm,4pm-10pm,2pm-11pm,2pm-11pm,,moving to new location in Summer,Brewery,http://bemidjibeer.com/,-94.88464033099996,47.469861810000054,1
+110,Portage Brewing Co,107 S 5th St,Walker,MN,56484,,,,,4pm-9pm,2pm-9pm,,these hours until Grand Opening,Brewery,https://portagebeer.com,-94.58167771199999,47.101200308000045,1
+111,Jack Pine Brewery,7942 College Rd,Brainerd,MN,56401,,,4pm-9pm,4pm-9pm,2pm-10pm,2pm-10pm,1pm-5pm,broke bround on new location (10-7-16),Brewery,http://jackpinebrewery.com/,-94.25321269499995,46.37756062100005,1
+112,Roundhouse Brewery,1551 Northern Pacific Rd,Brainerd,MN,56401,,,,4pm-8pm,3pm-10pm,3pm-10pm,,,Brewery,http://www.roundhousebrew.com/,-94.18558125399994,46.35625382100005,1
+113,Moose Lake Brewing Co,244 Lakeshore Dr,Moose Lake,MN,55767,12pm-9pm,12pm-9pm,12pm-9pm,12pm-9pm,12pm-10pm,12pm-10pm,,2016 - 56 barrels produced,Brewery,http://www.mooselakebrewing.com/,-92.76766733599999,46.447462378000075,1
+114,Junkyard Brewing Co,1416 1st Ave N,Moorhead,MN,56560,,4pm-9pm,4pm-9pm,4pm-9pm,4pm-12am,12pm-12am,,,Brewery,http://www.junkyardbeer.com/,-96.75651601099997,46.876252499000024,1
+115,Gull Dam Brewery,23836 Smiley Rd,Nisswa,MN,56468,,12pm-10pm,12pm-10pm,12pm-10pm,12pm-10pm,12pm-10pm,12pm-5pm,,Brewery,http://gulldambrewing.com/,-94.29719972699996,46.497597635000034,1
+116,Big Axe Brewing Company,25435 Main St,Nisswa,MN,56468,12pm-9pm,12pm-9pm,12pm-9pm,12pm-9pm,12pm-11pm,12pm-10pm,12pm-6pm,,Brewery,http://www.bigwoodbrewery.com/,-94.28913238699994,46.519900749000044,1
+117,Disgruntled Brewing Co,735 2nd St NE,Perham,MN,56573,,,,3pm-10pm,3pm-10pm,3pm-10pm,11am-4pm,,Brewery,https://www.disgruntledbeer.com/,-95.55905253299994,46.59050326500005,1
+118,Bent Paddle Brewing Co,1912 W Michigan St,Duluth,MN,55806,,,2pm-10pm,2pm-10pm,2pm-11pm,12pm-11pm,12pm-5pm,"2016 - 15,700 barrels produced",Brewery,http://www.bentpaddlebrewing.com/,-92.12190048599997,46.76776149200003,1
+119,Lake Superior Brewing Co,2711 W Superior St,Duluth,MN,55806,,,,,4pm-9pm,3pm-9pm,,"2016 - 1,600 barrels produced",Brewery,http://www.lakesuperiorbrewing.com/,-92.13288099499994,46.76127054300008,1
+120,Castle Danger Brewery,17 7th St,Two Harbors,MN,55616,,,12pm-9pm,12pm-9pm,12pm-10pm,12pm-10pm,12pm-5pm,"2016 - 9,200 barrels produced",Brewery,http://www.castledangerbrewery.com/,-91.67319815099995,47.01946177900003,1
+121,Lupulin Brewing Co,570 Humboldt Dr,Big Lake,MN,55309,,,4pm-10pm,4pm-10pm,4pm-11pm,12pm-11pm,11am-6pm,,Brewery,http://www.lupulinbrewing.com/,-93.73958233999996,45.331609122000025,1
+122,Hayes' Public House Brew,112 1st St S,Buffalo,MN,55313,,,5pm-10pm,5pm-10pm,3pm-10pm,3pm-10pm,2pm-7pm,,Brewery,http://hayespublichouse.com,-93.87458548899997,45.17059378300007,1
+123,Voyageur Brewing Co,233 MN-61,Grand Marais,MN,55604,,,,4pm-11pm,4pm-11pm,12pm-11pm,,"2016 - 1,300 barrels produced",Brewery,http://www.voyageurbrewing.com/,-90.33643675999998,47.75015547700008,1
+124,Third Street Brewhouse,219 Red River Ave N,Cold Spring,MN,56320,,,,,4pm-8pm,12pm-5pm,,"2014 - 84,000 barrels produced (3rd in MN)",Brewery,http://www.thirdstreetbrewhouse.com/,-94.42937717799998,45.458925162000064,1
+126,Beaver Island Brewing Co,216 6th Ave S,St Cloud,MN,56301,,,4pm-10pm,4pm-10pm,4pm-10pm,12pm-10pm,11am-7pm,,Brewery,http://www.beaverislandbrew.com/,-94.15697490299999,45.55841379600003,1
+127,Bad Habit Brewing Co,15 E Minnesota St,St Joseph,MN,56374,,,4pm-10pm,4pm-10pm,3pm-11pm,1pm-11pm,1pm-7pm,,Brewery,http://www.badhabitbeer.com/,-94.31729345399997,45.56497991600002,1
+128,Foxhole Brewhouse,313 4th St SW,Willmar,MN,56201,,,4pm-9pm,4pm-9pm,3pm-10pm,2pm-10pm,1pm-4pm,,Brewery,http://www.foxholebrewhouse.com,-95.04814852099997,45.12120226300004,1
+129,Brau Brothers Brewing Co,910 E Main St,Marshall,MN,56258,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-9pm,,Brewery,http://www.braubeer.com/,-95.77630251799997,44.43634479100006,1
+130,Take 16 Brewing Co,509 E Main St,Luverne,MN,56156,,,,4pm-7pm,,,,,Brewery,http://www.take16beer.com,-96.20355385199996,43.654337878000035,1
+132,Goat Ridge Brewing Co,17 Central Ave W,New London,MN,56273,,,,3pm-9pm,12pm-10pm,12pm-10pm,,,Brewery,http://www.goatridgebrewing.com/,-94.94463575499998,45.30112049500007,1
+133,Talking Waters Brewing,205 S 1st St,Montevideo,MN,56265,,,,3pm-10pm,3pm-10pm,12pm-10pm,,,Brewery,https://www.talkingwatersbrewing.com,-95.72433622999995,44.944614854000065,1
+135,Enki Brewing Co,1495 Stieger Lake Ln,Victoria,MN,55386,,4pm-10pm,4pm-10pm,4pm-10pm,2pm-10pm,12pm-10pm,12pm-7pm,new location,Brewery,http://www.enkibrewing.com/,-93.65645924099994,44.861408963000024,1
+136,U4IC Brewing Co,23436 Union Tr,Belle Plaine,MN,56011,,,,4pm-9pm,4pm-11pm,12pm-11pm,,,Brewery,http://u4icbrewing.com,-93.85541964599997,44.60931007600004,1
+137,Waconia Brewing Co,255 W Main St,Waconia,MN,55387,4pm-9pm,4pm-9pm,2pm-9pm,2pm-9pm,2pm-10pm,11am-10pm,11am-9pm,,Brewery,http://www.waconiabrewing.com/,-93.79013767199996,44.85026853800008,1
+138,Schram Vineyard Winery & Brewery,8785 Airport Rd,Waconia,MN,55387,,,,1pm-9pm,1pm-9pm,12pm-9pm,12pm-5pm,summer hours April - October,Brewery,http://www.schramvineyards.com/p/home.html,-93.74485497399996,44.84379492300007,1
+139,The Freehouse,701 N Washington Ave,Minneapolis,MN,55413,6:30am-2am,6:30am-2am,6:30am-2am,6:30am-2am,6:30am-2am,6:30am-2am,6:30am-2am,,Brew Pub,https://www.freehousempls.com/,-93.27735339099995,44.98762544300007,1
+140,Granite City Food & Brewery,851 Rosedale Center,Roseville,MN,55113,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.gcfb.com/,-93.16965350099997,45.012863122000056,1
+141,Granite City Food & Brewery,851 Rosedale Shopping Center,Roseville,MN,55113,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.gcfb.com/,-93.16965350099997,45.012863122000056,1
+145,Nutmeg Brewhouse,3673 Lexington Ave N,Arden Hills,MN,55126,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,,Brew Pub,http://nutmegbrewhouse.com/,-93.14792477899994,45.05197639600005,1
+146,Roma Restaurant & Brewery,310 Stillwater Rd,Willernie,MN,55090,11am-9pm,11am-9pm,11am-9pm,11am-9pm,11am-10pm,11am-10pm,11am-9pm,,Brew Pub,http://www.roman-market.com/brewery,-92.95795670299998,45.05717749500007,1
+148,Granite City Food & Brewery,11909 Main St,Maple Grove,MN,55369,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.gcfb.com/location/eagan-minnesota/,-93.43196913699995,45.090547595000025,1
+151,Chatterbox Pub,2229 E 35th St,Minneapolis,MN,55410,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,10am-1am,10am-1am,,Brew Pub,http://www.chatterboxpub.net/,-93.32865425599994,44.92128554100003,1
+152,Town Hall Station,4500 Valley View Rd,Minneapolis,MN,55424,,,,,,,,,Brew Pub,http://townhallstation.com/,-93.33947930199997,44.89199058800005,1
+153,Birch's on the Lake Brewhouse,1310 W Wayzata Blvd,Long Lake,MN,55356,,,11am-12am,11am-12am,11am-12am,10am-12am,10am-2pm,,Brew Pub,http://www.birchsonthelake.com/,-93.55623971499995,44.98529127600004,1
+155,Granite City Food & Brewery,3330 Pilot Knob Rd,Eagan,MN,55121,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.gcfb.com/,-93.16651967499996,44.83641437800002,1
+157,Union 32 Craft House,2864 Hwy 55,Eagan,MN,55121,,,,,,,,,Brew Pub,https://www.union32crafthouse.com,-93.13093072899994,44.85383986100004,1
+159,Nutmeg Brewhouse,1905 Co Rd 42 W,Burnsville,MN,55306,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,,Brew Pub,http://nutmegbrewhouse.com,-93.30368441199994,44.745793450000065,1
+160,Lazy Loon Brewing,305 Wilson St E,Norwood Young America,MN,55368,1pm-8pm,1pm-8pm,1pm-8pm,1pm-8pm,1pm-10pm,1pm-10pm,1pm-8pm,"bowling, guest beer, wine, other drink options",Brew Pub,http://www.lazyloonbrewing.com/,-93.92152721499997,44.77023641100004,1
+161,Lakeville Brewing Co,8790 Upper 208th St W,Lakeville,MN,55044,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,11am-11pm,9am-11pm,9am-9pm,,Brew Pub,https://lakevillebrewing.com,-93.24385409699995,44.64772790100006,1
+162,Great Waters Restaurant & Brewing Co,426 Saint Peter St,St Paul,MN,55102,,11am - 2am,11am - 2am,11am - 2am,11am - 2am,11am - 2am,11am - 2am,,Brew Pub,http://greatwatersbc.com,-93.09689253699996,44.94666838900008,1
+163,Forager Brewing,1005 6th St NW,Rochester,MN,55901,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,10am-11pm,,Brew Pub,https://foragerbrewery.com,-92.47825444699997,44.02948582500004,1
+164,Grand Rounds Brewpub,4 3rd St SW,Rochester,MN,55902,11am-10pm,11am-10pm,11am-10pm,11am-12am,11am-12am,11am-12am,12pm-8pm,,Brew Pub,https://grandroundsbrewing.com,-92.46331128799993,44.02027523900005,1
+166,Bub's Brewing Co,65 E 4th St,Winona,MN,55987,11:30am-1am,11:30am-1am,11:30am-1am,11:30am-1am,11:30am-1am,11:30am-1am,11:30am-1am,,Brew Pub,http://www.bubsbrewingco.com,-91.63650577899995,44.05106754700006,1
+167,Wellington's Backwater Brewpub,1429 W Service Dr,Winona,MN,55987,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,,Brew Pub,http://wellingtons-pubandgrill.com/wellingtons/,-91.67596585299998,44.04627239800004,1
+168,Barley John's,781 Old Highway 8 SW,New Brighton,MN,55112,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,,,Brew Pub,http://www.barleyjohns.com/,-93.19816626499994,45.03614780100002,1
+172,Granite City Food & Brewery,3945 2nd St S,St Cloud,MN,56301,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.gcfb.com/location/st-cloud-minnesota/,-94.20638620499994,45.55005762000008,1
+173,Urban Lodge Brewery & Restaurant,415 N Benton Dr,Sauk Rapids,MN,56379,11am-10pm,11am-10pm,11am-10pm,11am-11pm,11am-11pm,11am-11pm,11am-10pm,,Brew Pub,http://urbanlodgebrewery.com/,-94.17157064299992,45.59224156400006,1
+174,Union Pizza and Brewery,114 South Union,Fergus Falls,MN,56537,,4pm-10pm,4pm-10pm,4pm-10pm,4pm-10pm,4pm-10pm,,,Brew Pub,http://unionpizzaandbrewing.com/,-96.07805821499994,46.28300974700005,1
+175,Oakhold brewery,200 W Lake Dr,Detroit Lakes,MN,56501,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,part of Lakeside Tavern,Brew Pub,http://www.oakholdbrewery.com/,-95.84761918299995,46.806553447000056,1
+177,Canal Park Brewing Co,300 Canal Park Dr,Duluth,MN,55802,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-12am,11am-12am,11am-11pm,"2016 - 1,200 barrels produced",Brew Pub,https://canalparkbrewery.com/,-92.09409550799995,46.78472502000005,1
+178,Fitger's Brewhouse,600 E Superior St,Duluth,MN,55802,11am-10pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-10pm,"2016 - 1,862 barrels produced",Brew Pub,https://fitgersbrewhouse.com/,-92.09072827399996,46.792433472000035,1
+179,Boathouse Brewpub and Restaurant,47 E Sheridan St,Ely,MN,55731,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,11am-11pm,2016 - 275 barrels produced,Brew Pub,http://boathousebrewpub.com/,-91.86565169999993,47.90334780900007,1
+180,Loony's Brew,3481 Main St,International Falls,MN,56649,4pm-1am,4pm-1am,4pm-1am,4pm-1am,4pm-1am,4pm-1am,4pm-10pm,,Brew Pub,http://www.loonysbrew.com/,-93.34818315399995,48.61544488900006,1
+181,Gun Flint Tavern & Brewpub,111 W Wisconsin St,Grand Marais,MN,55604,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,2016 - 200 barrels produced,Brew Pub,http://www.gunflinttavern.com/,-90.33522369599997,47.74943536500006,1
+182,Carmody Irish Pub,308 E Superior St,Duluth,MN,55802,3pm-12am,3pm-12am,3pm-12am,3pm-12am,3pm-12am,3pm-12am,3pm-12am,2016 - 115 barrels produced,Brew Pub,http://www.carmodyirishpub.com/,-92.09397233799994,46.78996204000003,1
+183,Rock Bottom Brewery,800 LaSalle Plaza,Minneapolis,MN,55402,11am-1am,11am-1am,11am-1am,11am-1am,11am-2am,11am-2am,11am-1am,,Brew Pub,https://www.rockbottom.com/locations/minneapolis/,-93.27658310199998,44.97639602200007,1
+184,The Herkimer Pub & Brewery,2922 Lyndale Ave S,Minneapolis,MN,55408,10am-2am,10am-2am,10am-2am,10am-2am,10am-2am,10am-2am,10am-2am,,Brew Pub,http://www.theherkimer.com/the-beer/,-93.28839030899998,44.949119542000055,1
+185,Town Hall Lanes,5019 S 34th Ave,Minneapolis,MN,55417,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brew Pub,http://www.thlanes.com/,-93.22268696899994,44.911883605000064,1
+186,Northbound Smokehouse,2617 E 38th St,Minneapolis,,,11am-1am,11am-1am,11am-1am,11am-1am,11am-2am,11am-2am,11am-1am,,Brew Pub,http://northboundbrewpub.com/,-93.23241552299999,44.93423686700003,1
+187,Town Hall Tap,4810 Chicago Ave S,Minneapolis,MN,55417,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,,Brew Pub,http://www.townhalltap.com/contactlocation/,-93.26283439099996,44.91575208000006,1
+188,Town Hall Brewery,1430 Washington Ave S,Minneapolis,MN,55454,11am-1am,11am-1am,11am-1am,11am-1am,11am-2am,11am-2am,11am-12am,,Brew Pub,http://www.townhallbrewery.com/,-93.24774417999998,44.97330508400005,1
+189,August Schell Brewing Co,1860 Schells Rd,New Ulm,MN,56073,,,,,,,,,Brewery,http://www.schellsbrewery.com/,-94.44995519999996,44.28938430000005,1
+191,Bang Brewing,2320 Capp Road,St Paul,MN,55114,,,,4pm-8pm,4pm-10pm,2pm-10pm,,,Brewery,http://bangbrewing.com/,-93.19259059999996,44.97048070000005,1
+193,Blacklist Brewing Company,200 E 2nd St,Duluth,MN,55805,,,,,,,,,Brewery,http://www.blacklistbrewing.com/,-92.09768591999995,46.79030051900003,1
+196,Gull Dam Brewing,25202 Smiley Rd,Nisswa,MN,56468,,,,,,,,,Brewery,http://gulldambrewing.com/,-94.28695351899995,46.51797890000005,1
+198,Harriet Brewing,3036 Minnehaha Ave,Minneapolis,MN,55406,,,,,,,,,Brewery,http://www.harrietbrewing.com/,-93.23387039999994,44.94714440000006,1
+202,Lucid Brewing,6020 Culligan Way,Minnetonka,MN,55345,,,,,,,,,Brewery,http://www.lucidbrewing.com/,-93.44972499999996,44.89521800000006,1
+203,Mantorville Brewing Co,101 East Fifth St,Mantorville,MN,55955,,,,,,,,,Brewery,http://www.mantorvillebeer.com/,-92.75431319999994,44.066693800000046,1
+205,Olvalde Farm and Brewing Company,16557 County Road 25,Rollingstone,MN,55969,,,,,,,,,Brewery,http://olvalde.com/,-91.8189963,44.09926660000007,1
+206,Sidhe Brewing Co,652 Jenks Ave E,St Paul,MN,55130,,,,,,,,,Brewery,http://www.sidhebrewing.com/,-93.07310599999994,44.97096700000003,1
+208,South Fork Brewing Co,229 2nd St N,Delano,MN,55328,,,,,,,,,Brewery,http://southforkbrewingcompany.com/,-93.78788499999995,45.04222929200006,1
+210,Vine Park Brewing Co,1254 West 7th,St Paul,MN,55102,,,,,,,,,Brewery,http://www.vinepark.com/,-93.13433649999995,44.92224080000006,1
+212,Boom Island Brewing ,2014 Washington Ave N #300,Minneapolis,MN,55411,,,4pm-9pm,4pm-9pm,4pm-9pm,1pm-9pm,1pm-6pm,,Brewery,http://boomislandbrewing.com/,-93.28173365799995,44.99986500000006,1
+213,Pryes Brewing Co,1401 W River Rd N,Minneapolis,MN,55411,,,4pm-10pm,4pm-11pm,3pm-12am,11am-12am,11am-9pm,,Brewery,https://www.pryesbrewing.com/,-93.27606264199993,44.994047525000035,1
+214,Lakes & Legends Brewing Co,1368 LaSalle Ave,Minneapolis,MN,55403,,3pm-10pm,3pm-10pm,3pm-10pm,3pm-12am,12pm-12am,12pm-10pm,,Brewery,http://lakesandlegends.com,-93.27936032099996,44.96907622000004,1
+215,HeadFlyer Brewing Co,861 E Hennepin Ave,Minneapolis,MN,55417,3pm-10pm,3pm-10pm,3pm-10pm,3pm-10pm,2pm-12am,12pm-12am,12pm-9pm,,Brewery,http://www.headflyerbrewing.com/,-93.21065499999997,44.89612500000004,1
+216,56 Brewing Co,3055 Columbia St NE,Minneapolis,MN,55418,4pm-10pm,4pm-10pm,4pm-10pm,4pm-11pm,12pm-12am,12pm-12am,11am-8pm,,Brewery,http://56brewing.com/,-93.27284364999997,45.02367900000006,1
+217,Tin Whiskers Brewing Co,125 E 9th St,St Paul,MN,55101,,4pm-10pm,4pm-10pm,4pm-10pm,3pm-11pm,12pm-11pm,12pm-8pm,,Brewery,http://twbrewing.com/,-93.09347398999994,44.95071801000005,1
+218,Urban Growler,2325 Endicott St,St Paul,MN,55114,,11am-10pm,11am-10pm,11am-10pm,11am-11pm,11am-11pm,11am-8pm,,Brewery,http://www.urbangrowlerbrewing.com/,-93.19347859899995,44.970128977000066,1
+221,Wayzata Brew Works,294 Grove Ln E,Wayzata,MN,55391,4pm-10pm,4pm-10pm,4pm-10pm,4pm-10pm,2pm-12am,12pm-12am,12pm-8pm,,Brewery,http://www.wayzatabrewworks.com/,-93.51806344499994,44.96991746600003,1
+223,Schram Vineyards Winery & Brewery,8785 Airport Rd,Waconia,MN,55387,,,,1pm-9pm,1pm-9pm,12pm-9pm,12pm-5pm,summer hours April - October,Brewery,http://schramvineyards.com/,-93.74582265799995,44.84415653600007,1
+224,ENKI Brewing Co,1495 Stieger Lake Ln,Excelsior,MN,55331,,4pm-10pm,4pm-10pm,4pm-10pm,2pm-10pm,12pm-10pm,12pm-7pm,new location,Brewery,http://www.enkibrewing.com/,-93.62375999999995,44.86865000000006,1
+225,Hoops Brewing,325 Lake Ave S,Duluth,MN,55802,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,11am-12am,,Brewery,https://hoopsbrewing.com/,-92.095740397,46.78310451700001,1
+226,Big Axe Brewing Co,25435 Main St,Nisswa,MN,56468,12pm-9pm,12pm-9pm,12pm-9pm,12pm-9pm,12pm-11pm,12pm-10pm,12pm-6pm,,Brewery,http://www.bigaxebrewing.com/,-94.28876364999998,46.51988998300004,1
+227,Lupine Brewing Co,248 N. River St,Delano,MN,55328,,,4pm-10pm,4pm-10pm,4pm-11pm,2pm-11pm,2pm-6pm,,Brewery,http://lupinebrewing.com,-93.78929209999995,45.04271374900003,1
+228,Starkeller Brewing Co,2215 N Garden St,New Ulm,MN,56073,,,,,4pm-8pm,12pm-8pm,12pm-4pm,owned by Schell's,Brewery,http://schellsbrewery.com/locations/starkeller-brewery/,-94.49195056699995,44.332827189000064,1
+229,Bank Brewing Co,200 S Main St,Hendricks,MN,56136,,,,,4pm-8pm,4pm-8pm,,,Brewery,http://www.bankbrewing.com,-96.42578382599999,44.50599666800007,1
+230,Day Block Brewing Co,1105 Washington Ave S,Minneapolis,MN,55415,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,11am-1am,,Brew Pub,https://www.dayblockbrewing.com,-93.25294126499993,44.97517565500004,1
+232,Lazy Loon Lanes,305 Wilson St E,Norwood Young America,MN,55368,1pm-8pm,1pm-8pm,1pm-8pm,1pm-8pm,1pm-10pm,1pm-10pm,1pm-8pm,"bowling, guest beer, wine, other drink options",Brew Pub,http://lovetheloon.com/bowling.html,-93.92138567799998,44.77042757200007,1
+233,Dubh Linn Irish Brew Pub,109 W Superior St,Duluth,MN,55802,11am-2am,11am-2am,11am-2am,11am-2am,11am-2am,11am-2am,,2016 - 150 barrels produced,Brew Pub,https://dubhlinnpub.com/,-92.09982991099997,46.78565603100002,1
+234,Reads Landing Brewing Co,70555 202nd St,Reads Landing,MN,55968,,,11am-9pm,11am-9pm,11am-10pm,11am-10pm,12pm-9pm,,Brew Pub,https://www.rlbrewingco.com,-92.07884311199996,44.40287764000004,1
+235,Hoppy Girl Brewing,136 Bridge Ave,Wabasha,MN,55981,late summer 17,confused on the name,,,,,,,Brew Pub,http://www.hoppygirlbrewing.com,-92.03564506499998,44.38443975000007,1

@@ -43,7 +43,7 @@ class FlaskExtension(Flask):  # inherit from Flask object
     def __init__(self, name, *args, **kwargs):
 
         # call super class
-        super(self.__class__, self).__init__(name)
+        super(self.__class__, self).__init__(name, *args, **kwargs)
 
         # wrap in CORS for cross origin sharing
         self.cors = CORS(self)

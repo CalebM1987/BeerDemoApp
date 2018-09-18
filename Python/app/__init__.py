@@ -19,7 +19,7 @@ if not os.path.exists(download_folder):
 
 # init app inherited from our base.FlaskExtension object
 app_name = os.path.basename(__file__).split('.')[0]
-app = FlaskExtension(app_name, static_url_path=download_folder)
+app = FlaskExtension(app_name, static_folder=download_folder)
 
 # set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
@@ -54,6 +54,7 @@ def load_user_from_request(request):
             user = userStore.get_user(token=token)
             if user.activated == 'False':
                 return None
+            return user
         except UserNotFound:
             return None
 

@@ -24,7 +24,6 @@ table_dict = {
     'categories': Category
 }
 
-
 # REST API METHODS BELOW
 
 @brewery_api.route('/beer/categories')
@@ -122,6 +121,7 @@ def export_table_data(tablename):
             del args['fields']
 
         outfile = export_data(table, fields, f, **args)
-        url = url_for('static', filename=os.path.basename(outfile))
-        return success('Successfully exported data', url=url)
+        return success('successfully exported data', url=url_for('static', filename=os.path.basename(outfile), _external=True))
+        # return send_file(outfile, mimetype='application/octet-stream', as_attachment=True, attachment_filename=os.path.basename(outfile))
+        # return success('Successfully exported data', url=url)
     raise InvalidResource

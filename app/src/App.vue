@@ -80,17 +80,28 @@
     font-weight: bold;
     color: white;
   }
-
-  .btn-danger {
-    min-width: 6rem;
-  }
-
-  button.theme:hover, button.theme.active {
+  button.theme:hover:enabled, button.theme.active:enabled {
     background-color: darkorange !important;
     border-color: darkorange !important;
     font-weight: bold;
     color: white;
   }
+
+  button.theme:disabled{
+    background-color: rgba(153, 61, 0, 0.3);
+    cursor: not-allowed;
+    color: gray;
+  }
+
+  button.theme:disabled:hover{
+
+  }
+
+  .btn-danger {
+    min-width: 6rem;
+  }
+
+
   .control-btn-active {
     background-color: orange;
   }

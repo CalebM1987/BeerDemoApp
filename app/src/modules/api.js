@@ -10,10 +10,10 @@ const default_request_options = {
 const default_activation_url = window.location.href.replace('/sign-up', '/users/{id}/activate');
 
 // request wrapper to pass in token
-function _request(url, options={}){
+function _request(url, options={}, dataOnly=true){
   // api.token ? options.token = api.token: null;
   console.log('OPTIONS IS: ', options);
-  return request(url, options);
+  return request(url, options, dataOnly);
 }
 
 const api = {
@@ -109,6 +109,22 @@ const api = {
 
   authTest(){
     return _request('/users/welcome');
+  },
+
+  async exportData({table='breweries', format='csv'}={}){
+    try {
+      const resp = await _request(`/data/${table}/export?f=${format}`, {
+        method: 'post'
+      });
+      // const blob = format === 'csv' ? new Blob(['\ufeff', resp.data]): new Blob([resp], { type: 'octet/stream' });
+      // console.log('RESP: ', resp);
+      // return { data: URL.createObjectURL(blob), filename: 'breweries.csv' };//axios.defaults.baseURL + resp.url;
+      const parts = resp.url.split('/');
+      return { url: resp.url, filename: parts[parts.length-1] };
+    } catch(err){
+      console.warn('export data failed: ', err);
+    }
+
   },
 
   async maboxReverseGeocode(lat, lng, access_token){
