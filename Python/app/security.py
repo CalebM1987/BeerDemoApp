@@ -1,7 +1,6 @@
 import random
 import string
 import base64
-from datetime import datetime
 from flask import Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
@@ -11,6 +10,7 @@ from exceptions import *
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from datetime import datetime, timedelta
 
 # user fields to return
 user_fields = ['id', 'name', 'username', 'email']
@@ -150,7 +150,10 @@ def login():
         if validatedUser.activated == 'False':
             raise UserNotActivated
         login_user(validatedUser, remember=remember_me)
+
+        # update last login and expires
         validatedUser.last_login = datetime.utcnow()
+        validatedUser.expires = validatedUser.last_login + timedelta(hours=8)
         session.commit()
         return success('user logged in', token=validatedUser.token)
     raise InvalidCredentials

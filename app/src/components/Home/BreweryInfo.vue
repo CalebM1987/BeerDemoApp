@@ -13,7 +13,7 @@
 
       <hr>
       <p>{{ properties.address }}</p>
-      <p>{{ properties.city }}</p>
+      <p>{{ properties.city }}, {{ properties.state }} {{ properties.zip }}</p>
       <b-link :href="properties.website" target="_blank" v-if="properties.website">view website</b-link>
 
 
