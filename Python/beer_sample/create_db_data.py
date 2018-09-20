@@ -5,7 +5,9 @@ import six
 thisDir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(thisDir))
 import munch
-from app.models import Beer, Brewery, BeerPhotos, Category, Style, session
+from app import models
+reload(models)
+from app.models import Beer, BeerPhotos, Brewery, Category, Style, session, create_beer_photo
 from app.security import userStore
 from datetime import datetime
 import csv
@@ -94,7 +96,8 @@ def create_data():
         newBeer = Beer(**beer)
 
         # create new beer photo
-        newBeer.photos.append(BeerPhotos(photo_name=photo_name, data=photoBlob))
+        # newBeer.photos.append(create_beer_photo(beer_id=newBeer.id, photo_name=photo_name, data=photoBlob))
+        newBeer.photos.append(BeerPhotos(**create_beer_photo(photo_name, photoBlob)))
         mankatoBrewery.beers.append(newBeer)
 
     # commit db changes
@@ -105,3 +108,7 @@ if __name__ == '__main__':
 
     # run function to create the data
     create_data()
+
+    # had some issues with db corrupting see:
+    #   http://www.froebe.net/blog/2015/05/27/error-sqlite-database-is-malformed-solved/
+    # in sqlite run: "pragma integrity_check;"

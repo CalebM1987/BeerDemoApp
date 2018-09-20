@@ -99,6 +99,7 @@ def list_fields(table):
     cols = table.__table__.columns if hasattr(table, '__table__') else table.columns
     return [f.name for f in cols]
 
+
 def query_wrapper(table, **kwargs):
     """query wrapper for complex queries via kwargs
 
@@ -377,13 +378,19 @@ def remove_files(path, exclude=[], older_than=True, test=False, subdirs=False, p
     return
 
 
-def get_row(table, d, key):
+def get_object(table, d, key):
     val = d.get(key)
     if val:
         return session.query(table).filter_by(**{key: val}).first()
     return None
 
+def create_object(table, **kwargs):
+    return table(**kwargs)
+
 def update_object(obj, **kwargs):
     for k,v in six.iteritems(kwargs):
         setattr(obj, k, v)
+
+def delete_object(obj):
+    obj.delete() if hasattr(obj, 'delete') else session.delete(obj)
 

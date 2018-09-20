@@ -104,6 +104,19 @@ def download_beer_photo(id):
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
 
+@brewery_api.route('/beer_photos/<id>/update', methods=['POST', 'PUT'])
+def update_photo(id):
+    if not id:
+        raise InvalidResource
+    args = collect_args()
+    beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
+
+    new_photo = create_beer_photo(**args)
+    update_object(beer_photo, **new_photo)
+    session.commit()
+    return success('successfully updated photo')
+
+
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])
 @login_required
 def export_table_data(tablename):

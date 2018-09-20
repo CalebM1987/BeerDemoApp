@@ -9,7 +9,7 @@
           </i>
         </span>
         <span class="float-right action-btn" style="margin-right: 0.35rem;">
-          <i class="fas fa-pen" style="color: forestgreen;" title="edit beer"></i>
+          <i class="fas fa-pen" style="color: forestgreen;" title="edit beer" @click="goToBeer"></i>
         </span>
       </h5>
       <p>{{ beer.description }}</p>
@@ -41,6 +41,8 @@
     },
     methods: {
       goToBeer(){
+
+        this.$router.push({ name: 'editableBeerInfo', params: { id: this.beer.id } })
 
       },
 

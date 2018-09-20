@@ -9,7 +9,7 @@ from flask_login import UserMixin
 from datetime import timedelta
 from PIL import Image
 
-__all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
+__all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session', 'create_beer_photo')
 
 # db path, make sure "check_same_thread" is set to False
 thisDir = os.path.dirname(__file__)
@@ -27,24 +27,7 @@ class BeerPhotos(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     beer_id = Column(Integer, ForeignKey('beers.id'))
     photo_name = Column(String(100))
-    data = Column(LargeBinary)
-
-    def __init__(self, photo_name, data):
-        """custom handler for inserting data"""
-        name, ext = os.path.splitext(photo_name)
-        self.photo_name = '{}.png'.format(os.path.basename(name))
-
-        # create thumbnail version of photo
-        thumbnail = io.BytesIO()
-        with Image.open(io.BytesIO(data)) as im:
-
-            # create thumbnail 256x256 pixels
-            im.thumbnail((256, 256), Image.ANTIALIAS)
-            im.save(thumbnail, 'PNG', optimize=True, quality=50, progressive=True)
-            self.data = thumbnail.getvalue()
-            thumbnail.close()
-        del thumbnail
-
+    data = Column(LargeBinary, default=None)
 
     def __repr__(self):
         return basic_repr(self, 'photo_name')
@@ -54,11 +37,11 @@ class Beer(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     brewery_id = Column(Integer, ForeignKey('breweries.id'))
     name = Column(String(150))
-    description = Column(String(500))
-    style = Column(String(50))
-    alc = Column(Float)
-    ibu = Column(Integer)
-    color = Column(String(25))
+    description = Column(String(500), default=None)
+    style = Column(String(50), default=None)
+    alc = Column(Float, default=None)
+    ibu = Column(Integer, default=None)
+    color = Column(String(25), default=None)
     photos = relationship(BeerPhotos)
     created_by = Column(Integer, ForeignKey('users.id'))
     brewery = relationship('Brewery', back_populates='beers')
@@ -76,16 +59,16 @@ class Brewery(Base):
     city = Column(String(50))
     state = Column(String(2))
     zip = Column(String(11))
-    monday = Column(String(30))
-    tuesday = Column(String(30))
-    wednesday = Column(String(30))
-    thursday = Column(String(30))
-    friday = Column(String(30))
-    saturday = Column(String(30))
-    sunday = Column(String(30))
-    comments = Column(String(255))
-    brew_type = Column(String(50))
-    website = Column(String(255))
+    monday = Column(String(30), default=None)
+    tuesday = Column(String(30), default=None)
+    wednesday = Column(String(30), default=None)
+    thursday = Column(String(30), default=None)
+    friday = Column(String(30), default=None)
+    saturday = Column(String(30), default=None)
+    sunday = Column(String(30), default=None)
+    comments = Column(String(255), default=None)
+    brew_type = Column(String(50), default='Brewery')
+    website = Column(String(255), default=None)
     x = Column(Float)
     y = Column(Float)
     created_by = Column(Integer, ForeignKey('users.id'))
@@ -148,3 +131,33 @@ Base.metadata.create_all(engine)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+# helper for creating a beer photo
+def create_beer_photo(photo_name, data):
+    """custom handler for inserting data"""
+    name, ext = os.path.splitext(photo_name)
+    photo_name = '{}.png'.format(os.path.basename(name))
+
+
+    # create thumbnail version of photo
+    thumbnail = io.BytesIO()
+    thumbData = None
+    with Image.open(io.BytesIO(data)) as im:
+
+        # create thumbnail 256x256 pixels
+        im.thumbnail((256, 256), Image.ANTIALIAS)
+        im.save(thumbnail, 'PNG', optimize=True, quality=50, progressive=True)
+        thumbData = thumbnail.getvalue()
+        thumbnail.close()
+    del thumbnail
+
+    # create actual photo
+    return {
+        'photo_name': photo_name,
+        'data': thumbData
+    }
+    # photo = BeerPhotos(beer_id=beer_id, photo_name=photo_name, data=thumbData)
+    #
+    # # commit changes
+    # session.add(photo)
+    # session.commit()

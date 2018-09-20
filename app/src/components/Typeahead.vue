@@ -1,5 +1,5 @@
 <template>
-  <div class="Typeahead mt-2">
+  <div class="Typeahead mt-3">
     <i class="fa fa-spinner fa-spin input-icon" v-show="loading"></i>
     <div>
       <span v-show="isEmpty"><i class="fa fa-search input-icon"></i></span>

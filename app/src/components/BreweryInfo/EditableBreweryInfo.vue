@@ -75,7 +75,7 @@
         </b-col>
 
         <b-col sm="6">
-          <b-button @click="submitEdits" class="theme mt-2">Save</b-button>
+          <b-button @click="submitEdits" class="theme mt-2">Save Changes</b-button>
         </b-col>
 
       </b-row>
@@ -139,8 +139,7 @@
       hook.eb = this;
       console.log('mounted editable brewery: ', this.$route.params);
       const brewery = await this.update();
-      console.log('editable brewery is: ', brewery)
-
+      console.log('editable brewery is: ', brewery);
     },
 
     async beforeRouteUpdate(to, from, next){
@@ -165,6 +164,10 @@
 
       async addBeer(){
         console.log('clicked add beer')
+      },
+
+      goToEditBeer(id){
+        this.$router.push({ name: 'editableBeerInfo', params: {id: id} })
       },
 
       submitEdits(){

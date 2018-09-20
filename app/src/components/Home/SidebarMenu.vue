@@ -1,6 +1,6 @@
 <template>
   <div class="menu-container">
-    <typeahead></typeahead>
+    <typeahead />
   </div>
   
 </template>

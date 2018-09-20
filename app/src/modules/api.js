@@ -40,6 +40,10 @@ const api = {
     return request(`/breweries/${breweryId}/beers`, options);
   },
 
+  getBeer(id){
+    return request(`/beers/${id}`);
+  },
+
   getBeers(options={}){
     return request('/beers', options);
   },
@@ -63,6 +67,14 @@ const api = {
 
   downloadPhoto(photo_id, options){
     return request(`/beer_photos/${photo_id}`, options);
+  },
+
+  async getStyles(options, asOptions=true){
+    const resp = await request('/beer/styles', options);
+    if (asOptions){
+      return resp.map(s => s.style_name).sort().map(s => { return { text: s, value: s } });
+    }
+    return resp;
   },
 
   async login(usr, pw, remember_me=false){
