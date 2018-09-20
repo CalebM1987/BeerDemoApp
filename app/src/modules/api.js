@@ -9,13 +9,6 @@ const default_request_options = {
 
 const default_activation_url = window.location.href.replace('/sign-up', '/users/{id}/activate');
 
-// request wrapper to pass in token
-function _request(url, options={}, dataOnly=true){
-  // api.token ? options.token = api.token: null;
-  console.log('OPTIONS IS: ', options);
-  return request(url, options, dataOnly);
-}
-
 const api = {
   token: null,
 
@@ -31,7 +24,7 @@ const api = {
 
   getBrewery(id, options=default_request_options){
     if (id){
-      return _request(`/breweries/${id}`, options);
+      return request(`/breweries/${id}`, options);
     }
 
   },
@@ -91,7 +84,7 @@ const api = {
   },
 
   async logout(){
-    const response = await _request('/users/logout', {method: 'post'}, false);
+    const response = await request('/users/logout', {method: 'post'}, false);
     console.log('FULL LOGOUT RESPONSE: ', response);
     return response.data;
   },
@@ -115,24 +108,33 @@ const api = {
 
   },
 
+  createItem(table, options={}){
+    options.method = 'post';
+    return request(`/data/${table}/create`, options);
+  },
+
+  updateItem(table, id, options){
+    options.method = 'put';
+    return request(`/data/${table}/${id}/update`, options);
+  },
+
+  deleteItem(table, id){
+    return request(`/data/${table}/${id}/delete`, { method: 'delete' });
+  },
+
   activate(id){
     return request(`/users/${id}/activate`, { method: 'post' });
   },
 
   authTest(){
-    return _request('/users/welcome');
+    return request('/users/welcome');
   },
 
   async exportData({table='breweries', format='csv'}={}){
     try {
-      const resp = await _request(`/data/${table}/export?f=${format}`, {
+      return await request(`/data/${table}/export?f=${format}`, {
         method: 'post'
       });
-      // const blob = format === 'csv' ? new Blob(['\ufeff', resp.data]): new Blob([resp], { type: 'octet/stream' });
-      // console.log('RESP: ', resp);
-      // return { data: URL.createObjectURL(blob), filename: 'breweries.csv' };//axios.defaults.baseURL + resp.url;
-      const parts = resp.url.split('/');
-      return { url: resp.url, filename: parts[parts.length-1] };
     } catch(err){
       console.warn('export data failed: ', err);
     }

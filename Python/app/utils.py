@@ -11,6 +11,7 @@ import shutil
 import datetime
 import operator
 import fnmatch
+from werkzeug.exceptions import HTTPException
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
@@ -45,6 +46,21 @@ def success(msg, **kwargs):
     kwargs['message'] = msg
     kwargs['status'] = 'success'
     return jsonify(kwargs)
+
+def dynamic_error(errName='FlaskRuntimeError', **kwargs):
+    defaults = {
+        'code': 501,
+        'description': 'Runtime Error',
+        'message': 'A runtime error has occured'
+    }
+    atts = {}
+    for k,v in six.iteritems(defaults):
+        atts[k] = kwargs.get(k) or defaults[k]
+
+    # create HTTPException Subclass Error dynamically with type()
+    de = type(errName, (HTTPException,), atts)
+    return json_exception_handler(de)
+
 
 def json_exception_handler(error):
     response = jsonify({
@@ -378,11 +394,13 @@ def remove_files(path, exclude=[], older_than=True, test=False, subdirs=False, p
     return
 
 
-def get_object(table, d, key):
-    val = d.get(key)
-    if val:
-        return session.query(table).filter_by(**{key: val}).first()
-    return None
+def get_object(table, **kwargs):#, d, key):
+    # val = d.get(key)
+    # if val:
+    try:
+        return session.query(table).filter_by(**kwargs).first()
+    except:
+        return None
 
 def create_object(table, **kwargs):
     return table(**kwargs)
@@ -390,7 +408,10 @@ def create_object(table, **kwargs):
 def update_object(obj, **kwargs):
     for k,v in six.iteritems(kwargs):
         setattr(obj, k, v)
+    return obj
 
 def delete_object(obj):
+    oid = obj.id
     obj.delete() if hasattr(obj, 'delete') else session.delete(obj)
+    return oid
 

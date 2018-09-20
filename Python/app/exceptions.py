@@ -18,6 +18,11 @@ class TokenRequired(HTTPException):
     description = 'Token Required'
     message = 'Access Denied: a Token is required to access this resource'
 
+class SessionExpired(HTTPException):
+    code = 463
+    description = 'Session Expired'
+    message = 'Your session has expired, please login again'
+
 
 class InvalidResource(HTTPException):
     code = 513

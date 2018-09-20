@@ -2,15 +2,15 @@
   <b-card bg-variant="light" class="editable-beer" body-class="card-block">
 
     <!--  SPINNER FOR LOADING -->
-    <span style="font-size: 3.5rem;" class="centered" v-show="isLoading">
-      <spinner :text="'loading brewery info...'" :visible="isLoading"/>
+    <span style="font-size: 3.5rem;" class="centered" v-if="isLoading">
+      <spinner :text="'loading beer info...'" :visible="isLoading"/>
     </span>
 
     <!-- EDITABLE BREWERY CONTENT -->
-    <b-container class="mx-auto">
+    <b-container class="mx-auto" v-else>
       <b-row class="mt-3">
         <b-col>
-          <div class="img-container" v-if="photoUrl !== null && 0">
+          <div class="img-container" v-if="photoUrl !== null">
             <b-img :src="photoUrl" height="200" />
             <!--<font-awesome-icon prefix="fas"-->
                                <!--icon="minus-circle"-->
@@ -43,7 +43,7 @@
       </b-row>
 
       <b-row class="mt-2" align-h="end">
-        <b-col :cols="prop.cols" v-for="prop in beer_props">
+        <b-col :cols="prop.cols" v-for="prop in beer_props" :key="prop.field">
           <b-form-group :label="prop.label + ':'" label-text-align="left">
             <b-form-input :type="prop.type" v-model="beer[prop.field]" />
           </b-form-group>

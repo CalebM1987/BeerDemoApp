@@ -11,7 +11,7 @@ import glob
 from utils import *
 from models import session
 from datetime import timedelta
-from exceptions import UserNotFound
+from exceptions import *
 
 # downloads folder for exports
 if not os.path.exists(download_folder):
@@ -53,12 +53,18 @@ def load_user_from_request(request):
         try:
             user = userStore.get_user(token=token)
             if user.activated == 'False':
-                return None
+                # return None
+                raise UserNotActivated
+            if datetime.datetime.utcnow() > user.expires:
+                # return None
+                raise SessionExpired
             return user
         except UserNotFound:
-            return None
+            # return None
+            raise UserNotFound
 
-    return None
+    # return None
+    raise TokenRequired
 
 
 # API METHODS BELOW

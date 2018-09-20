@@ -83,12 +83,12 @@
 
       <!--  BEER ROWS -->
       <b-row class="mt-4">
-        <accordion :header="'Featured Beers'" @action-btn-clicked="addBeer">
+        <accordion :header="'Featured Beers'" @action-btn-clicked="openNewBeerModal">
           <template slot="action_btn">
             <i class="fas fa-plus-circle" title="add new beer"></i>
           </template>
 
-          <b-list-group v-for="beer in beers" v-show="beers.length">
+          <b-list-group v-for="beer in beers" v-show="beers.length" :key="beer.id">
             <beer-preview :beer="beer"/>
           </b-list-group>
 
@@ -100,6 +100,9 @@
 
     </b-container>
 
+    <!-- PLACEHOLDER FOR NEW BEER MODAL -->
+    <new-beer-modal :brewery="brewery" @created-beer="goToEditBeer" ref="newBeerModal"/>
+
 
   </b-card>
 </template>
@@ -109,7 +112,7 @@
   import BeerPreview from './BeerPreview';
   import enums from '../../modules/enums';
   import Accordion from '../UI/Accordion';
-  import Spinner from '../UI/Spinner';
+  import NewBeerModal from '../NewBeerModal';
   import { FormTextarea } from 'bootstrap-vue/es/components';
   import Vue from 'vue';
   Vue.use(FormTextarea);
@@ -119,7 +122,7 @@
     components: {
       BeerPreview,
       Accordion,
-      Spinner
+      NewBeerModal
     },
     data(){
       return {
@@ -161,13 +164,15 @@
         this.isLoading = false;
         return this.brewery;
       },
-
-      async addBeer(){
-        console.log('clicked add beer')
+      openNewBeerModal(){
+        this.$refs.newBeerModal.show();
       },
-
       goToEditBeer(id){
-        this.$router.push({ name: 'editableBeerInfo', params: {id: id} })
+        console.log('navigating to new beer: ', id);
+        this.$refs.newBeerModal.hide();
+        setTimeout(()=>{
+          this.$router.push({ name: 'editableBeerInfo', params: {id: id} });
+        }, 250);
       },
 
       submitEdits(){

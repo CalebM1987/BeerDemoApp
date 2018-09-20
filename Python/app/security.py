@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
-# user fields to return
+# user fields to return (no others allowed for security purposes)
 user_fields = ['id', 'name', 'username', 'email']
 
 # create blue print
@@ -106,7 +106,8 @@ def error():
 @security_api.route('/users/<id>')
 def get_users(id=None):
     args = collect_args()
-    fields = args.get('fields') or user_fields
+    fields = validate_fields(User, args.get('fields'))
+    fields = [f for f in fields if f in user_fields]
     return endpoint_query(User, fields, id)
 
 @security_api.route('/users/create', methods=['POST'])

@@ -156,8 +156,3 @@ def create_beer_photo(photo_name, data):
         'photo_name': photo_name,
         'data': thumbData
     }
-    # photo = BeerPhotos(beer_id=beer_id, photo_name=photo_name, data=thumbData)
-    #
-    # # commit changes
-    # session.add(photo)
-    # session.commit()

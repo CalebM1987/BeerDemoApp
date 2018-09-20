@@ -16,7 +16,6 @@
 <script>
   import AppNavBar from './components/AppNavBar';
   import Home from './components/Home/Home';
-  import { parseURI } from "./modules/utils";
 
   export default {
     name: 'app',
@@ -33,11 +32,6 @@
     },
     mounted(){
       hook.app = this;
-      // this.args = parseURI();
-      // console.log('uri args: ', this.args);
-      // if ('activate' in this.args){
-      //   this.$router.push({name: 'activate', params: { id: 2 }});
-      // }
     },
 
     methods: {},
