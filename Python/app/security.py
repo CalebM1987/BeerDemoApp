@@ -13,7 +13,7 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
 # user fields to return (no others allowed for security purposes)
-user_fields = ['id', 'name', 'username', 'email']
+user_fields = ['id', 'name', 'username', 'email', 'activated']
 
 # create blue print
 security_api = Blueprint('security_api', __name__)

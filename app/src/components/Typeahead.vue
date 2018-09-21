@@ -50,6 +50,7 @@
       }
     },
     mounted(){hook.th = this;},
+
     methods: {
       onHit (item) {
         //window.location.href = 'http://twitter.com/' + item.screen_name

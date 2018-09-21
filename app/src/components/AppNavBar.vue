@@ -111,7 +111,12 @@
         EventBus.$emit('user-logged-in');
       },
 
+    },
 
+    watch: {
+      $route(to, from){
+        console.log('app navbar route: ', to, from);
+      }
     }
   }
 </script>

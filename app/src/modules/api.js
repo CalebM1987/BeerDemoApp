@@ -94,6 +94,11 @@ const api = {
     return resp.map(u => u.username);
   },
 
+  async userIsActive(id){
+    const resp = await request(`/users/${id}?fields=username,active,id`);
+    return resp.active === 'True'; // stored as string in db
+  },
+
   createUser({name, email, username, password, activation_url=default_activation_url } = {}){
     return request('/users/create', {
       method: 'post',
