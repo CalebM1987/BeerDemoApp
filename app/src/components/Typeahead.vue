@@ -24,7 +24,7 @@
         @mousedown="hit"
         @mousemove="setActive($item)">
           <p class="brewery-name hit-result mb-2">{{ item.name }}</p>
-          <p class="hit-result mb-1">{{ item.city }}</p>
+          <p class="hit-result mb-1">{{ item.city }}, {{ item.state }}</p>
       </b-list-group-item>
 
     </b-list-group>

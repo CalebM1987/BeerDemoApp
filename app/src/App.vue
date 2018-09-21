@@ -5,7 +5,7 @@
     <app-nav-bar />
 
     <!-- ROUTER VIEW -->
-    <keep-alive>
+    <keep-alive :exclude="['editableBeerInfo']">
       <router-view></router-view>
     </keep-alive>
 

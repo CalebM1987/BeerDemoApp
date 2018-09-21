@@ -65,6 +65,7 @@
   }
 
   .beer-info > p {
+    font-size: 95%;
     margin-top: 2px !important;
     margin-bottom: 2px !important;
   }

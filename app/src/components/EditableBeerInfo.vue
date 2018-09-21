@@ -2,28 +2,28 @@
   <b-card bg-variant="light" class="editable-beer" body-class="card-block">
 
     <!--  SPINNER FOR LOADING -->
-    <span style="font-size: 3.5rem;" class="centered" v-if="isLoading">
-      <spinner :text="'loading beer info...'" :visible="isLoading"/>
+    <span style="font-size: 3.5rem;" class="centered" v-if="state ==='loading'">
+      <spinner :text="'loading beer info...'" :visible="true"/>
     </span>
 
     <!-- EDITABLE BREWERY CONTENT -->
     <b-container class="mx-auto" v-else>
-      <b-row class="mt-3">
+      <b-row class="mt-3" align-h="center">
         <b-col>
           <div class="img-container" v-if="photoUrl !== null">
             <b-img :src="photoUrl" height="200" />
-            <!--<font-awesome-icon prefix="fas"-->
-                               <!--icon="minus-circle"-->
-                               <!--title="remove/replace photo"-->
-                               <!--class="mt-0 ml-3 mr-0 remove" />-->
             <div class="mt-3">
               <b-button class="theme">Update Photo</b-button>
             </div>
-
           </div>
 
           <div v-else class="file-uploader mx-auto w-50">
-            <drop-zone />
+            <span v-if="photoState === 'uploading'">
+              <b-alert  :show="1" v-if="photoState === 'error'" @dismissed="photoState = 'loaded'" variant="danger">Failed to Upload Photo</b-alert>
+              <spinner :visible="photoState !== 'error'" text="Uploading Photo..."/>
+            </span>
+
+            <drop-zone @received-files="photoHandler" v-else />
 
           </div>
         </b-col>
@@ -31,7 +31,7 @@
       </b-row>
 
       <b-row class="mt-4">
-        <b-col cols="12">
+        <b-col md="10" sm="12" align-h="center">
           <b-form-group label="Name:"
                         horizontal
                         label-text-align="right"
@@ -42,8 +42,8 @@
 
       </b-row>
 
-      <b-row class="mt-2" align-h="end">
-        <b-col :cols="prop.cols" v-for="prop in beer_props" :key="prop.field">
+      <b-row class="mt-2" align-h="center">
+        <b-col :sm="prop.cols * 2" :md="prop.cols" v-for="prop in beer_props" :key="prop.field">
           <b-form-group :label="prop.label + ':'" label-text-align="left">
             <b-form-input :type="prop.type" v-model="beer[prop.field]" />
           </b-form-group>
@@ -51,7 +51,7 @@
       </b-row>
 
       <b-row class="mt-2">
-        <b-col cols="12">
+        <b-col md="10" sm="12" align-h="center">
           <b-form-group label="Style:"
                         horizontal
                         label-text-align="right"
@@ -63,7 +63,7 @@
       </b-row>
 
       <b-row class="mt-2">
-        <b-col cols="12">
+        <b-col md="10" sm="12" align-h="center">
           <b-form-group label="Description:"
                         horizontal
                         label-text-align="right"
@@ -74,9 +74,12 @@
 
       </b-row>
 
-      <b-row class="mt-4 mb-4">
-        <b-col>
-          <b-button class="theme">Save Changes</b-button>
+      <b-row class="mt-4 mb-4" align-h="center">
+        <b-col md="10" sm="12">
+          <spinner :visible="state === 'saving'" text="Saving Changes..."/>
+          <b-alert :show="1" v-if="state === 'saveComplete'" @dismissed="state = 'loaded'" variant="success">Successfully Saved Changes</b-alert>
+          <b-alert  :show="1" v-if="state === 'saveFailed'" @dismissed="state = 'loaded'" variant="danger">Failed to Save Changes</b-alert>
+          <b-button class="theme" @click="saveChanges" v-if="state === 'loaded'">Save Changes</b-button>
         </b-col>
       </b-row>
 
@@ -88,65 +91,142 @@
 <script>
   import api from '../modules/api';
   import DropZone from './UI/DropZone';
+  import XhrSpinner from './UI/XhrSpinner';
+  import swal from 'sweetalert2';
 
   export default {
     name: "beer-info",
     components: {
-      DropZone
+      DropZone,
+      XhrSpinner
     },
     data(){
       return {
-        isLoading: false,
+        state: 'loading',
         beer: {},
+        copy: {},
         photoInfos: [],
+        photoState: null,
         photoUrl: null,
         beerStyles: [],
         beer_props: [
           { label: 'IBU', field: 'ibu', type: 'number', cols: 2 },
           { label: 'Alcohol %', field: 'alc', type: 'number', cols: 2 },
-          { label: 'Color', field: 'color', type: 'text', cols: 6 }
+          { label: 'Color', field: 'color', type: 'text', cols: 4 }
         ]
       }
     },
 
     async mounted(){
       hook.eb = this;
-      console.log('mounted editable brewery: ', this.$route.params);
-      const brewery = await this.update();
-      console.log('editable brewery is: ', brewery);
-
+      console.log('mounted editable beer: ', this.$route.params);
       const styles = await api.getStyles();
       this.beerStyles.length = 0;
       this.beerStyles.push(...styles);
+    },
+
+    // we want to make sure to intercept this to force the router to update
+    // the current beer
+    beforeRouteEnter(to, from, next){
+      console.log('BEFORE BEER ROUTE UPDATE: ', to, from, next);
+      next(async (vm) => {
+        await vm.update(to.params.beer_id);
+        console.log('updated Beer and calling next: ', vm.beer);
+        next();
+      });
 
     },
 
-    async beforeRouteUpdate(to, from, next){
-      console.log('BEFORE BEER ROUTE UPDATE: ', to, from, next);
-      await this.update(to.params.id);
-      console.log('updated Beer and calling next: ', this.beer);
-      this.next();
+    beforeRouteLeave (to, from, next){
+      // called when the route that renders this component is about to
+      // be navigated away from.
+      // has access to `this` component instance.
+      // make sure there haven't been any changes before leaving route
+      if (JSON.stringify(this.beer) != JSON.stringify(this.copy)) {
+        swal({
+          type: 'warning',
+          title: 'You have unsaved Edits',
+          text: 'You are about to leave this page but have unsaved edits. Do you want to save your changes before proceeding?',
+          showCancelButton: true,
+          confirmButtonColor: 'forestgreen',
+          cancelButtonColor: '#d33',
+          cancelButtonText: "Don't Save Changes",
+          confirmButtonText: 'Save Changes'
+        }).then((choice) => {
+          if (choice) {
+            // save here before proceeding
+            console.log('SAVE HERE!');
+          }
+
+          // now proceed
+          next();
+        })
+      } else {
+        next();
+      }
     },
 
     methods: {
       async update(id){
-        this.isLoading = true;
+        this.state = 'loading';
         if (!id){
-          id = this.$route.params.id;
+          id = this.$route.params.beer_id;
         }
         this.beer = await api.getBeer(id);
+        this.copy = Object.assign({}, this.beer);
         this.photoInfos.length = 0;
         const photoInfos = await api.getBeerPhotos(this.beer.id);
         console.log('photoInfos: ', photoInfos);
         this.photoInfos.push(...photoInfos);
         if (this.photoInfos.length){
           this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id);
+          this.photoState = 'loaded';
+        } else {
+          this.photoUrl = null;
+          this.photoState = 'missing';
         }
         console.log('loaded beer: ', this.beer);
-        this.isLoading = false;
+        this.state = 'loaded';
         return this.beer;
       },
-    }
+
+      async saveChanges(){
+        console.log('clicked save changes');
+       this.state = 'saving';
+        try {
+          const resp = await api.updateItem('beers', this.beer);
+          this.state = 'saveComplete';
+        } catch(err){
+          console.log('err: ', err);
+          this.state = 'saveFailed';
+        }
+
+      },
+
+      async photoHandler(files){
+        this.photoState = 'uploading';
+        const photo = files[0];
+
+        // photo already exists, we just need to update by passing in photoId
+        // otherwise it will add a new one
+        const photoId = this.photoInfos.length ? this.photoInfos[0].id: null;
+        try{
+          const resp = await api.uploadBeerPhoto(this.beer.id, photo, photoId);
+          console.log('UPLOAD PHOTO RESP: ', resp);
+          
+          // now refresh photoInfos and update photoUrl
+          const photoInfos = await api.getBeerPhotos(this.beer.id);
+          console.log('photoInfos: ', photoInfos);
+          this.photoInfos.push(...photoInfos);
+          this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id);
+          this.photoState = 'loaded';
+        } catch(err){
+          console.warn('PHOTO UPLOAD ERROR: ', err);
+          this.photoState = 'error';
+        }
+
+      }
+    },
 
   }
 </script>

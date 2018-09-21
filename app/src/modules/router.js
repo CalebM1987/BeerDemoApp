@@ -12,8 +12,8 @@ Vue.use(Router);
 const routes = [
   { path: '/', name: 'home', component: Home },
   { path: '/sign-up', name: 'signup', component: SignUp },
-  { path: '/brewery/:id', name: 'editableBreweryInfo', component: EditableBreweryInfo },
-  { path: '/beers/:id', name: 'editableBeerInfo', component: EditableBeerInfo },
+  { path: '/brewery/:brewery_id', name: 'editableBreweryInfo', component: EditableBreweryInfo },
+  { path: '/beers/:beer_id', name: 'editableBeerInfo', component: EditableBeerInfo },
   { path: '/users/:id/activate', name: 'activate', component: ActivationPage },
 
   // catch all route

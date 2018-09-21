@@ -118,13 +118,34 @@ const api = {
     return request(`/data/${table}/create`, options);
   },
 
-  updateItem(table, id, options){
-    options.method = 'put';
+  updateItem(table, data={}){
+    const options = { method: 'put', data: data };
+    const id = data.id;
     return request(`/data/${table}/${id}/update`, options);
   },
 
   deleteItem(table, id){
     return request(`/data/${table}/${id}/delete`, { method: 'delete' });
+  },
+
+  uploadBeerPhoto(beer_id, file, photoId=null){
+
+    // form data will store the photo blob in request body
+    const formData = new FormData();
+
+    // add photo blob
+    formData.append('photo', file, file.name);
+    formData.append('beer_id', beer_id);
+
+    // return response
+    return axios.post(parseInt(photoId) > 0 ? `/beer_photos/${photoId}/update`: '/beer_photo/add',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data' // required for form data
+        }
+      }
+    )
   },
 
   activate(id){

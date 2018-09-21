@@ -10,7 +10,7 @@
         <input type="file" multiple :disabled="isSaving"
                accept="image/*" class="input-file">
         <p v-if="!isSaving">
-          Drag your file(s) here to begin<br> or click to browse
+          Drag your photo here to begin<br> or click to browse
         </p>
       </div>
     </div>
@@ -42,9 +42,7 @@
 
     methods: {
       handleDrop(e){
-        console.log('dropped!')
-        // e.preventDefault();
-        // e.stopPropagation();
+        console.log('dropped!');
         console.log('dropped yo!', e)
         /*
           Capture the files from the drop event and add them to our local files
@@ -54,6 +52,7 @@
           this.files.push( e.dataTransfer.files[i] );
         }
         console.log('FILES: ', this.files);
+        this.$emit('received-files', this.files);
       },
 
       addHighlight(e){

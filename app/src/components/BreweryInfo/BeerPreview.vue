@@ -2,6 +2,7 @@
   <b-list-group-item @click="goToBeer">
     <b-media>
       <b-img slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl" height="128"/>
+      <span slot="aside" title="no image available" v-else><font-awesome-icon prefix="fas" icon="image" class="no-img"/></span>
       <h5>{{ beer.name }}
         <span class="float-right action-btn" @click="emitDeleteBeer(beer.id)">
           <i class="fas fa-minus-circle remove-beer"
@@ -12,7 +13,7 @@
           <i class="fas fa-pen" style="color: forestgreen;" title="edit beer" @click="goToBeer"></i>
         </span>
       </h5>
-      <p>{{ beer.description }}</p>
+      <p :class="[(beer.description || '').trim().length < 1 ? 'no-desc': 'desc']">{{ beer.description || 'no description available, click pen to edit' }}</p>
 
     </b-media>
   </b-list-group-item>
@@ -25,7 +26,8 @@
     mounted(){
       this.getThumbnailUrl();
       hook.bp=this;
-      },
+    },
+
     props: {
       beer: {
         type: Object,
@@ -41,8 +43,8 @@
     },
     methods: {
       goToBeer(){
-
-        this.$router.push({ name: 'editableBeerInfo', params: { id: this.beer.id } })
+        console.log('going to beer! ', this.beer.id)
+        this.$router.push({ name: 'editableBeerInfo', params: { beer_id: this.beer.id } })
 
       },
 
@@ -64,6 +66,17 @@
 </script>
 
 <style scoped>
+  .desc {
+    color: gray;
+  }
+  .no-desc {
+    color: darkgray !important;
+    font-style: italic;
+  }
+  .no-img {
+    color: lightgray;
+    font-size: 128px;
+  }
 
   .action-btn {
     cursor: pointer;

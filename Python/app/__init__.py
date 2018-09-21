@@ -47,7 +47,7 @@ def load_user_from_request(request):
     """allow users to be loaded via request params or authorization header"""
     # check for token in request params or in Authorization header
     args = collect_args()
-    print('args from request_loader: ', args)
+    #print('args from request_loader: ', args)
     token = args.get('token') or request.headers.get('Authorization')
     if token:
         try:

@@ -115,6 +115,7 @@
   import NewBeerModal from '../NewBeerModal';
   import { FormTextarea } from 'bootstrap-vue/es/components';
   import Vue from 'vue';
+  import swal from 'sweetalert2';
   Vue.use(FormTextarea);
 
   export default {
@@ -127,6 +128,7 @@
     data(){
       return {
         brewery: {},
+        copy: {},
         isLoading: false,
         weekday_fields: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
         stateList: enums.states,
@@ -141,15 +143,49 @@
     async mounted(){
       hook.eb = this;
       console.log('mounted editable brewery: ', this.$route.params);
-      const brewery = await this.update();
-      console.log('editable brewery is: ', brewery);
+      // const brewery = await this.update();
+      // console.log('editable brewery is: ', brewery);
     },
 
-    async beforeRouteUpdate(to, from, next){
-      console.log('BEFORE ROUTE UPDATE: ', to, from, next);
-      await this.update(to.params.id);
-      console.log('updated brewery and calling next: ', this.brewery);
-      this.next();
+    // we want to make sure to intercept this to force the router to update
+    // the current brewery
+    beforeRouteEnter(to, from, next){
+      next(async (vm)=>{
+        // vm is reference to this component!
+        await vm.update(to.params.brewery_id);
+        console.log('updated brewery and calling next: ', vm.brewery);
+        next();
+      })
+
+    },
+
+    beforeRouteLeave (to, from, next) {
+      // called when the route that renders this component is about to
+      // be navigated away from.
+      // has access to `this` component instance.
+      // make sure there haven't been any changes before leaving route
+      if (JSON.stringify(this.brewery) != JSON.stringify(this.copy)){
+        swal({
+          type: 'warning',
+          title: 'You have unsaved Edits',
+          text: 'You are about to leave this page but have unsaved edits. Do you want to save your changes before proceeding?',
+          showCancelButton: true,
+          confirmButtonColor: 'forestgreen',
+          cancelButtonColor: '#d33',
+          cancelButtonText: "Don't Save Changes",
+          confirmButtonText: 'Save Changes'
+        }).then((choice)=>{
+          if (choice){
+            // save here before proceeding
+            console.log('SAVE HERE!');
+          }
+
+          // now proceed
+          next();
+        })
+      } else {
+        next();
+      }
     },
 
     methods: {
@@ -157,9 +193,10 @@
         this.isLoading = true;
         this.beers.length = 0;
         if (!id){
-          id = this.$route.params.id;
+          id = this.$route.params.brewery_id;
         }
         this.brewery = await api.getBrewery(id, {'f': 'json'});
+        this.copy = Object.assign({}, this.brewery);
         this.beers.push(...await api.getBeersFromBrewery(id || this.brewery.id));
         this.isLoading = false;
         return this.brewery;

@@ -72,7 +72,8 @@
     methods: {
 
       editBrewery(){
-        this.$router.push(`/brewery/${this.feature.properties.id}`);
+        // this.$router.push(`/brewery/${this.feature.properties.id}`);
+        this.$router.push({name: 'editableBreweryInfo', params: {brewery_id: this.feature.properties.id}});
       },
 
       async fetchBeers(id){

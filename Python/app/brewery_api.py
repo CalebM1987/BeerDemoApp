@@ -104,17 +104,38 @@ def download_beer_photo(id):
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
     return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
 
+# struggling with route name here???
+@brewery_api.route('/beer_photo/add', methods=['POST'])
+def add_beer_photo():
+    args = collect_args()
+    try:
+        beer = query_wrapper(Beer, id=int(args.get('beer_id')))[0]
+    except:
+        return dynamic_error(description='Missing Beer ID', message='A Beer ID is required for submitting a photo')
+    # return jsonify(to_json(beer, beer_fields)) #test
+    photo_blob = args.get('photo')
+    try:
+        new_photo = BeerPhotos(**create_beer_photo(data=photo_blob.stream.read(), photo_name=photo_blob.filename))
+    except Exception as e:
+        return dynamic_error(message=str(e))
+    print('NEW PHOTO: ', photo_blob.filename)
+    beer.photos.append(new_photo)
+    session.commit()
+    return success('successfully updated photo', id=new_photo.id)
+
 @brewery_api.route('/beer_photos/<id>/update', methods=['POST', 'PUT'])
-def update_photo(id):
+def update_beer_photo(id):
     if not id:
         raise InvalidResource
     args = collect_args()
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
 
-    new_photo = create_beer_photo(**args)
-    update_object(beer_photo, **new_photo)
+    photo_blob = args.get('photo')
+    #new_photo = BeerPhotos(**create_beer_photo(data=photo_blob.stream.read(), photo_name=photo_blob.filename))
+    beer_photo.data = photo_blob.stream.read()
+    beer_photo.photo_name = photo_blob.filename
     session.commit()
-    return success('successfully updated photo')
+    return success('successfully updated photo', id=beer_photo.id)
 
 
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])

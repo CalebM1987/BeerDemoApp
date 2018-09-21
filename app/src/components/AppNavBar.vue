@@ -1,5 +1,8 @@
 <template>
-  <b-navbar toggleable="md" type="dark" class="theme-banner app-header" fixed>
+  <b-navbar toggleable="md" type="dark" class="theme-banner app-header" :sticky="true">
+    <span class="back mr-3" title="go back" @click="$router.back()" v-if="backEnabled">
+      <font-awesome-icon prefix="fas" icon="arrow-circle-left"/>
+    </span>
     <b-navbar-brand href="#"><strong>Brewery Finder</strong></b-navbar-brand>
 
     <b-navbar-nav class="ml-auto">
@@ -44,7 +47,6 @@
 <script>
   import api from '../modules/api';
   import LoginPage from './Home/LoginPage';
-  // import Spinner from './UI/Spinner';
   import ExportData from './ExportData';
   import { EventBus } from "../modules/EventBus";
 
@@ -52,15 +54,15 @@
     name: "app-nav-bar",
     components: {
       LoginPage,
-      ExportData,
-      // Spinner
+      ExportData
     },
     data() {
       return {
         state: null,
         showModal: false,
         userLoggedIn: false,
-        showLogout: false
+        showLogout: false,
+        backEnabled: false
       }
     },
     mounted: async function(){
@@ -115,13 +117,21 @@
 
     watch: {
       $route(to, from){
-        console.log('app navbar route: ', to, from);
+        // console.log('app navbar route: ', to, from);
+        // watch the router to see if one of these routes are active, if so we want to add a back button
+        this.backEnabled = ['editableBreweryInfo', 'editableBeerInfo'].includes(to.name);
       }
     }
   }
 </script>
 
 <style scoped>
+
+  .back {
+    font-size: 1.75rem;
+    color: white;
+    cursor: pointer;
+  }
 
   .logout-container {
     margin: auto;
