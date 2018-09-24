@@ -22,11 +22,16 @@
     <!-- MAP VIEW-->
     <map-view
             ref="mapView"
+            :userIsAuthenticated="userIsAuthenticated"
+            @clicked-add-brewery="handleAddBrewery"
+            @new-brewery-point="createNewBrewery"
+            @add-brewery-cancelled="deactivateAddBrewery"
             @toggle-identify="identifyActivePanel"
             @cleared-selection="clearSelection"
             @brewery-identified="showBreweryInfo"
             @toggle-menu="menuActivePanel">
     </map-view>
+
   </div>
 </template>
 
@@ -37,6 +42,7 @@
   import SidebarMenu from './SidebarMenu';
   import api from '../../modules/api';
   import { EventBus } from "../../modules/EventBus";
+  import swal from 'sweetalert2';
 
   export default {
     name: "home",
@@ -44,7 +50,7 @@
       MapView,
       Sidebar,
       SidebarMenu,
-      BreweryInfo
+      BreweryInfo,
     },
 
     data(){
@@ -52,34 +58,33 @@
         selectedBrewery: null,
         menuActive: true,
         identifyActive: false,
+        addBreweryActive: false,
         sidebarActive: false,
-        userIsAuthenticated: false,
+        newBreweryPoint: null,
+        userIsAuthenticated: false
       }
     },
     mounted(){
       hook.home = this;
 
-      // listen for user login/logout events
-      EventBus.$on('user-logged-in', ()=>{
-        this.userIsAuthenticated = true;
-      });
-
-      EventBus.$on('user-logged-out', ()=>{
-        this.userIsAuthenticated = false;
-      });
-
       // need to manually update this, because feature returned from map click is not
       // the original object
       EventBus.$on('brewery-changed', async (obj)=>{
+        console.log('brewery change event from home: ', obj);
         if (this.selectedBrewery && obj.id === this.selectedBrewery.properties.id){
           const resp = await api.getBrewery(obj.id, {f: 'geojson'});
           if (resp.features.length){
             // update brewery
             Object.assign(this.selectedBrewery, resp.features[0]);
+          } else {
+            this.clearSelection();
           }
-
         }
-      })
+        if (obj.type === 'create'){
+          this.deactivateAddBrewery();
+        }
+      });
+
     },
 
     methods: {
@@ -134,24 +139,124 @@
         if (!expanded){
           this.clearActiveButtons();
         } else {
+          this.deactivateAddBrewery();
           this.activateButton(`.expand-${this.menuActive ? 'menu': 'identify'}`)
         }
 
       },
 
+      handleAddBrewery(){
+        this.addBreweryActive = true;
+        this.activateButton('.add-brewery');
+      },
+
+      deactivateAddBrewery(){
+        document.querySelector('.add-brewery').classList.remove('control-btn-active');
+        this.addBreweryActive = false;
+        this.$refs.mapView.deactivateAddBrewery();
+      },
+
+
+      async createNewBrewery(point){
+
+        console.log('received new brewery point: ', point)
+        swal({
+          title: 'Create New Brewery',
+          input: 'text',
+          showCancelButton: true,
+          confirmButtonText: 'Create',
+          confirmButtonColor: 'forestgreen',
+          showLoaderOnConfirm: true,
+          allowOutsideClick: ()=> !swal.isLoading(),
+          preConfirm: async (name)=> {
+            console.log('CALLED CREATE NEW BREWERY: ', name);
+            const lat = point.lat;
+            const lng = point.lng;
+
+            // fetch access token from root vue instance "config" prop
+            const accessToken = this.$root.config.map.accessToken;
+            const params = await api.maboxReverseGeocode(lat, lng, accessToken);
+
+            // add x,y coords
+            params.x = point.lng;
+            params.y = point.lat;
+
+            // add brewery name to params and create new brewery
+            params.name = name;
+            const resp = await api.createItem('breweries', params);
+            console.log('CREATE BREWERY RESPONSE: ', resp);
+
+            // notify new brewery has been created
+            EventBus.$emit('brewery-change', {
+              id: resp.id,
+              type: 'create'
+            });
+
+            this.deactivateAddBrewery();
+            return resp;
+          }
+        }).then((res)=> {
+          const newBreweryId = res.value.id;
+          this.emitBreweryChange(newBreweryId, 'create');
+          console.log('CREATE BREWERY RESPONSE: ', res, newBreweryId);
+          swal({
+            title: 'Success',
+            text: 'successfully created new brewery',
+            confirmButtonText: 'Go To New Brewery',
+            cancelButtonText: 'Stay Here',
+            showCancelButton: true
+          }).then((res)=>{
+            res.value ? this.goToEditBrewery(newBreweryId): null;
+          });
+
+        }).catch(err =>{
+          console.log('error creating brewery: ', err);
+          swal({
+            type: 'error',
+            title: 'Unable to Create Brewery',
+            text: "please make sure you're logged in to make this change"
+          })
+        });
+
+      },
+
+      goToEditBrewery(id){
+        console.log('CALLED GO TO EDIT BREWERY: ', id)
+
+        // small timeout to prevent race conditions
+        setTimeout(()=>{
+          this.$router.push({ name: 'editableBreweryInfo', params: { brewery_id: id }})
+        }, 250)
+      },
+
+      emitBreweryChange(id, type){
+        EventBus.$emit('brewery-changed', {
+          id: id,
+          type: type
+        })
+      },
+
       clearActiveButtons(){
         const active = document.querySelectorAll('.control-btn-active');
-        active.forEach(e => e.className = e.className.replace(/\bcontrol-btn-active\b/g, ""));
+        // active.forEach(e => e.className = e.className.replace(/\bcontrol-btn-active\b/g, ""));
+        active.forEach( e=> e.classList.remove('control-btn-active'));
       },
 
       activateButton(selector){
         this.clearActiveButtons();
         const btn = document.querySelector(selector);
+
         if (this.$refs.sidebar.active){
           if (btn.className.indexOf('control-btn-active') < 0){
             btn.className += ' control-btn-active';
           } else {
             btn.className.replace('control-btn-active', '');
+          }
+        } else {
+          // check if it is add brewery button
+          if (selector === '.add-brewery'){
+            console.log('it is add brewery button!')
+            btn.className += ' control-btn-active';
           }
         }
       }
@@ -171,6 +276,10 @@
           this.activateButton('.expand-identify');
         }
       },
+
+      '$root.userIsAuthenticated'(newVal){
+        this.userIsAuthenticated = newVal;
+      }
 
     }
   }

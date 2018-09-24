@@ -34,15 +34,25 @@
   import { EventBus } from "../../modules/EventBus";
   hook.api = api;
 
+
   export default {
     name: "map-view-mglv",
     components: {
       Mapbox
     },
+    props: {
+      userIsAuthenticated: {
+        type: Boolean,
+        default: false
+      }
+    },
     data() {
       return {
         map: null,
-        selectionMarker: null
+        selectionMarker: null,
+        state: 'default',
+        canvas: null,
+        addBreweryButton: null,
       }
     },
     mounted(){
@@ -53,18 +63,49 @@
 
       // update the brewery source when breweries have changed
       EventBus.$on('brewery-changed', async (obj)=>{
+        console.log('brewery changed from map component: ', obj);
         this.map.getSource('breweries').setData(await api.getBreweries());
-      })
+      });
+
     },
     methods: {
       mapInitialized(map){
         console.log('map initialized: ', map);
         this.map = map;
 
-        // // add menu button for slideout
-        // map.addControl(new MenuButtonControl(), 'top-left');
-
       },
+
+      createAddBreweryButton(){
+        const addButton = createControlButton({
+          className: 'add-brewery',
+          iconClass: 'fas fa-plus',
+          onClick: this.addNewBrewery,
+          title: 'add new brewery'
+        });
+
+        this.map.addControl(addButton, 'top-left');
+        this.addBreweryButton = addButton;
+      },
+
+      deactivateAddBrewery(){
+        this.state = 'default';
+        this.canvas.style.cursor = 'grab';
+      },
+
+      addNewBrewery(){
+        console.log('clicked add new brewery!');
+        if (this.state === 'adding'){
+          this.deactivateAddBrewery();
+          this.$emit('add-brewery-cancelled');
+          return;
+        }
+        this.$emit('clicked-add-brewery');
+        // set cursor to crosshair temporarily
+        this.canvas = document.querySelector('.mapboxgl-canvas-container');
+        this.canvas.style.cursor = 'crosshair';
+        this.state = 'adding';
+      },
+
 
       async mapLoaded(map){
         const brewerySource = await api.getBreweries();
@@ -107,7 +148,6 @@
 
         map.addControl(menuButton, 'top-left');
 
-
         // add identify button
         const toggleIdentify =(evt)=>{
           this.$emit('toggle-identify');
@@ -120,30 +160,37 @@
           title: 'expand identify window'
         });
         map.addControl(identifyButton, 'top-left');
+
+        // create add button if authenticated
+        this.$root.userIsAuthenticated ? this.createAddBreweryButton(): null;
       },
 
       mapClick(map, e){
         console.log('map click: ', e);
 
         // find features
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ['breweries']
-        });
+        if (this.state === 'default'){
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ['breweries']
+          });
 
-        console.log('found features: ', features);
-        if (features.length){
+          console.log('found features: ', features);
+          if (features.length){
 
-          // handle selection on map
-          const feature = features[0];
-          this.handleIdentify(feature);
-        } else if (this.selectionMarker){
+            // handle selection on map
+            const feature = features[0];
+            this.handleIdentify(feature);
+          } else if (this.selectionMarker){
 
-          // clear selection on map and close identify
-          this.selectionMarker.remove();
-          this.selectionMarker = null;
-          this.$emit('cleared-selection')
+            // clear selection on map and close identify
+            this.selectionMarker.remove();
+            this.selectionMarker = null;
+            this.$emit('cleared-selection')
+          }
+        } else {
+          console.log('emitting new-brewery-location', e.lngLat)
+          this.$emit('new-brewery-point', e.lngLat);
         }
-
       },
 
       handleIdentify(feature, updateCenter=false){
@@ -169,9 +216,23 @@
         if (updateCenter){
           this.map.setCenter(feature.geometry.coordinates);
         }
-
       }
+    },
 
+    watch: {
+      '$root.userIsAuthenticated'(newVal){
+        console.log('user is authenticated watcher: ', newVal)
+        if (newVal) {
+          if (!this.addBreweryButton){
+            this.createAddBreweryButton()
+          }
+        } else {
+          if (this.addBreweryButton){
+            this.map.removeControl(this.addBreweryButton);
+            this.addBreweryButton = null;
+          }
+        }
+      }
     }
   }
 </script>

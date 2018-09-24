@@ -154,11 +154,11 @@
           cancelButtonColor: '#d33',
           cancelButtonText: "Don't Save Changes",
           confirmButtonText: 'Save Changes'
-        }).then((choice) => {
-          if (choice) {
+        }).then(async (choice) => {
+          if (choice.value) {
             // save here before proceeding
-            console.log('SAVE HERE!');
-            this.saveChanges();
+            console.log('SAVE BEER HERE!');
+            console.log(await this.saveChanges());
           }
 
           // now proceed

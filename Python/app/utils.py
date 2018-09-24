@@ -13,6 +13,7 @@ import datetime
 import operator
 import fnmatch
 from werkzeug.exceptions import HTTPException
+from exceptions import InvalidResource
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
@@ -171,8 +172,11 @@ def endpoint_query(table, fields=None, id=None, **kwargs):
     :return: Response() object for query result as json
     """
     if id != None:
-        item = query_wrapper(table, id=int(id))[0]
-        return jsonify(to_json(item, fields))
+        try:
+            item = query_wrapper(table, id=int(id))[0]
+            return jsonify(to_json(item, fields))
+        except IndexError:
+            raise InvalidResource
 
     # check for args and do query
     args = collect_args()

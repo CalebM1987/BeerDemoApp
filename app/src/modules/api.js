@@ -1,6 +1,6 @@
 import { request } from './xhr';
 import axios from 'axios';
-
+import enums from './enums';
 
 const default_request_options = {
   method: 'get',
@@ -179,12 +179,15 @@ const api = {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng}%2C${lat}.json?access_token=${access_token}`;
     const resp = await request(url);
     if ((resp.features || []).length){
-      const parts = resp.features[0].place_name.split(',');
+      const allParts = resp.features[0].place_name.split(',');
+
+      // we only want the last 4 parts, if is an existing place in mapbox the name of place is returned first...skip this!
+      const parts = allParts.splice(allParts.length - 4, allParts.length);
       const stZip = parts[2].split(' ').filter(s => s.length);
       return {
         address: parts[0],
         city: parts[1].trim(),
-        state: stZip[0],
+        state: enums.statesLookup[stZip[0]],
         zip: stZip[1]
       }
     }

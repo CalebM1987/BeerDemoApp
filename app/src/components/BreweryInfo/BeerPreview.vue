@@ -1,7 +1,7 @@
 <template>
-  <b-list-group-item @click="goToBeer">
+  <b-list-group-item>
     <b-media>
-      <b-img slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl" height="128"/>
+      <b-img-lazy slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl" height="128"/>
       <span slot="aside" title="no image available" v-else><font-awesome-icon prefix="fas" icon="image" class="no-img"/></span>
       <h5>{{ beer.name }}
         <span class="float-right action-btn" @click="emitDeleteBeer">
@@ -9,8 +9,8 @@
              title="remove beer">
           </i>
         </span>
-        <span class="float-right action-btn" style="margin-right: 0.35rem;">
-          <i class="fas fa-pen" style="color: forestgreen;" title="edit beer" @click="goToBeer"></i>
+        <span class="float-right action-btn" style="margin-right: 0.35rem;" @click="goToBeer">
+          <i class="fas fa-pen" style="color: forestgreen;" title="edit beer"></i>
         </span>
       </h5>
       <p :class="[(beer.description || '').trim().length < 1 ? 'no-desc': 'desc']">{{ beer.description || 'no description available, click pen to edit' }}</p>
@@ -43,7 +43,7 @@
     },
     methods: {
       goToBeer(){
-        console.log('going to beer! ', this.beer.id)
+        console.log('going to beer! ', this.beer.id);
         this.$router.push({ name: 'editableBeerInfo', params: { beer_id: this.beer.id } })
 
       },

@@ -76,6 +76,8 @@
         // ignore, just means user isn't authenticated from a prior session
       }
 
+      // enable back button if loaded at another screen
+      this.backEnabled = ['editableBreweryInfo', 'editableBeerInfo'].includes(this.$router.currentRoute.name);
       hook.nb = this;
     },
     methods: {

@@ -66,8 +66,11 @@ def get_breweries(id=None):
     fields = args.get('fields') or brewery_fields
 
     if id:
-        brewery = query_wrapper(Brewery, id=int(id))[0]
-        return jsonify(handler(to_json(brewery, fields)))
+        try:
+            brewery = query_wrapper(Brewery, id=int(id))[0]
+            return jsonify(handler(to_json(brewery, fields)))
+        except IndexError:
+            raise InvalidResource
 
     # query as normal
     results = query_wrapper(Brewery, **args)

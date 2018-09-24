@@ -3,6 +3,7 @@ import App from './App.vue'
 import axios from 'axios';
 import router from './modules/router';
 import { request } from "./modules/xhr";
+import { EventBus } from "./modules/EventBus";
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -31,11 +32,26 @@ request('./config.json').then((config) => {
   //setBaseUrl(config.api_base);
   axios.defaults.baseURL = config.api_base;
 
-  new Vue({
+  const vue = new Vue({
     render: h => h(App),
 
     // register router with vue
     router,
+
+    // mounted event
+    mounted(){
+      // listen for user login/logout events
+      EventBus.$on('user-logged-in', ()=>{
+        this.userIsAuthenticated = true;
+        // this.$refs.mapView.createAddBreweryButton();
+      });
+
+      EventBus.$on('user-logged-out', ()=>{
+        this.userIsAuthenticated = false;
+      });
+
+      // this.$router.push({ name: 'home', params: { userIsAuthenticated: this.userIsAuthenticated }});
+    },
 
     // data must be a function that returns an object
     data(){

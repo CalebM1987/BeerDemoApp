@@ -15,23 +15,20 @@
 
 <script>
   import AppNavBar from './components/AppNavBar';
-  import Home from './components/Home/Home';
 
   export default {
     name: 'app',
     components: {
-      AppNavBar,
-      Home
+      AppNavBar
     },
-
     data(){
       return {
-        isAuthenticated: false,
         args: {}
       }
     },
     mounted(){
       hook.app = this;
+
     },
 
     methods: {},

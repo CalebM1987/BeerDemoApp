@@ -34,9 +34,8 @@
       <!--  city, st zip -->
       <b-row class="mt-2" align-h="end">
         <!--<div class="row justify-content-end">-->
-          <b-col sm="12" md="6">
+          <b-col sm="12" md="5">
             <b-form-group label="City:" label-text-align="left">
-              <!--class="city-align"-->
               <b-form-input v-model="brewery.city" />
             </b-form-group>
           </b-col>
@@ -61,7 +60,7 @@
                         horizontal
                         label-text-align="right"
                         :label-cols="2">
-            <b-form-input id="website" v-model="brewery.website"/>
+            <b-form-input id="website" v-model="brewery.website" style="color:#0000EE;"/>
           </b-form-group>
         </b-col>
       </b-row>
@@ -97,7 +96,11 @@
 
         <b-col sm="6">
           <div class="save-container">
-            <b-button @click="saveChanges" class="theme mt-2" v-if="state === 'loaded'">Save Changes</b-button>
+            <div class="buttons-container" v-if="state === 'loaded'">
+              <b-button @click="saveChanges" class="theme mt-2" >Save Changes</b-button>
+              <b-button class="bold mt-2 ml-4" variant="danger" @click="deleteBrewery">Delete Brewery</b-button>
+            </div>
+
             <div v-else>
               <spinner text="Saving Changes..." :visible="state === 'saving'"/>
 
@@ -120,7 +123,7 @@
 
       <!--  BEER ROWS -->
       <b-row class="mt-4">
-        <accordion :header="'Featured Beers'" @action-btn-clicked="openNewBeerModal">
+        <accordion :header="'Featured Beers'" @action-btn-clicked="addBeer">
           <template slot="action_btn">
             <i class="fas fa-plus-circle" title="add new beer"></i>
           </template>
@@ -137,10 +140,6 @@
 
     </b-container>
 
-    <!-- PLACEHOLDER FOR NEW BEER MODAL -->
-    <new-beer-modal :brewery="brewery" @created-beer="goToEditBeer" ref="newBeerModal"/>
-
-
   </b-card>
 </template>
 
@@ -149,7 +148,6 @@
   import BeerPreview from './BeerPreview';
   import enums from '../../modules/enums';
   import Accordion from '../UI/Accordion';
-  import NewBeerModal from '../NewBeerModal';
   import { EventBus } from "../../modules/EventBus";
   import swal from 'sweetalert2';
 
@@ -157,8 +155,7 @@
     name: "brewery-info",
     components: {
       BeerPreview,
-      Accordion,
-      NewBeerModal
+      Accordion
     },
     data(){
       return {
@@ -197,7 +194,8 @@
       // be navigated away from.
       // has access to `this` component instance.
       // make sure there haven't been any changes before leaving route
-      if (JSON.stringify(this.brewery) != JSON.stringify(this.copy)){
+      console.log('BEFORE BREWERY ROUTE LEAVE')
+      if (this.state !== 'deleted' && JSON.stringify(this.brewery) != JSON.stringify(this.copy)){
         swal({
           type: 'warning',
           title: 'You have unsaved Edits',
@@ -244,21 +242,121 @@
       openNewBeerModal(){
         this.$refs.newBeerModal.show();
       },
+
+      deleteBrewery(){
+        //const component = this
+        swal({
+          title: 'Are you sure?',
+          text: 'Once deleted, this operation cannot be undone',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Delete',
+          confirmButtonColor: 'forestgreen',
+          showLoaderOnConfirm: true,
+          allowOutsideClick: ()=> !swal.isLoading(),
+          preConfirm: async ()=> {
+            return await api.deleteItem('breweries', this.brewery.id);
+          }
+        }).then((res)=> {
+          console.log('RES: ', res.value);
+          this.state = 'deleted';
+          EventBus.$emit('brewery-changed', {
+            id: this.brewery.id,
+            type: 'delete'
+          });
+          swal({
+            type: 'success',
+            title: 'Success!',
+            text: 'successfully deleted brewery'
+          }).then(()=>{
+            this.$router.push({name: 'home'});
+          });
+        }).catch((err)=> {
+          swal({
+            type: 'error',
+            title: 'Unable to Delete Brewery',
+            text: "please make sure you're logged in to make this change"
+          })
+        })
+      },
+
+      async addBeer(){
+        console.log('clicked add beer');
+        swal({
+          title: 'Create New Beer',
+          input: 'text',
+          showCancelButton: true,
+          confirmButtonText: 'Create',
+          confirmButtonColor: 'forestgreen',
+          showLoaderOnConfirm: true,
+          allowOutsideClick: ()=> !swal.isLoading(),
+          preConfirm: async (name)=> {
+            return await api.createItem('beers', {
+              brewery_id: this.brewery.id,
+              name: name
+            });
+          }
+        }).then((res)=> {
+          const newBeerId = res.value.id;
+          console.log('CREATE BEER RESPONSE: ', res, newBeerId);
+          swal({
+            title: 'Success',
+            text: 'successfully created new beer',
+            confirmButtonText: 'Go To New Beer',
+            cancelButtonText: 'Stay Here',
+            showCancelButton: true
+          }).then((res)=>{
+            res.value ? this.goToEditBeer(newBeerId): this.emitBeerChange(newBeerId, 'create');
+          });
+
+        }).catch(err =>{
+          console.log('error creating beer: ', err);
+          swal({
+            type: 'error',
+            title: 'Unable to Create Beer',
+            text: "please make sure you're logged in to make this change"
+          })
+        });
+      },
+
+      deleteBeer(id){
+        //const component = this
+        swal({
+          title: 'Are you sure?',
+          text: 'Once deleted, this operation cannot be undone',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Delete',
+          confirmButtonColor: 'forestgreen',
+          showLoaderOnConfirm: true,
+          allowOutsideClick: ()=> !swal.isLoading(),
+          preConfirm: async ()=> {
+            return await api.deleteItem('beers', id);
+          }
+        }).then((res)=> {
+          console.log('RES: ', res.value);
+          this.emitBeerChange(id, 'delete');
+
+          swal({
+            type: 'success',
+            title: 'Success!',
+            text: 'successfully deleted beer'
+          });
+        }).catch((err)=> {
+          swal({
+            type: 'error',
+            title: 'Unable to Delete Beer',
+            text: "please make sure you're logged in to make this change"
+          })
+        })
+      },
+
       goToEditBeer(id){
         console.log('navigating to new beer: ', id);
         this.emitBeerChange(id, 'create');
-        this.$refs.newBeerModal.hide();
         setTimeout(()=>{
           this.$router.push({ name: 'editableBeerInfo', params: { beer_id: id } });
         }, 250);
-      },
-
-      async deleteBeer(id){
-        const resp = await api.deleteItem('beers', id);
-        console.log('delete beer resp:', resp);
-        this.emitBeerChange(id, 'delete');
-        this.updateBeers();
-
       },
 
       async saveChanges(){
@@ -289,10 +387,11 @@
 
       emitBeerChange(id, type){
         EventBus.$emit('beers-changed', {
-          brewery_id: this.beer.brewery_id,
+          brewery_id: this.brewery_id,
           beer_id: id,
           type: type
         });
+        this.updateBeers();
       },
     }
   }
