@@ -1,6 +1,7 @@
 from flask import url_for, Blueprint, send_file
 from flask_login import login_required, current_user
 from models import *
+from database_utils import create_beer_photo
 from exceptions import *
 from utils import *
 from io import BytesIO
@@ -23,6 +24,20 @@ table_dict = {
     'styles': Style,
     'categories': Category
 }
+
+# load app config file
+config = load_config()
+PHOTO_STORAGE_TYPE = config.get('photo_storage_type', 'database')
+
+# helper function for removing filesystem photos
+def remove_filesystem_photo(beer_photo):
+    if PHOTO_STORAGE_TYPE == 'filesystem':
+        photo = os.path.join(upload_folder, beer_photo.photo_name)
+        if os.path.exists(photo):
+            try:
+                os.remove(photo)
+            except:
+                print('unable to remove photo from filesystem')
 
 # REST API METHODS BELOW
 
@@ -73,8 +88,7 @@ def get_beers_from_brewery(id=None, bid=None):
             beers = brewery.beers
             # should be a way to achieve this via filter or join?
             return jsonify(to_json([b for b in beers if b.id ==int(bid)][0], beer_fields))
-        except Exception as e:
-            #return jsonify({'error': str(e), })
+        except:
             raise InvalidResource
     return jsonify(to_json(brewery.beers, beer_fields))
 
@@ -102,10 +116,17 @@ def download_beer_photo(id):
         raise InvalidResource
 
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
-    return send_file(BytesIO(beer_photo.data), attachment_filename=beer_photo.photo_name, as_attachment=True)
+
+    # handle appropriately based on config
+    if PHOTO_STORAGE_TYPE == 'filesystem':
+        to_send = os.path.join(upload_folder, beer_photo.photo_name)
+    else:
+        to_send = BytesIO(beer_photo.data)
+    return send_file(to_send, attachment_filename=beer_photo.photo_name, as_attachment=True)
 
 # struggling with route name here???
 @brewery_api.route('/beer_photo/add', methods=['POST'])
+@login_required
 def add_beer_photo():
     args = collect_args()
     try:
@@ -124,18 +145,31 @@ def add_beer_photo():
     return success('successfully updated photo', id=new_photo.id)
 
 @brewery_api.route('/beer_photos/<id>/update', methods=['POST', 'PUT'])
+@login_required
 def update_beer_photo(id):
     if not id:
         raise InvalidResource
     args = collect_args()
     beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
+    remove_filesystem_photo(beer_photo)
 
     photo_blob = args.get('photo')
-    #new_photo = BeerPhotos(**create_beer_photo(data=photo_blob.stream.read(), photo_name=photo_blob.filename))
-    beer_photo.data = photo_blob.stream.read()
-    beer_photo.photo_name = photo_blob.filename
+    update_object(beer_photo, **create_beer_photo(data=photo_blob.stream.read(), photo_name=photo_blob.filename))
     session.commit()
     return success('successfully updated photo', id=beer_photo.id)
+
+
+@brewery_api.route('/beer_photos/<id>/delete', methods=['DELETE'])
+@login_required
+def delete_beer_photo(id):
+    if not id:
+        raise InvalidResource
+    beer_photo = query_wrapper(BeerPhotos, id=int(id))[0]
+    remove_filesystem_photo(beer_photo)
+    photo_id = beer_photo.id
+    delete_object(beer_photo)
+    session.commit()
+    return success('successfully deleted photo', id=photo_id)
 
 
 @brewery_api.route('/data/<tablename>/export', methods=['POST'])

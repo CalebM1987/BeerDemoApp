@@ -2,6 +2,7 @@ from flask import request, jsonify
 import six
 import json
 import os
+import re
 import flask_sqlalchemy
 from models import session
 import csv
@@ -18,12 +19,10 @@ InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedA
 
 # download folder
 download_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'downloads')
-
-# # allow safe imports
-# __all__ = ('collect_args', 'to_json', 'json_exception_handler', 'query_wrapper', 'success',
-#            'list_fields', 'get_row', 'update_object', 'toGeoJson',  'endpoint_query')
+upload_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
 
 WGS_1984 = """GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]"""
+
 
 def load_config():
     config_file = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
@@ -34,7 +33,25 @@ def load_config():
         return {}
 
 def get_timestamp(s=''):
+    """
+
+    Args:
+        s:
+
+    Returns:
+
+    """
     return '_'.join(filter(None, [s, time.strftime('%Y%m%d%H%M%S')]))
+
+def clean_filename(path):
+    """replaces all special characters with underscores
+
+    Required:
+        path -- full path to file or folder
+    """
+    basename, ext = os.path.splitext(os.path.basename(path))
+    fn = re.sub('[^A-Za-z0-9]+', '_', basename).replace('__', '_')
+    return os.path.join(os.path.dirname(path), fn + ext)
 
 def success(msg, **kwargs):
     """ returns a Response() object as JSON
@@ -105,7 +122,7 @@ def collect_args():
 
     # finally, check for files
     if request.files:
-        for k,v in request.files.iteritems():
+        for k,v in six.iteritems(request.files):
             data[k] = v
     return data
 
@@ -140,7 +157,6 @@ def query_wrapper(table, **kwargs):
                 else:
                     conditions.append(col==val)
     if conditions:
-        #print('conditions: {}'.format(conditions))
         return session.query(table).filter(*conditions).all()
     else:
         return session.query(table).all()
@@ -305,12 +321,12 @@ def toGeoJson(d):
         d = [d]
     return {
         "type": "FeatureCollection",
-        "crs": {
-            "type": "name",
-            "properties": {
-                "name": "urn:ogc:def:crs:EPSG::3857"
-            }
-        },
+        # "crs": {
+        #     "type": "name",
+        #     "properties": {
+        #         "name": "urn:ogc:def:crs:EPSG::3857"
+        #     }
+        # },
        "features": [
             {
                 "type": "Feature",

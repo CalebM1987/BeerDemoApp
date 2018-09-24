@@ -30,7 +30,6 @@
 <script>
   import Mapbox from 'mapbox-gl-vue';
   import api from '../../modules/api';
-  // import { MenuButtonControl } from '../modules/MenuButtonControl';
   import { createControlButton } from "../../modules/MenuButtonControl";
   import { EventBus } from "../../modules/EventBus";
   hook.api = api;
@@ -51,6 +50,11 @@
       EventBus.$on('brewery-search-result', (feature)=>{
         this.handleIdentify(feature, true);
       });
+
+      // update the brewery source when breweries have changed
+      EventBus.$on('brewery-changed', async (obj)=>{
+        this.map.getSource('breweries').setData(await api.getBreweries());
+      })
     },
     methods: {
       mapInitialized(map){

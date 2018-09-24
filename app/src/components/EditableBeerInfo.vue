@@ -10,10 +10,10 @@
     <b-container class="mx-auto" v-else>
       <b-row class="mt-3" align-h="center">
         <b-col>
-          <div class="img-container" v-if="photoUrl !== null">
+          <div class="img-container" v-if="photoUrl && photoState !== 'missing'">
             <b-img :src="photoUrl" height="200" />
             <div class="mt-3">
-              <b-button class="theme">Update Photo</b-button>
+              <b-button class="theme" @click="photoState = 'missing'">Update Photo</b-button>
             </div>
           </div>
 
@@ -93,6 +93,7 @@
   import DropZone from './UI/DropZone';
   import XhrSpinner from './UI/XhrSpinner';
   import swal from 'sweetalert2';
+  import { EventBus } from "../modules/EventBus";
 
   export default {
     name: "beer-info",
@@ -133,6 +134,7 @@
         await vm.update(to.params.beer_id);
         console.log('updated Beer and calling next: ', vm.beer);
         next();
+        window.scrollTo(0,0);
       });
 
     },
@@ -156,6 +158,7 @@
           if (choice) {
             // save here before proceeding
             console.log('SAVE HERE!');
+            this.saveChanges();
           }
 
           // now proceed
@@ -179,7 +182,9 @@
         console.log('photoInfos: ', photoInfos);
         this.photoInfos.push(...photoInfos);
         if (this.photoInfos.length){
-          this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id);
+
+          // set cacheBust param to true to capture when image is updated!
+          this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id, true);
           this.photoState = 'loaded';
         } else {
           this.photoUrl = null;
@@ -190,11 +195,23 @@
         return this.beer;
       },
 
+      emitBeerChange(){
+        EventBus.$emit('beers-changed', {
+          brewery_id: this.beer.brewery_id,
+          beer_id: this.beer.id,
+          type: 'update'
+        });
+      },
+
       async saveChanges(){
         console.log('clicked save changes');
        this.state = 'saving';
         try {
           const resp = await api.updateItem('beers', this.beer);
+
+          // make sure to update copy so router guard isn't thrown
+          this.copy = Object.assign({}, this.beer);
+          this.emitBeerChange();
           this.state = 'saveComplete';
         } catch(err){
           console.log('err: ', err);
@@ -213,12 +230,16 @@
         try{
           const resp = await api.uploadBeerPhoto(this.beer.id, photo, photoId);
           console.log('UPLOAD PHOTO RESP: ', resp);
-          
+
           // now refresh photoInfos and update photoUrl
           const photoInfos = await api.getBeerPhotos(this.beer.id);
           console.log('photoInfos: ', photoInfos);
+          this.photoInfos.length = 0;
           this.photoInfos.push(...photoInfos);
-          this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id);
+
+          // set cacheBust param to true to capture updated image!
+          this.photoUrl = api.getPhotoUrl(this.photoInfos[0].id, true);
+          this.emitBeerChange();
           this.photoState = 'loaded';
         } catch(err){
           console.warn('PHOTO UPLOAD ERROR: ', err);

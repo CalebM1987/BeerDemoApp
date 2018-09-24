@@ -1,5 +1,6 @@
 <template>
-  <div id="sidebar" :class="{'active': active}" :style="{width: `${expandWidth}px`, display: active ? 'block': 'none'}">
+  <div id="sidebar" :class="{'active': active}"
+       :style="{width: `${expandWidth}px`, display: active ? 'block': 'none'}">
 
     <!--  DEFAULT SIDEBAR CONTENT GETS INSERTED IN SLOT BELOW-->
     <slot></slot>

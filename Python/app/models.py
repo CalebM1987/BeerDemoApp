@@ -1,5 +1,4 @@
 import os
-import io
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, LargeBinary, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,9 +6,8 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from flask_login import UserMixin
 from datetime import timedelta
-from PIL import Image
 
-__all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session', 'create_beer_photo')
+__all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
 # db path, make sure "check_same_thread" is set to False
 thisDir = os.path.dirname(__file__)
@@ -27,7 +25,7 @@ class BeerPhotos(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     beer_id = Column(Integer, ForeignKey('beers.id'))
     photo_name = Column(String(100))
-    data = Column(LargeBinary, default=None)
+    data = Column(LargeBinary, default=None) #field is only used when config.photo_storage_type is 'database'
 
     def __repr__(self):
         return basic_repr(self, 'photo_name')
@@ -131,28 +129,3 @@ Base.metadata.create_all(engine)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-
-# helper for creating a beer photo
-def create_beer_photo(photo_name, data):
-    """custom handler for inserting data"""
-    name, ext = os.path.splitext(photo_name)
-    photo_name = '{}.png'.format(os.path.basename(name))
-
-
-    # create thumbnail version of photo
-    thumbnail = io.BytesIO()
-    thumbData = None
-    with Image.open(io.BytesIO(data)) as im:
-
-        # create thumbnail 256x256 pixels
-        im.thumbnail((256, 256), Image.ANTIALIAS)
-        im.save(thumbnail, 'PNG', optimize=True, quality=50, progressive=True)
-        thumbData = thumbnail.getvalue()
-        thumbnail.close()
-    del thumbnail
-
-    # create actual photo
-    return {
-        'photo_name': photo_name,
-        'data': thumbData
-    }

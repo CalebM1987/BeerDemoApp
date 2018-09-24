@@ -83,6 +83,7 @@
       download(){
         const link = document.createElement('a');
         link.setAttribute('href', this.url);
+        link.setAttribute('target', '_blank');
         link.setAttribute('download', this.filename);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);

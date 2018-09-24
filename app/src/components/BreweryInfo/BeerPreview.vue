@@ -4,7 +4,7 @@
       <b-img slot="aside" :src="thumbnailUrl" v-if="thumbnailUrl" height="128"/>
       <span slot="aside" title="no image available" v-else><font-awesome-icon prefix="fas" icon="image" class="no-img"/></span>
       <h5>{{ beer.name }}
-        <span class="float-right action-btn" @click="emitDeleteBeer(beer.id)">
+        <span class="float-right action-btn" @click="emitDeleteBeer">
           <i class="fas fa-minus-circle remove-beer"
              title="remove beer">
           </i>
@@ -48,9 +48,9 @@
 
       },
 
-      async emitDeleteBeer(id){
-        this.$emit('delete-beer', id);
-        console.log('deleting beer with id: ', id)
+      async emitDeleteBeer(){
+        this.$emit('delete-beer', this.beer.id);
+        console.log('deleting beer with id: ', this.beer.id)
       },
 
       async getThumbnailUrl(){

@@ -5,9 +5,8 @@ import six
 thisDir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(thisDir))
 import munch
-from app import models
-reload(models)
-from app.models import Beer, BeerPhotos, Brewery, Category, Style, session, create_beer_photo
+from app.models import Beer, BeerPhotos, Brewery, Category, Style, session
+from app.database_utils import create_beer_photo
 from app.security import userStore
 from datetime import datetime
 import csv

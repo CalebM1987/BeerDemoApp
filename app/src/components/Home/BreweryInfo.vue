@@ -40,6 +40,7 @@
 <script>
   import api from '../../modules/api';
   import FeaturedBeer from './FeaturedBeer';
+  import { EventBus } from "../../modules/EventBus";
 
   export default {
     name: "brewery-info",
@@ -67,13 +68,25 @@
       console.log('breweryInfo: ', this.properties);
       hook.bi = this;
       this.fetchBeers();
+
+      // notify this component to reload featured beers
+      EventBus.$on('beers-changed', (obj)=>{
+        if (obj.brewery_id == this.properties.id){
+          this.fetchBeers();
+        }
+      })
     },
 
     methods: {
 
       editBrewery(){
         // this.$router.push(`/brewery/${this.feature.properties.id}`);
-        this.$router.push({name: 'editableBreweryInfo', params: {brewery_id: this.feature.properties.id}});
+        this.$router.push({
+          name: 'editableBreweryInfo',
+          params: {
+            brewery_id: this.feature.properties.id
+          }
+        });
       },
 
       async fetchBeers(id){
@@ -82,6 +95,7 @@
         }
         const beers = await api.getBeersFromBrewery(id || this.properties.id);
         console.log('beers found: ', beers);
+        this.featuredBeers.length = 0;
         this.featuredBeers.push(...beers);
       }
     },

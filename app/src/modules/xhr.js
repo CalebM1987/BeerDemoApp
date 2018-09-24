@@ -6,9 +6,6 @@ const default_options = {
   method: 'get'
 };
 
-// // export global axios object as well to allow global setters
-// export { default as axios } from 'axios';
-
 /**
  * Base request function built on axios.
  *

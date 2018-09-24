@@ -35,6 +35,7 @@
   import Sidebar from './Sidebar';
   import BreweryInfo from './BreweryInfo';
   import SidebarMenu from './SidebarMenu';
+  import api from '../../modules/api';
   import { EventBus } from "../../modules/EventBus";
 
   export default {
@@ -66,6 +67,19 @@
       EventBus.$on('user-logged-out', ()=>{
         this.userIsAuthenticated = false;
       });
+
+      // need to manually update this, because feature returned from map click is not
+      // the original object
+      EventBus.$on('brewery-changed', async (obj)=>{
+        if (this.selectedBrewery && obj.id === this.selectedBrewery.properties.id){
+          const resp = await api.getBrewery(obj.id, {f: 'geojson'});
+          if (resp.features.length){
+            // update brewery
+            Object.assign(this.selectedBrewery, resp.features[0]);
+          }
+
+        }
+      })
     },
 
     methods: {

@@ -13,9 +13,17 @@ from models import session
 from datetime import timedelta
 from exceptions import *
 
+# load config
+config = load_config()
+
 # downloads folder for exports
 if not os.path.exists(download_folder):
     os.makedirs(download_folder)
+
+# uploads folder (used if config.photo_storage_type is 'filesystem')
+photo_storage = config.get('photo_storage_type', 'database')
+if not os.path.exists(upload_folder) and photo_storage == 'filesystem':
+    os.makedirs(upload_folder)
 
 # init app inherited from our base.FlaskExtension object
 app_name = os.path.basename(__file__).split('.')[0]
@@ -24,6 +32,10 @@ app = FlaskExtension(app_name, static_folder=download_folder)
 # set secret key and cookie name for flask-login
 app.config['SECRET_KEY'] = 'beer-app'
 app.config['REMEMBER_COOKIE_NAME'] = 'beer_app_token'
+
+# uploads folder for beer images
+app.config['UPLOAD_FOLDER'] = upload_folder
+
 
 # register flask-login manager
 login_manager = LoginManager()

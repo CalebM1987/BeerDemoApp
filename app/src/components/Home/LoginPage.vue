@@ -23,8 +23,17 @@
     <div v-else>
       <spinner :visible="state === 'logging_in'" :text="'Logging In...'"/>
 
-      <b-alert :show="1" @dismissed="handleUserLogin" v-if="state === 'logged_in'" variant="success">Successfully Logged In</b-alert>
-      <b-alert :show="1" @dismissed="state = 'default'" v-if="state === 'login_failed'" variant="danger">Login Failed, please try again.</b-alert>
+      <b-alert :show="1" @dismissed="handleUserLogin"
+               v-if="state === 'logged_in'"
+               variant="success">
+        Successfully Logged In
+      </b-alert>
+
+      <b-alert :show="1" @dismissed="state = 'default'"
+               v-if="state === 'login_failed'"
+               variant="danger">
+        Login Failed, please try again.
+      </b-alert>
 
     </div>
 

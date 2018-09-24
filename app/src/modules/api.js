@@ -53,8 +53,8 @@ const api = {
     return request(url, options);
   },
 
-  getPhotoUrl(photo_id){
-    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/download`;
+  getPhotoUrl(photo_id, cacheBust=false){
+    return `${axios.defaults.baseURL}/beer_photos/${photo_id}/download${cacheBust ? '?cb=' + new Date().getTime(): ''}`;
   },
 
 
@@ -128,7 +128,7 @@ const api = {
     return request(`/data/${table}/${id}/delete`, { method: 'delete' });
   },
 
-  uploadBeerPhoto(beer_id, file, photoId=null){
+  async uploadBeerPhoto(beer_id, file, photoId=null){
 
     // form data will store the photo blob in request body
     const formData = new FormData();
@@ -137,15 +137,23 @@ const api = {
     formData.append('photo', file, file.name);
     formData.append('beer_id', beer_id);
 
+    // if (parseInt(photoId) > 0 ){
+    //   // delete photo first, then add a new one
+    //   const delResp = axios.delete(``)
+    // }
+
     // return response
-    return axios.post(parseInt(photoId) > 0 ? `/beer_photos/${photoId}/update`: '/beer_photo/add',
+    const resp = axios.post(parseInt(photoId) > 0 ? `/beer_photos/${photoId}/update`: '/beer_photo/add',
+    // const resp = axios.post('/beer_photo/add',
       formData,
       {
         headers: {
           'Content-Type': 'multipart/form-data' // required for form data
         }
       }
-    )
+    );
+    console.log('PHOTO RESP API: ', resp);
+    return resp;
   },
 
   activate(id){

@@ -16,7 +16,7 @@
       </b-form-group>
     </div>
 
-    <div class="buttons mb-2 mt-3">
+    <div class="buttons mb-2 mt-3" v-if="state === 'ready'">
       <b-button @click="hide" variant="danger" class="bold mr-4">Cancel</b-button>
       <b-button class="theme" @click="addBeer">Create Beer</b-button>
     </div>

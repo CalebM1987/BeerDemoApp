@@ -24,11 +24,8 @@ Vue.prototype.$http = axios;
 
 Vue.config.productionTip = false;
 
-console.log('ROUTER: ', router);
-
 // wait for config to load before initializing Vue instance
 request('./config.json').then((config) => {
-  console.log(config);
 
   // set base url for API from config file
   //setBaseUrl(config.api_base);

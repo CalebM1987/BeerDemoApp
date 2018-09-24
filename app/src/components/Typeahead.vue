@@ -10,6 +10,7 @@
            class="typeahead-input mt-2 ml-2"
            placeholder="Search for brewery"
            autocomplete="off"
+           ref="input"
            v-model="query"
            @keydown.down="down"
            @keydown.up="up"
@@ -49,7 +50,11 @@
         minChars: 2
       }
     },
-    mounted(){hook.th = this;},
+    mounted(){
+      hook.th = this;
+      // focus on input
+      this.$nextTick(() => this.$refs.input.focus());
+    },
 
     methods: {
       onHit (item) {
