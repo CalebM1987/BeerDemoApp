@@ -4,16 +4,20 @@ import json
 import os
 import re
 import flask_sqlalchemy
-from models import session
 import csv
 import time
-import shapefile
 import shutil
 import datetime
 import operator
 import fnmatch
 from werkzeug.exceptions import HTTPException
+
+# https://github.com/GeospatialPython/pyshp
+import shapefile
+
+# custom modules
 from exceptions import InvalidResource
+from models import session
 
 Column = flask_sqlalchemy.sqlalchemy.sql.schema.Column
 InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedAttribute
@@ -22,10 +26,12 @@ InstrumentedAttribute = flask_sqlalchemy.sqlalchemy.orm.attributes.InstrumentedA
 download_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'downloads')
 upload_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
 
+# prj file contents for shapefile exports
 WGS_1984 = """GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]"""
 
 
 def load_config():
+    """load our configuratioo file for the app"""
     config_file = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
     try:
         with open(config_file, 'r') as f:
@@ -34,13 +40,10 @@ def load_config():
         return {}
 
 def get_timestamp(s=''):
-    """
+    """create a timestamp in this format: '%Y%m%d%H%M%S'
 
-    Args:
-        s:
-
-    Returns:
-
+    :param s: string to prefix the timestamp with
+    :return: a string with timestamp inserted
     """
     return '_'.join(filter(None, [s, time.strftime('%Y%m%d%H%M%S')]))
 
@@ -65,7 +68,11 @@ def success(msg, **kwargs):
     kwargs['status'] = 'success'
     return jsonify(kwargs)
 
-def dynamic_error(errName='FlaskRuntimeError', **kwargs):
+def dynamic_error(**kwargs):
+    """ creates a dynamic error defined at runtime
+
+    :param **kwargs: keyword arguments for custom error name, code, description, and message
+    """
     defaults = {
         'code': 501,
         'description': 'Runtime Error',
@@ -76,11 +83,17 @@ def dynamic_error(errName='FlaskRuntimeError', **kwargs):
         atts[k] = kwargs.get(k) or defaults[k]
 
     # create HTTPException Subclass Error dynamically with type()
+    errName = kwargs.get('name', 'FlaskRuntimeError')
     de = type(errName, (HTTPException,), atts)
     return json_exception_handler(de)
 
 
 def json_exception_handler(error):
+    """ Returns an HTTPException Object into JSON Response
+
+    :param error: error to convert to JSON response
+    :return: flask.Response() object
+    """
     response = jsonify({
         'status': 'error',
         'details': {
@@ -128,22 +141,52 @@ def collect_args():
     return data
 
 def list_fields(table):
+    """ lists fields for a table """
     if not table:
         return []
     cols = table.__table__.columns if hasattr(table, '__table__') else table.columns
     return [f.name for f in cols]
 
 
+def validate_fields(table, fields=None):
+    """ ensures that available fields are fetched from a table
+
+    :param table: table object
+    :param fields: list of fields to validate, default is None
+    :return: list of fields
+    """
+    if isinstance(fields, six.string_types):
+        fields = map(lambda f: f.strip(), fields.split(','))
+    if not fields or not isinstance(fields, (list, tuple)):
+        fields = list_fields(table)
+    return fields
+
+
+def to_json(results, fields=None):
+    """casts query results to json
+
+    :param results: query results
+    :param fields: list of field names to include
+    :return:
+    """
+    fields = validate_fields(results[0] if isinstance(results, list) and len(results) else results, fields)
+    if isinstance(results, list):
+        if len(results):
+            return [{f: getattr(r, f) for f in fields} for r in results]
+        else:
+            return []
+    else:
+        return {f: getattr(results, f) for f in fields}
+
+
 def query_wrapper(table, **kwargs):
-    """query wrapper for complex queries via kwargs
+    """
 
-    Required:
-        table -- db.Model() for table
-
-    Optional:
-        **kwargs -- dict/kwargs of conditions for query
-        wildcards -- list of field names that should use like query
+    :param table: db.Model() for table
+    :param kwargs: dict/kwargs of conditions for query
+    :param wildcards: (keyword argument) list of field names that should use like query
             instead of equals (string contains)
+    :return:
     """
     conditions = []
     wildcards = kwargs.get('wildcards', [])
@@ -161,6 +204,7 @@ def query_wrapper(table, **kwargs):
         return session.query(table).filter(*conditions).all()
     else:
         return session.query(table).all()
+
 
 def endpoint_query(table, fields=None, id=None, **kwargs):
     """ wrapper for for query endpoint that can query one feature by id
@@ -186,42 +230,51 @@ def endpoint_query(table, fields=None, id=None, **kwargs):
     results = query_wrapper(table, **args)
     return jsonify(to_json(results, fields))
 
-def validate_fields(table, fields=None):
-    """
 
-    :param table:
-    :param fields:
-    :return:
-    """
-    if isinstance(fields, six.string_types):
-        fields = map(lambda f: f.strip(), fields.split(','))
-    if not fields or not isinstance(fields, (list, tuple)):
-        fields = list_fields(table)
-    return fields
+# toGeoJson() handler for breweries
+def toGeoJson(d):
+    """ return features as GeoJson (use this for brewery query)
 
-def to_json(results, fields=None):
-    """casts query results to json
-
-    :param results: query results
-    :param fields: list of field names to include
-    :return:
+    :param d: dict of features to return as GeoJson
+    :return: GeoJson structure as dict
     """
-    fields = validate_fields(results[0] if isinstance(results, list) and len(results) else results, fields)
-    if isinstance(results, list):
-        if len(results):
-            return [{f: getattr(r, f) for f in fields} for r in results]
-        else:
-            return []
-    else:
-        return {f: getattr(results, f) for f in fields}
+    if not isinstance(d, list):
+        d = [d]
+    return {
+        "type": "FeatureCollection",
+        # "crs": {
+        #     "type": "name",
+        #     "properties": {
+        #         "name": "urn:ogc:def:crs:EPSG::3857"
+        #     }
+        # },
+       "features": [
+            {
+                "type": "Feature",
+                "properties": f,
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [f.get('x'), f.get('y')]
+                }
+            } for f in d
+        ]
+    }
+
 
 def export_to_shapefile(table, fields=None, **kwargs):
+    """ exports records to a shapefile, only supported with breweries table
+
+    :param table: table object for breweries
+    :param fields: field list to export in shapefile
+    :param kwargs: query parameters to filter results
+    :return: a zip file containing shapefile contents
+    """
     results = toGeoJson(to_json(query_wrapper(table, **kwargs), fields=fields))
     features = results.get('features')
     if not len(features):
         return None
 
-    # field mapping
+    # field mapping schema
     field_map = {
         'id':  { 'type': 'N' },
         'name': { 'type': 'C', 'size': '100' },
@@ -288,6 +341,14 @@ def export_to_shapefile(table, fields=None, **kwargs):
 
 
 def export_data(table, fields=None, format='csv', **kwargs):
+    """ exports table to csv or shapefile (latter only supported with breweries table)
+
+    :param table: table to export
+    :param fields: fields to include in export
+    :param format: export type, defaults to csv (csv|shapefile)
+    :param kwargs: filter parameters
+    :return: download file, will be either a .csv file or .zip
+    """
     # cleanup download directory by deleting files older than 30 minutes
     remove_files(download_folder, minutes=30)
 
@@ -314,51 +375,18 @@ def export_data(table, fields=None, format='csv', **kwargs):
         return csvFilePath
 
 
-# toGeoJson() handler for breweries
-def toGeoJson(d):
-    """ return features as GeoJson (use this for brewery query)
-
-    :param d: dict of features to return as GeoJson
-    :return: GeoJson structure as dict
-    """
-    if not isinstance(d, list):
-        d = [d]
-    return {
-        "type": "FeatureCollection",
-        # "crs": {
-        #     "type": "name",
-        #     "properties": {
-        #         "name": "urn:ogc:def:crs:EPSG::3857"
-        #     }
-        # },
-       "features": [
-            {
-                "type": "Feature",
-                "properties": f,
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [f.get('x'), f.get('y')]
-                }
-            } for f in d
-        ]
-    }
-
 def remove_files(path, exclude=[], older_than=True, test=False, subdirs=False, pattern='*', **kwargs):
-    """removes old folders within a certain amount of days from today
-    Required:
-        path -- root directory to delete files from
-        days -- number of days back to delete from.  Anything older than
-            this many days will be deleted. Default is 7 days.
-    Optional:
-        exclude -- list of folders to skip over (supports wildcards).
-            These directories will not be removed.
-        older_than -- option to remove all folders older than a certain
-            amount of days. Default is True.  If False, will remove all
-            files within the last N days.
-        test -- Default is False.  If True, performs a test folder iteration,
-            to print out the mock results and does not actually delete files.
-        subdirs -- iterate through all sub-directories. Default is False.
-        pattern -- wildcard to match name scheme for files to delete, default is "*"
+    """ removes old folders within a datetime.timedelta from now
+
+    :param path: root directory to delete files from
+    :param exclude: list of folders to skip over (supports wildcards). These directories will not be removed.
+    :param older_than: option to remove all files older than a certain amount of days. Default is True.  If False, will
+            remove all before the specified timedelta
+    :param test: If True, performs a dry run to print out the mock results and does not actually delete files.
+    :param subdirs: option to iterate through all sub-directories. Default is False.
+    :param pattern: wildcard to match name scheme for files to delete, default is "*"
+    :param kwargs: keyword arguments for time delta (days|months|years|weeks|hours|minutes|seconds)
+    :return:
     """
     # if not kwargs, default to delete things older than one day
     deltas = ['days', 'months', 'years', 'weeks', 'hours', 'minutes', 'seconds']
@@ -414,23 +442,44 @@ def remove_files(path, exclude=[], older_than=True, test=False, subdirs=False, p
     return
 
 
-def get_object(table, **kwargs):#, d, key):
-    # val = d.get(key)
-    # if val:
+def get_object(table, **kwargs):
+    """ fetches a single object (row) from a table
+
+    :param table: table to query
+    :param kwargs: filter params
+    :return: an instance of a single object from table
+    """
     try:
         return session.query(table).filter_by(**kwargs).first()
     except:
         return None
 
 def create_object(table, **kwargs):
+    """ creates a new record in the table
+
+    :param table: table for which to add record
+    :param kwargs: data for table record as json
+    :return: newly created table object
+    """
     return table(**kwargs)
 
 def update_object(obj, **kwargs):
+    """ creates a new record in the table
+
+    :param obj: record from table
+    :param kwargs: data to update record with as json
+    :return: updated table object
+    """
     for k,v in six.iteritems(kwargs):
         setattr(obj, k, v)
     return obj
 
 def delete_object(obj):
+    """ deletes a single object from table
+
+    :param obj: record from table
+    :return: id of deleted object
+    """
     oid = obj.id
     obj.delete() if hasattr(obj, 'delete') else session.delete(obj)
     return oid

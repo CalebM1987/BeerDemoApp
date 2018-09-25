@@ -7,18 +7,33 @@ from sqlalchemy import create_engine
 from flask_login import UserMixin
 from datetime import timedelta
 
+# safe imports
 __all__ = ('Beer', 'Brewery', 'BeerPhotos', 'User', 'Category', 'Style', 'engine', 'Base', 'session')
 
 # db path, make sure "check_same_thread" is set to False
 thisDir = os.path.dirname(__file__)
 db_path = os.path.join(os.path.dirname(thisDir), 'db').replace(os.sep, '/')
+
+# make sure folder exists
+if not os.path.exists(db_path):
+    os.makedirs(db_path)
+
+# VERY IMPORTANT - our connection string.  SqlAlchemy can work with many different database formats
+# we are using sqlite for demo purposes (using multithreaded to prevent locks)
 brewery_str = 'sqlite:///{}/beer.db?check_same_thread=False'.format(db_path)
 
 # get declaritive base context
 Base = declarative_base()
 
 # basic repr
-basic_repr = lambda obj, attr: '<{}: "{}">'.format(obj.__class__.__name__, getattr(obj, attr))
+def basic_repr(obj, attr):
+    """ returns a basic representation of an object
+
+    :param obj: table object
+    :param attr: attribute used to label unique object
+    """
+    return '<{}: "{}">'.format(obj.__class__.__name__, getattr(obj, attr))
+
 
 class BeerPhotos(Base):
     __tablename__ = 'beer_photos'
@@ -29,6 +44,7 @@ class BeerPhotos(Base):
 
     def __repr__(self):
         return basic_repr(self, 'photo_name')
+
 
 class Beer(Base):
     __tablename__ = 'beers'
@@ -76,6 +92,7 @@ class Brewery(Base):
     def __repr__(self):
         return basic_repr(self, 'name')
 
+
 class Style(Base):
     __tablename__ = 'styles'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -87,6 +104,7 @@ class Style(Base):
     def __repr__(self):
         return basic_repr(self, 'style_name')
 
+
 class Category(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -97,6 +115,8 @@ class Category(Base):
     def __repr__(self):
         return basic_repr(self, 'cat_name')
 
+
+# this must implement Flask-Login's UserMixin class to work with decorators!
 class User(Base, UserMixin):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -122,6 +142,7 @@ class User(Base, UserMixin):
 
     def __str__(self):
         return repr(self)
+
 
 # make sure all databases are created
 engine = create_engine(brewery_str)

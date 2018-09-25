@@ -72,13 +72,16 @@
       // need to manually update this, because feature returned from map click is not
       // the original object
       EventBus.$on('brewery-changed', async (obj)=>{
+
         if (this.selectedBrewery && obj.id === this.selectedBrewery.properties.id){
-          const resp = await api.getBrewery(obj.id, { f: 'geojson' });
-          if (resp.features.length){
-            // update brewery
-            Object.assign(this.selectedBrewery, resp.features[0]);
-          } else {
+          if (obj.type === 'delete'){
             this.clearSelection();
+          } else {
+            const resp = await api.getBrewery(obj.id, { f: 'geojson' });
+            if (resp.features.length){
+              // update brewery
+              Object.assign(this.selectedBrewery, resp.features[0]);
+            }
           }
         }
         if (obj.type === 'create'){
@@ -220,10 +223,10 @@
 
       goToEditBrewery(id){
 
-        // small timeout to prevent race conditions
-        setTimeout(()=>{
+        // // small timeout to prevent race conditions
+        // setTimeout(()=>{
           this.$router.push({ name: 'editableBreweryInfo', params: { brewery_id: id }})
-        }, 250)
+        // }, 250)
       },
 
       emitBreweryChange(id, type){

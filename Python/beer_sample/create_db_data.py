@@ -11,10 +11,6 @@ from app.security import userStore
 from datetime import datetime
 import csv
 
-
-# url to AGOL layer with MN Brewery info
-url = 'https://services2.arcgis.com/ZkOsbg84o8DsPPaP/arcgis/rest/services/Minnesota_Beer/FeatureServer/0'
-
 # function get utc time string to datetime()
 timestamp_to_date = lambda s: datetime.strptime(s,'%Y-%m-%d %H:%M:%S UTC')
 
@@ -108,6 +104,6 @@ if __name__ == '__main__':
     # run function to create the data
     create_data()
 
-    # had some issues with db corrupting see:
+    # had some issues with sqlite db corrupting on my mac, see:
     #   http://www.froebe.net/blog/2015/05/27/error-sqlite-database-is-malformed-solved/
     # in sqlite run: "pragma integrity_check;"

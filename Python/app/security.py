@@ -97,11 +97,6 @@ def send_authentication_email(to_addr, msg):
 
 # API METHODS BELOW
 
-@security_api.route('/error')
-def error():
-    """ test the JSON Exception Handler """
-    raise TestException
-
 @security_api.route('/users')
 @security_api.route('/users/<id>')
 def get_users(id=None):

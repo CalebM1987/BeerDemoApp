@@ -5,6 +5,7 @@ from database_utils import create_beer_photo
 from exceptions import *
 from utils import *
 from io import BytesIO
+from base import errorHandler
 
 # add brewery API blueprint
 brewery_api = Blueprint('brewery_api', __name__)
@@ -15,7 +16,6 @@ beer_fields = list_fields(Beer)
 beer_photo_fields = filter(lambda f: f not in ('data', 'thumbnail'), list_fields(BeerPhotos))
 
 # constants
-PHOTO_MIMETYPE = 'application/octet-stream'
 category_fields = list_fields(Category)
 style_fields = list_fields(Style)
 table_dict = {
@@ -43,22 +43,29 @@ def remove_filesystem_photo(beer_photo):
 
 @brewery_api.route('/beer/categories')
 @brewery_api.route('/beer/categories/<id>')
+@errorHandler
 def get_categories(id=None):
     return endpoint_query(Category, category_fields, id)
 
+
 @brewery_api.route('/beer/categories/<id>/styles')
+@errorHandler
 def get_category_styles(id):
     if id:
         category_styles = query_wrapper(Category, id=int(id))[0].styles
         return jsonify(to_json(category_styles, style_fields))
 
+
 @brewery_api.route('/beer/styles')
 @brewery_api.route('/beer/styles/<id>')
+@errorHandler
 def get_styles(id=None):
     return endpoint_query(Style, style_fields, id)
 
+
 @brewery_api.route('/breweries')
 @brewery_api.route('/breweries/<id>')
+@errorHandler
 def get_breweries(id=None):
     args = collect_args()
     f = args.get('f', 'json')
@@ -76,8 +83,10 @@ def get_breweries(id=None):
     results = query_wrapper(Brewery, **args)
     return jsonify(handler(to_json(results, fields)))
 
+
 @brewery_api.route('/breweries/<id>/beers')
 @brewery_api.route('/breweries/<id>/beers/<bid>')
+@errorHandler
 def get_beers_from_brewery(id=None, bid=None):
     if not id:
         raise InvalidResource
@@ -97,8 +106,10 @@ def get_beers_from_brewery(id=None, bid=None):
 
 @brewery_api.route('/beers')
 @brewery_api.route('/beers/<id>')
+@errorHandler
 def get_beer_by_id(id=None):
     return endpoint_query(Beer, id=id)
+
 
 @brewery_api.route('/beers/<id>/photos')
 def get_beer_photos(id=None):
@@ -108,12 +119,16 @@ def get_beer_photos(id=None):
     beer = query_wrapper(Beer, id=int(id))[0]
     return jsonify(to_json(beer.photos, beer_photo_fields))
 
+
 @brewery_api.route('/beer_photos')
 @brewery_api.route('/beer_photos/<id>')
+@errorHandler
 def get_beer_photo(id=None):
     return endpoint_query(BeerPhotos, beer_photo_fields, id)
 
+
 @brewery_api.route('/beer_photos/<id>/download')
+@errorHandler
 def download_beer_photo(id):
     if not id:
         raise InvalidResource
@@ -130,6 +145,7 @@ def download_beer_photo(id):
 # struggling with route name here???
 @brewery_api.route('/beer_photo/add', methods=['POST'])
 @login_required
+@errorHandler
 def add_beer_photo():
     args = collect_args()
     try:

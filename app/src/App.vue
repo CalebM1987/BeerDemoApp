@@ -46,7 +46,6 @@
 
   .theme-banner {
     background-color: forestgreen;
-    /*font-weight: bold;*/
     color: white;
   }
 

@@ -66,5 +66,9 @@ typings/
 # sqlite db folder
 db/
 
+# uploads and downloads folders
+uploads/
+downloads/
+
 # jetbrains
 .idea/

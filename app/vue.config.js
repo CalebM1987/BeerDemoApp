@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+
 module.exports = {
   baseUrl: './',
   configureWebpack: config => {
@@ -17,5 +18,6 @@ module.exports = {
     config.plugins.push(new webpack.ProvidePlugin({
       mapboxgl: 'mapbox-gl'
     }));
-  }
+  },
+
 };
