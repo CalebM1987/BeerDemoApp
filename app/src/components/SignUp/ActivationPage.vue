@@ -18,8 +18,8 @@
 </template>
 
 <script>
-  import api from '../modules/api';
-  import Spinner from './UI/Spinner';
+  import api from '../../modules/api';
+  import Spinner from '../UI/Spinner';
 
   export default {
     name: "activation-page",

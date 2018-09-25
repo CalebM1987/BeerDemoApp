@@ -89,7 +89,7 @@
 
       deactivateAddBrewery(){
         this.state = 'default';
-        this.canvas.style.cursor = 'grab';
+        this.canvas ? this.canvas.style.cursor = 'grab': null;
       },
 
       addNewBrewery(){
@@ -109,7 +109,6 @@
 
       async mapLoaded(map){
         const brewerySource = await api.getBreweries();
-        this.brewerySource = brewerySource;
         console.log('brewerySource: ', brewerySource);
 
         map.loadImage('./assets/beer.png', function (error, image) {
@@ -188,7 +187,6 @@
             this.$emit('cleared-selection')
           }
         } else {
-          console.log('emitting new-brewery-location', e.lngLat)
           this.$emit('new-brewery-point', e.lngLat);
         }
       },
@@ -199,9 +197,6 @@
         }
         this.$emit('brewery-identified', feature);
 
-        // // emit menu-expanded as well to ensure it is always open when feature is selected
-        // EventBus.$emit('toggle-menu', true);
-
         // add marker to map
         if (!this.selectionMarker){
 
@@ -209,7 +204,6 @@
               .setLngLat(feature.geometry.coordinates)
               .addTo(this.map);
         } else {
-          console.log('using existing selection marker');
           this.selectionMarker.setLngLat(feature.geometry.coordinates)//[feature.properties.x, feature.properties.y]
         }
 
@@ -221,7 +215,6 @@
 
     watch: {
       '$root.userIsAuthenticated'(newVal){
-        console.log('user is authenticated watcher: ', newVal)
         if (newVal) {
           if (!this.addBreweryButton){
             this.createAddBreweryButton()

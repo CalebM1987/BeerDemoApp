@@ -60,8 +60,6 @@
 
 <style scoped>
   #sidebar{
-    /*display: none;*/
-    /*width: 350px;*/
     display: block;
     background: whitesmoke;
     height: calc(100vh - 60px);

@@ -29,10 +29,9 @@ Vue.config.productionTip = false;
 request('./config.json').then((config) => {
 
   // set base url for API from config file
-  //setBaseUrl(config.api_base);
   axios.defaults.baseURL = config.api_base;
 
-  const vue = new Vue({
+  new Vue({
     render: h => h(App),
 
     // register router with vue
@@ -50,7 +49,6 @@ request('./config.json').then((config) => {
         this.userIsAuthenticated = false;
       });
 
-      // this.$router.push({ name: 'home', params: { userIsAuthenticated: this.userIsAuthenticated }});
     },
 
     // data must be a function that returns an object

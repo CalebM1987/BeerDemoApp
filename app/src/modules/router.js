@@ -2,10 +2,10 @@ import Router from 'vue-router';
 import Vue from 'vue';
 import Home from '../components/Home/Home';
 import SignUp from '../components/SignUp/SignUp';
-import EditableBreweryInfo from '../components/BreweryInfo/EditableBreweryInfo';
-import EditableBeerInfo from '../components/EditableBeerInfo';
+import EditableBreweryInfo from '../components/Editing/EditableBreweryInfo';
+import EditableBeerInfo from '../components/Editing/EditableBeerInfo';
 import PageNotFound from '../components/PageNotFound';
-import ActivationPage from '../components/ActivationPage';
+import ActivationPage from '../components/SignUp/ActivationPage';
 
 Vue.use(Router);
 

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import { EventBus } from "../modules/EventBus";
+  import { EventBus } from "../../modules/EventBus";
   import VueTypeahead from 'vue-typeahead';
 
   export default {

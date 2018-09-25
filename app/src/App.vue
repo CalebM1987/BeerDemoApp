@@ -1,4 +1,5 @@
 <template>
+  <!-- Vue instance attaches here-->
   <div id="app">
 
     <!-- App Navbar -->
@@ -8,7 +9,6 @@
     <keep-alive :exclude="['editableBeerInfo']">
       <router-view></router-view>
     </keep-alive>
-
 
   </div>
 </template>
@@ -20,23 +20,13 @@
     name: 'app',
     components: {
       AppNavBar
-    },
-    data(){
-      return {
-        args: {}
-      }
-    },
-    mounted(){
-      hook.app = this;
-
-    },
-
-    methods: {},
+    }
   }
 </script>
 
 <style>
 
+  /* this will serve as our global css */
   .centered {
     color: gray;
     position: fixed;

@@ -65,7 +65,6 @@
     },
 
     mounted(){
-      console.log('breweryInfo: ', this.properties);
       hook.bi = this;
       this.fetchBeers();
 
@@ -94,7 +93,6 @@
           return;
         }
         const beers = await api.getBeersFromBrewery(id || this.properties.id);
-        console.log('beers found: ', beers);
         this.featuredBeers.length = 0;
         this.featuredBeers.push(...beers);
       }
@@ -107,7 +105,6 @@
 
     watch: {
       'properties.id'(newVal){
-        console.log('brewery id changed: ', newVal);
         // make sure to fetch beers each time a new brewery is identified
         this.featuredBeers.length = 0;
         this.fetchBeers(newVal);

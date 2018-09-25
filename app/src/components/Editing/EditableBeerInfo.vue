@@ -89,17 +89,15 @@
 </template>
 
 <script>
-  import api from '../modules/api';
-  import DropZone from './UI/DropZone';
-  import XhrSpinner from './UI/XhrSpinner';
+  import api from '../../modules/api';
+  import DropZone from '../UI/DropZone';
   import swal from 'sweetalert2';
-  import { EventBus } from "../modules/EventBus";
+  import { EventBus } from "../../modules/EventBus";
 
   export default {
     name: "beer-info",
     components: {
-      DropZone,
-      XhrSpinner
+      DropZone
     },
     data(){
       return {
